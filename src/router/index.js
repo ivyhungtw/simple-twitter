@@ -1,16 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Main from '../views/Main.vue'
 import SignIn from '../views/SignIn.vue'
-import NotFound from '../views/NotFound.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
-  // 首頁
   {
     path: '/',
     name: 'root',
-    redirect: '/signin'
+    component: Main
   },
   {
     path: '/signin',
@@ -18,10 +17,10 @@ const routes = [
     component: SignIn
   },
   {
-    path: '*',
-    name: 'not-found',
-    component: NotFound
-  }
+    path: '/signup',
+    name: 'sign-up',
+    component: () => import('../views/SignUp.vue')
+  },
 ]
 
 const router = new VueRouter({
@@ -29,7 +28,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  // do something
+  // do something 
   next()
 })
 
