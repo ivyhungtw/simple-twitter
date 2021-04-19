@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="setting">
     <!-- UserSidebar -->
     <UserSidebar></UserSidebar>
     <!-- SettingForm -->
@@ -21,4 +21,7 @@ export default {
 </script>
 
 <style scoped>
+#setting {
+  display: flex;
+}
 </style>
