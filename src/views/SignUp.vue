@@ -56,7 +56,7 @@
           required
         />
       </div>
-      <div class="row">
+      <div class="row mt-4">
         <button class="btn submit" type="submit">註冊</button>
       </div>
       <div class="row">
@@ -84,8 +84,8 @@ export default {
   },
   methods: {
     async handleSubmit(e) {
-      const formDataCheck = this.formDataCheck();
-      if (!formDataCheck) {
+      const formDataCheckResult = this.formDataCheck();
+      if (!formDataCheckResult) {
         return;
       }
       try {
@@ -184,6 +184,8 @@ form {
 .row label {
   color: #657786;
   font-weight: 700;
+  display: block;
+  width: 100%;
 }
 
 .title h1 {
@@ -191,11 +193,6 @@ form {
   text-align: center;
   font-weight: 900;
   font-size: 23px;
-}
-
-label {
-  display: block;
-  width: 100%;
 }
 
 input {
@@ -214,11 +211,11 @@ input {
 button.submit {
   background-color: #ff6600;
   color: #fff;
-  /* border: 1px solid #000; */
 }
 
 button.cancel {
   color: #0099ff;
   text-decoration: underline;
+  font-weight: 700;
 }
 </style>
