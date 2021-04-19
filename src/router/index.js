@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '../views/Main.vue'
 import SignUp from '../views/SignUp.vue'
+import NotFound from '../views/NotFound.vue'
 
 Vue.use(VueRouter)
 
@@ -26,6 +27,11 @@ const routes = [
     name: 'Main',
     component: Main
   },
+  {
+    path: '*',
+    name: 'not-found',
+    component: NotFound
+  }
 ]
 
 const router = new VueRouter({
