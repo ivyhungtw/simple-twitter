@@ -35,7 +35,9 @@
       </div>
       <div class="row link-btns-container">
         <div class="link-btns">
-          <router-link class="routerLink" to="">註冊 Alphitter</router-link>
+          <router-link class="routerLink" to="/signup"
+            >註冊 Alphitter</router-link
+          >
           <span> &#xb7; </span>
           <router-link class="routerLink" to="">後台登入</router-link>
         </div>
