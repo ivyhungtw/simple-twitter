@@ -1,10 +1,10 @@
 <template>
-  <div class="hello">RecommendedFollowers</div>
+  <div class="hello">TweetItem</div>
 </template>
 
 <script>
 export default {
-  name: "RecommendedFollowers",
+  name: "TweetItem",
 };
 </script>
 

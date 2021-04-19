@@ -5,11 +5,11 @@
 <script>
 // UserSidebar
 // RecommendedFollowers
-// CreateTweet.vue => modal id="tweetModal"
-// FollowingUsersTweets.vue => modal id="tweetReplyModal"
+// ReplyDetailContent
+// ReplyDetailList
 
 export default {
-  name: "Main",
+  name: "ReplyDetail",
 };
 </script>
 
