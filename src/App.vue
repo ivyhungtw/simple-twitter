@@ -1,12 +1,17 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+  <div id="simple-twitter">
     <router-view />
   </div>
 </template>
+
+<script>
+// bootstrap css
+import "bootstrap/dist/css/bootstrap.min.css";
+// bootstrap js
+import "bootstrap";
+
+export default {};
+</script>
 
 <style scoped>
 </style>

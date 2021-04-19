@@ -1,10 +1,13 @@
 <template>
-  <h1>sign up</h1>
+  <div>
+    <h1>SignUp page</h1>
+    <button class="btn btn-danger">BTN</button>
+  </div>
 </template>
 
 <script>
 export default {
-  name: "SignUp",
+  name: "sign-up",
 };
 </script>
 

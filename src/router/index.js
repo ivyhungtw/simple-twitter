@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '../views/Main.vue'
-import SignIn from '../views/SignIn.vue'
+import SignUp from '../views/SignUp.vue'
 
 Vue.use(VueRouter)
 
@@ -9,17 +9,22 @@ const routes = [
   {
     path: '/',
     name: 'root',
-    component: Main
-  },
-  {
-    path: '/signin',
-    name: 'sign-in',
-    component: SignIn
+    redirect: '/signup'
   },
   {
     path: '/signup',
     name: 'sign-up',
-    component: () => import('../views/SignUp.vue')
+    component: SignUp
+  },
+  {
+    path: '/signin',
+    name: 'sign-in',
+    component: () => import('../views/SignIn.vue')
+  },
+  {
+    path: '/main',
+    name: 'Main',
+    component: Main
   },
 ]
 
@@ -28,7 +33,8 @@ const router = new VueRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  // do something 
+  // do something
+  console.log(to)
   next()
 })
 
