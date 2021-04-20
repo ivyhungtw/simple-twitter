@@ -33,18 +33,30 @@ const routes = [
     component: () => import('../views/AccountEdit.vue')
   },
   {
-    path: '/userProfile',
-    name: 'UserProfile',
+    path: '/userprofile',
+    name: 'user-profile',
     component: () => import('../views/UserProfile.vue')
+  },
+  {
+    path: '/userprofile/replies',
+    name: 'user-profile-replies',
+    component: () => import('../views/UserProfileReply.vue')
+  },
+  {
+    path: '/userprofile/likes',
+    name: 'user-profile-Likes',
+    component: () => import('../views/UserProfileLike.vue')
   },
   {
     path: '*',
     name: 'not-found',
     component: NotFound
-  }
+  },
+
 ]
 
 const router = new VueRouter({
+  linkExactActiveClass: 'active',
   routes
 })
 
