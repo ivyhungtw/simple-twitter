@@ -11,14 +11,27 @@
             <div class="avatar"><img src="" alt="" /></div>
             <div class="info">
               <div class="name">
-                <h2>{{ user.name }}</h2>
+                <router-link to="/userProfile/user.id">
+                  <h2>{{ user.name }}</h2>
+                </router-link>
               </div>
               <div class="account">
                 <h2>{{ user.account }}</h2>
               </div>
             </div>
             <div class="toggleFollow">
-              <button class="btn" @click.prevent.stop="toggleFollow">
+              <button
+                v-if="user.isFollowed"
+                class="btn isFollowing"
+                @click.prevent.stop="toggleFollow(user)"
+              >
+                正在跟隨
+              </button>
+              <button
+                v-else
+                class="btn"
+                @click.prevent.stop="toggleFollow(user)"
+              >
                 跟隨
               </button>
             </div>
@@ -41,36 +54,42 @@ const dummyUsers = [
     id: 1,
     account: "@user1",
     image: "",
+    isFollowed: true,
   },
   {
     name: "user2",
     id: 2,
     account: "@user2",
     image: "",
+    isFollowed: false,
   },
   {
     name: "user3",
     id: 3,
     account: "@user3",
     image: "",
+    isFollowed: false,
   },
   {
     name: "user4",
     id: 4,
     account: "@user4",
     image: "",
+    isFollowed: false,
   },
   {
     name: "user5",
     id: 5,
     account: "@user5",
     image: "",
+    isFollowed: false,
   },
   {
     name: "user6",
     id: 6,
     account: "@user6",
     image: "",
+    isFollowed: false,
   },
 ];
 
@@ -98,8 +117,27 @@ export default {
         });
       }
     },
-    toggleFollow() {
-      console.log("toggleFollow");
+    async toggleFollow(user) {
+      try {
+        // call api to toggle isFollowed
+
+        // render
+        this.recommendedFollowers = this.recommendedFollowers.map((each) => {
+          if (each.id === user.id) {
+            return {
+              ...each,
+              isFollowed: !user.isFollowed,
+            };
+          } else {
+            return each;
+          }
+        });
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法執行動作，請稍後再試！",
+        });
+      }
     },
   },
 };
@@ -169,6 +207,12 @@ button {
 .toggleFollow button {
   font-size: 15px;
   font-weight: 700;
+}
+
+.toggleFollow .isFollowing {
+  width: 92px;
+  background-color: #ff6600;
+  color: #fff;
 }
 
 .showMore {
