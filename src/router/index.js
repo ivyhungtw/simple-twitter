@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '../views/Main.vue'
 import SignUp from '../views/SignUp.vue'
+import NotFound from '../views/NotFound.vue'
 
 Vue.use(VueRouter)
 
@@ -26,6 +27,10 @@ const routes = [
     name: 'Main',
     component: Main
   },
+    path: '/accountEdit',
+    name: 'AccountEdit',
+    component: () => import('../views/AccountEdit.vue')
+  },
   {
     path: '/userprofile',
     name: 'user-profile',
@@ -41,6 +46,11 @@ const routes = [
     name: 'user-profile-Likes',
     component: () => import('../views/UserProfileLike.vue')
   },
+  {
+    path: '*',
+    name: 'not-found',
+    component: NotFound
+  }
 ]
 
 const router = new VueRouter({
