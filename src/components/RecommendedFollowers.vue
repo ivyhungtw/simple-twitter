@@ -42,7 +42,7 @@
     </div>
 
     <div class="showMore">
-      <button class="btn">顯示更多</button>
+      <button class="btn" @click="showAlert">顯示更多</button>
     </div>
   </div>
 </template>
@@ -138,6 +138,12 @@ export default {
           title: "無法執行動作，請稍後再試！",
         });
       }
+    },
+    showAlert() {
+      Toast.fire({
+        icon: "info",
+        title: "這個按鈕目前沒有功能，請下個月再試！",
+      });
     },
   },
 };

@@ -52,7 +52,11 @@
               </div>
               <div class="textInput">
                 <!-- <textarea name="" id="" cols="30" rows="10"></textarea> -->
-                <input type="text" placeholder="有什麼新鮮事？" />
+                <input
+                  type="text"
+                  placeholder="有什麼新鮮事？"
+                  v-model="tweetContent"
+                />
               </div>
             </div>
           </div>
@@ -63,7 +67,9 @@
                 type="button"
                 class="btn"
                 data-dismiss="modal"
-                @click.stop.prevent="createNewTweet"
+                aria-label="Close"
+                @click="createNewTweet"
+                aria-hidden="true"
               >
                 推文
               </button>
@@ -77,11 +83,33 @@
 </template>
 
 <script>
+import { Toast } from "../../utils/helpers";
 export default {
   name: "CreateTweet",
+  data() {
+    return {
+      tweetContent: "",
+      isProcessing: false,
+    };
+  },
   methods: {
-    createNewTweet() {
-      console.log("call api to create New Tweet");
+    async createNewTweet() {
+      try {
+        this.isProcessing = true;
+
+        // call api to create new tweet
+        console.log("call api to create New Tweet");
+        console.log("tweet: " + this.tweetContent);
+        // close modal
+
+        this.isProcessing = false;
+      } catch (error) {
+        this.isProcessing = false;
+        Toast.fire({
+          icon: "error",
+          title: "無法推文，請稍後再試！",
+        });
+      }
     },
   },
 };
