@@ -28,9 +28,14 @@ const routes = [
     component: Main
   },
   {
-    path: '/setting',
-    name: 'Setting',
-    component: () => import('../views/Setting.vue')
+    path: '/accountEdit',
+    name: 'AccountEdit',
+    component: () => import('../views/AccountEdit.vue')
+  },
+  {
+    path: '/userProfile',
+    name: 'UserProfile',
+    component: () => import('../views/UserProfile.vue')
   },
   {
     path: '*',
