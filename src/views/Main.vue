@@ -48,11 +48,11 @@ export default {
 .title {
   height: 55px;
   border-bottom: 1px solid #e6ecf0;
-  padding: 15px;
+  padding: 10px 15px;
 }
 
 .title h1 {
   font-weight: 700;
-  font-size: 18px;
+  font-size: 19px;
 }
 </style>

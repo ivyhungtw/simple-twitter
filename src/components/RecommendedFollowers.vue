@@ -8,7 +8,9 @@
       <ul class="usersList">
         <li class="user" v-for="user of recommendedFollowers" :key="user.id">
           <div class="userContent">
-            <div class="avatar"><img src="" alt="" /></div>
+            <div class="avatar">
+              <img :src="user.image | emptyImageFilter" alt="" />
+            </div>
             <div class="info">
               <div class="name">
                 <router-link to="/userProfile/user.id">
@@ -93,9 +95,11 @@ const dummyUsers = [
   },
 ];
 
+import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 export default {
   name: "RecommendedFollowers",
+  mixins: [emptyImageFilter],
   created() {
     this.fetchRecommendedFollowers();
   },
@@ -187,6 +191,11 @@ hr {
   height: 50px;
   width: 50px;
   background-color: #c4c4c4;
+  border-radius: 50%;
+}
+.userContent .avatar img {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
 }
 
