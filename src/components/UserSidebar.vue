@@ -6,21 +6,33 @@
     <div class="buttonList">
       <div class="navItem index">
         <div class="icon">
-          <img src="../assets/home.png" alt="" />
+          <img src="../assets/home.svg" alt="" />
         </div>
-        <p>首頁</p>
+        <button class="btn">
+          <router-link to="/main">
+            <p>首頁</p>
+          </router-link>
+        </button>
       </div>
       <div class="navItem userProfile">
         <div class="icon">
-          <img src="../assets/profile.png" alt="" />
+          <img src="../assets/profile.svg" alt="" />
         </div>
-        <p>個人資料</p>
+        <button class="btn">
+          <router-link to="/userProfile">
+            <p>個人資料</p>
+          </router-link>
+        </button>
       </div>
       <div class="navItem setting">
         <div class="icon">
-          <img src="../assets/setting.png" alt="" />
+          <img src="../assets/setting.svg" alt="" />
         </div>
-        <p>設定</p>
+        <button class="btn">
+          <router-link to="/accountEdit">
+            <p>設定</p>
+          </router-link>
+        </button>
       </div>
       <div class="navItem newTweet">
         <button class="btn">
@@ -29,9 +41,11 @@
       </div>
       <div class="navItem logout">
         <div class="icon">
-          <img src="../assets/logout.png" alt="" />
+          <img src="../assets/logout.svg" alt="" />
         </div>
-        <p>登出</p>
+        <button class="btn" @click.stop.prevent="clearAutherization">
+          <p>登出</p>
+        </button>
       </div>
     </div>
   </div>
@@ -40,6 +54,12 @@
 <script>
 export default {
   name: "UserSidebar",
+  methods: {
+    clearAutherization() {
+      // 刪除 token => 登出
+      console.log("clearAutherization");
+    },
+  },
 };
 </script>
 
@@ -48,14 +68,13 @@ export default {
   margin-left: 103px;
   width: 235px;
   height: 100vh;
-  /* border: 1px solid #000; */
   display: flex;
   flex-direction: column;
-  border: 1px solid #000;
+  border-right: 1px solid #e6ecf0;
 }
 
 .logo {
-  margin-bottom: 43px;
+  margin-bottom: 24px;
 }
 
 .logo img {
@@ -70,20 +89,24 @@ export default {
 
 .buttonList .navItem {
   height: 60px;
-  /* border: 1px solid #000; */
   display: flex;
   align-items: center;
 }
 
 .icon {
   height: 26px;
-  /* border: 1px solid #000; */
 }
 
 p {
   height: 26px;
-  /* border: 1px solid #000; */
   margin: 0;
+  font-weight: 700;
+  font-size: 18px;
+  color: #1c1c1c;
+}
+
+.newTweet p {
+  font-weight: 500;
 }
 
 .icon img {

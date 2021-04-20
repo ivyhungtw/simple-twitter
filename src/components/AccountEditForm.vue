@@ -68,6 +68,7 @@
 
 <script>
 import { Toast } from "../utils/helpers";
+
 export default {
   name: "AccountEditForm",
   props: {
@@ -119,9 +120,11 @@ export default {
         // call api to post formData
         // if isSignup: post
         // else: put
+
         for (let [key, val] of formData) {
           console.log(key + ": " + val);
         }
+
         Toast.fire({
           icon: "success",
           title: "註冊成功！",
