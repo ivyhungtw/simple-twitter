@@ -26,9 +26,25 @@ const routes = [
     name: 'Main',
     component: Main
   },
+  {
+    path: '/userprofile',
+    name: 'user-profile',
+    component: () => import('../views/UserProfile.vue')
+  },
+  {
+    path: '/userprofile/replies',
+    name: 'user-profile-replies',
+    component: () => import('../views/UserProfileReply.vue')
+  },
+  {
+    path: '/userprofile/likes',
+    name: 'user-profile-Likes',
+    component: () => import('../views/UserProfileLike.vue')
+  },
 ]
 
 const router = new VueRouter({
+  linkExactActiveClass: 'active',
   routes
 })
 

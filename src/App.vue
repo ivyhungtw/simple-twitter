@@ -10,7 +10,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // bootstrap js
 import "bootstrap";
 
-export default {};
+export default {
+  name: "App",
+};
 </script>
 
 <style scoped>

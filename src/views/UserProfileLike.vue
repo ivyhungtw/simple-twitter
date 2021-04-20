@@ -1,16 +1,24 @@
 <template>
-  <h1>UserProfile</h1>
+  <div class="container">
+    <h1>UserProfileLike</h1>
+    <!-- UserSidebar -->
+    <UserProfileNavtabs />
+    <!-- UserProfileCard -->
+    <!-- userProfileNavtabs -->
+
+    <!-- UserProfileLikeList -->
+    <!-- RecommendedFollowers -->
+  </div>
 </template>
 
 <script>
-// UserSidebar
-// RecommendedFollowers
-// UserProfileCard
-// userProfileNavBar
-// UserProfileLikeList
+import UserProfileNavtabs from "./../components/UserProfileNavtabs";
 
 export default {
   name: "UserProfileLike",
+  components: {
+    UserProfileNavtabs,
+  },
 };
 </script>
 
