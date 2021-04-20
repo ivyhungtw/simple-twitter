@@ -148,6 +148,8 @@ input {
 button.signin {
   background-color: #ff6600;
   color: #fff;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .link-btns-container {

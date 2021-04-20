@@ -6,7 +6,7 @@
     <div class="title">
       <h1>建立你的帳號</h1>
     </div>
-    <AccountEditForm></AccountEditForm>
+    <AccountEditForm :isSignUp="isSignUp"></AccountEditForm>
   </div>
 </template>
 
@@ -15,7 +15,11 @@ import AccountEditForm from "../components/AccountEditForm";
 export default {
   name: "sign-up",
   components: { AccountEditForm },
-  methods: {},
+  data() {
+    return {
+      isSignUp: true,
+    };
+  },
 };
 </script>
 

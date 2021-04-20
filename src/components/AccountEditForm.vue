@@ -37,7 +37,6 @@
         required
       />
     </div>
-
     <div class="row">
       <label for="passwordCheck">密碼確認</label>
       <input
@@ -48,12 +47,22 @@
         required
       />
     </div>
-    <div class="row mt-4">
-      <button class="btn submit" type="submit">註冊</button>
-    </div>
-    <div class="row">
-      <button class="btn cancel">取消</button>
-    </div>
+
+    <template v-if="isSignUp">
+      <div class="row mt-4">
+        <button class="btn submit" type="submit" :disabled="isProcessing">
+          {{ isProcessing ? "註冊中.." : "註冊" }}
+        </button>
+      </div>
+      <div class="row">
+        <button class="btn cancel">取消</button>
+      </div>
+    </template>
+    <template v-else>
+      <div class="row">
+        <button class="btn update">儲存</button>
+      </div>
+    </template>
   </form>
 </template>
 
@@ -62,6 +71,24 @@ import { Toast } from "../utils/helpers";
 
 export default {
   name: "AccountEditForm",
+  props: {
+    isSignUp: {
+      type: Boolean,
+      default: true,
+    },
+    currentUser: {
+      type: Object,
+      default: () => ({
+        account: "",
+        name: "",
+        email: "",
+        password: "",
+      }),
+    },
+  },
+  created() {
+    this.fetchCurrentUser(this.currentUser);
+  },
   data() {
     return {
       form: {
@@ -75,6 +102,13 @@ export default {
     };
   },
   methods: {
+    fetchCurrentUser(newVal) {
+      console.log("newVal");
+      this.form = {
+        ...this.form,
+        ...newVal,
+      };
+    },
     async handleSubmit(e) {
       const formDataCheckResult = this.formDataCheck();
       if (!formDataCheckResult) {
@@ -84,6 +118,9 @@ export default {
         this.isProcessing = true;
         const formData = new FormData(e.target);
         // call api to post formData
+        // if isSignup: post
+        // else: put
+
         for (let [key, val] of formData) {
           console.log(key + ": " + val);
         }
@@ -96,6 +133,7 @@ export default {
         // 轉址到 /signin
         this.$router.push("/signin");
       } catch (error) {
+        this.isProcessing = false;
         Toast.fire({
           icon: "error",
           title: "發生錯誤，請稍後再試！",
@@ -150,6 +188,14 @@ export default {
       return result;
     },
   },
+  watch: {
+    currentUser(newVal) {
+      this.fetchCurrentUser(newVal);
+    },
+  },
+  computed: {
+    // ...mapState('currentUser')
+  },
 };
 </script>
 
@@ -157,28 +203,26 @@ export default {
 form {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  margin: 20px 0 0 15px;
+  width: 642px;
 }
 .row {
-  width: 540px;
-  margin: 10px;
+  width: 642px;
+  margin: 10px 0;
 }
 
 .row label {
+  padding-left: 11px;
   color: #657786;
   font-weight: 700;
   display: block;
   width: 100%;
 }
 
-.title h1 {
-  width: 100%;
-  text-align: center;
-  font-weight: 900;
-  font-size: 23px;
-}
-
-input {
+.row input {
+  padding-left: 11px;
+  font-weight: 500;
+  font-size: 19px;
   background-color: #f5f8fa;
   width: 100%;
   border: none;
@@ -191,14 +235,30 @@ input {
   height: 50px;
 }
 
-button.submit {
+button.submit,
+button.update {
   background-color: #ff6600;
   color: #fff;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 button.cancel {
   color: #0099ff;
   text-decoration: underline;
+  font-size: 18px;
   font-weight: 700;
+}
+
+.row:last-child {
+  position: relative;
+  height: 50px;
+}
+
+button.update {
+  position: absolute;
+  right: 0;
+  width: 122px;
+  font-size: 18px;
 }
 </style>
