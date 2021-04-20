@@ -8,19 +8,31 @@
         <div class="icon">
           <img src="../assets/home.svg" alt="" />
         </div>
-        <p>首頁</p>
+        <button class="btn">
+          <router-link to="/main">
+            <p>首頁</p>
+          </router-link>
+        </button>
       </div>
       <div class="navItem userProfile">
         <div class="icon">
           <img src="../assets/profile.svg" alt="" />
         </div>
-        <p>個人資料</p>
+        <button class="btn">
+          <router-link to="/userProfile">
+            <p>個人資料</p>
+          </router-link>
+        </button>
       </div>
       <div class="navItem setting">
         <div class="icon">
           <img src="../assets/setting.svg" alt="" />
         </div>
-        <p>設定</p>
+        <button class="btn">
+          <router-link to="/accountEdit">
+            <p>設定</p>
+          </router-link>
+        </button>
       </div>
       <div class="navItem newTweet">
         <button class="btn">
@@ -31,7 +43,9 @@
         <div class="icon">
           <img src="../assets/logout.svg" alt="" />
         </div>
-        <p>登出</p>
+        <button class="btn" @click.stop.prevent="clearAutherization">
+          <p>登出</p>
+        </button>
       </div>
     </div>
   </div>
@@ -40,6 +54,12 @@
 <script>
 export default {
   name: "UserSidebar",
+  methods: {
+    clearAutherization() {
+      // 刪除 token => 登出
+      console.log("clearAutherization");
+    },
+  },
 };
 </script>
 

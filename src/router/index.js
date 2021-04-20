@@ -33,6 +33,11 @@ const routes = [
     component: () => import('../views/AccountEdit.vue')
   },
   {
+    path: '/userProfile',
+    name: 'UserProfile',
+    component: () => import('../views/UserProfile.vue')
+  },
+  {
     path: '*',
     name: 'not-found',
     component: NotFound
