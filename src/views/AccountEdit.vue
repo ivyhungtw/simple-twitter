@@ -2,20 +2,26 @@
   <div id="setting">
     <!-- UserSidebar -->
     <UserSidebar></UserSidebar>
-    <!-- SettingForm -->
-    <SettingForm></SettingForm>
+    <!-- AccountEditForm -->
+    <div class="accountEdit">
+      <div class="title">
+        <h1>帳戶設定</h1>
+      </div>
+
+      <AccountEditForm></AccountEditForm>
+    </div>
   </div>
 </template>
 
 <script>
 import UserSidebar from "../components/UserSidebar";
-import SettingForm from "../components/SettingForm";
+import AccountEditForm from "../components/AccountEditForm";
 
 export default {
   name: "Setting",
   components: {
     UserSidebar,
-    SettingForm,
+    AccountEditForm,
   },
 };
 </script>

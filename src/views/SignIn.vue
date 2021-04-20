@@ -101,12 +101,6 @@ export default {
 </script>
 
 <style scoped>
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .logo {
   margin: 60px 0 30px 0;
 }
@@ -114,6 +108,11 @@ form {
 .logo img {
   width: 50px;
   height: 50px;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .row {

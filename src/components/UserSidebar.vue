@@ -51,7 +51,7 @@ export default {
   /* border: 1px solid #000; */
   display: flex;
   flex-direction: column;
-  border: 1px solid #000;
+  /* border: 1px solid #000; */
 }
 
 .logo {
