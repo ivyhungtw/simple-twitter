@@ -3,8 +3,7 @@
   <div class="createTweet">
     <div class="container">
       <div class="avatar">
-        <!-- <img src="" alt="" /> -->
-        <div class="imagePlaceholder"></div>
+        <img :src="user.image | emptyImageFilter" alt="" />
       </div>
       <div class="textInput">
         <input type="text" disabled placeholder="有什麼新鮮事？" />
@@ -47,8 +46,7 @@
           <div class="modal-body">
             <div class="container">
               <div class="avatar">
-                <!-- <img src="" alt="" /> -->
-                <div class="imagePlaceholder"></div>
+                <img :src="user.image | emptyImageFilter" alt="" />
               </div>
               <div class="textInput">
                 <!-- <textarea name="" id="" cols="30" rows="10"></textarea> -->
@@ -83,16 +81,32 @@
 </template>
 
 <script>
+const currentUser = {
+  name: "user1",
+  id: 1,
+  image: "",
+};
+
+import { emptyImageFilter } from "../../utils/mixins";
 import { Toast } from "../../utils/helpers";
 export default {
   name: "CreateTweet",
+  mixins: [emptyImageFilter],
+  created() {
+    this.fetchCurrentUser();
+  },
   data() {
     return {
+      user: {},
       tweetContent: "",
       isProcessing: false,
     };
   },
   methods: {
+    fetchCurrentUser() {
+      // async
+      this.user = currentUser;
+    },
     async createNewTweet() {
       try {
         this.isProcessing = true;
@@ -111,6 +125,9 @@ export default {
         });
       }
     },
+  },
+  computed: {
+    // ...mapState('currentUser')
   },
 };
 </script>
@@ -143,6 +160,7 @@ export default {
 
 .textInput input {
   border: none;
+  background-color: transparent;
 }
 
 .textInput input::placeholder {

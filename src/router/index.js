@@ -28,8 +28,13 @@ const routes = [
     component: Main
   }, {
     path: '/accountEdit',
-    name: 'accountEdit',
+    name: 'account-edit',
     component: () => import('../views/AccountEdit.vue')
+  },
+  {
+    path: '/replydetail',
+    name: 'reply-detail',
+    component: () => import('../views/ReplyDetail.vue')
   },
   {
     path: '/userprofile',
