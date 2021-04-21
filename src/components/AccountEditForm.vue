@@ -129,7 +129,6 @@ export default {
           icon: "success",
           title: "註冊成功！",
         });
-
         // 轉址到 /signin
         this.$router.push("/signin");
       } catch (error) {
@@ -210,7 +209,6 @@ form {
   width: 642px;
   margin: 10px 0;
 }
-
 .row label {
   padding-left: 11px;
   color: #657786;
@@ -218,7 +216,6 @@ form {
   display: block;
   width: 100%;
 }
-
 .row input {
   padding-left: 11px;
   font-weight: 500;
@@ -228,13 +225,11 @@ form {
   border: none;
   border-bottom: 2px solid #657786;
 }
-
 .btn {
   width: 100%;
   border-radius: 50px;
   height: 50px;
 }
-
 button.submit,
 button.update {
   background-color: #ff6600;
@@ -242,19 +237,16 @@ button.update {
   font-size: 18px;
   font-weight: 700;
 }
-
 button.cancel {
   color: #0099ff;
   text-decoration: underline;
   font-size: 18px;
   font-weight: 700;
 }
-
 .row:last-child {
   position: relative;
   height: 50px;
 }
-
 button.update {
   position: absolute;
   right: 0;
