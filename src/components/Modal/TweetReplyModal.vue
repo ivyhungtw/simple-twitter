@@ -18,10 +18,7 @@
             @click="tweetContent = ''"
           >
             <span aria-hidden="true"
-              ><img
-                @click="closeTweetReplyModal"
-                src="../../assets/close.svg"
-                alt=""
+              ><img src="../../assets/close.svg" alt=""
             /></span>
           </button>
         </div>
@@ -120,8 +117,8 @@ export default {
   },
   methods: {
     closeTweetReplyModal() {
-      console.log("closeTweetReplyModal");
-      this.$emit("afterCloseTweetReplyModal");
+      // console.log("closeTweetReplyModal");
+      // this.$emit("afterCloseTweetReplyModal");
     },
     createReply() {
       // console.log(e);

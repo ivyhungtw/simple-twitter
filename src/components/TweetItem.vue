@@ -20,7 +20,6 @@
           <img
             src="../assets/commentCount.svg"
             alt=""
-            @click="openTweetReplyModal"
             data-toggle="modal"
             :data-target="`#tweetReplyModal-${tweet.tweetId}`"
           />
@@ -71,11 +70,11 @@ export default {
       required: true,
     },
   },
-  // data() {
-  //   return {
-  //     tweetInTweetItem: {},
-  //   };
-  // },
+  data() {
+    return {
+      tweetInTweetItem: {},
+    };
+  },
   methods: {
     toggleLike(tweet) {
       // call api to like this tweet by user
@@ -89,12 +88,12 @@ export default {
       // tell Main.vue to change data
       this.$emit("afterToggleLike", tweet);
     },
-    openTweetReplyModal() {
-      console.log("openTweetReplyModal");
-    },
-    afterCloseTweetReplyModal() {
-      console.log("afterCloseTweetReplyModal");
-    },
+    // openTweetReplyModal() {
+    //   console.log("openTweetReplyModal");
+    // },
+    // afterCloseTweetReplyModal() {
+    //   console.log("afterCloseTweetReplyModal");
+    // },
   },
 };
 </script>
