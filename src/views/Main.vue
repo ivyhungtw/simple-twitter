@@ -129,14 +129,12 @@ export default {
     },
     afterCreateTweet(newTweet) {
       console.log("afterCreateTweet");
-      console.log(newTweet);
       this.tweets.unshift({
         ...this.tweet,
         ...newTweet,
       });
     },
     afterToggleLike(likedTweet) {
-      console.log(likedTweet);
       // 處理畫面
       this.tweets = this.tweets.map((tweet) => {
         if (tweet.tweetId === likedTweet.tweetId) {
@@ -160,6 +158,7 @@ export default {
 
 .mainSection {
   flex: 1;
+  width: 100%;
   height: 100vh;
   border-right: 1px solid #e6ecf0;
   overflow: hidden;

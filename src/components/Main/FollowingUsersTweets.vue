@@ -56,11 +56,13 @@ export default {
 .container {
   padding: 0;
   height: calc(100% - 175px);
+  width: 100%;
 }
 
 .tweetList {
   overflow-y: scroll;
   height: 100%;
+  width: 100%;
 }
 
 /* for Chrome, Safari and Opera */

@@ -104,6 +104,7 @@ export default {
   border-bottom: 1px solid #e6ecf0;
   display: flex;
   padding: 10px 15px;
+  width: 100%;
 }
 
 .avatar {
@@ -113,13 +114,14 @@ export default {
 }
 
 .avatar img {
-  width: 100%;
+  min-width: 100%;
   height: 100%;
   border-radius: 50%;
 }
 
 .tweetInfo {
-  width: 510px;
+  width: 100%;
+  width: calc(100% - 60px);
 }
 
 .userInfo {
@@ -149,13 +151,17 @@ export default {
 }
 
 .tweetContent a {
+  display: block;
   text-decoration: none;
 }
 
 .tweetContent p {
+  width: 100%;
   margin: 0;
   font-weight: 500;
   font-size: 15px;
+  word-wrap: break-word;
+  /* 解決 textarea 取直後超出 tag p 之問題 */
 }
 
 .tweetPanel {

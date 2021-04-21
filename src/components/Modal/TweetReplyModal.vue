@@ -34,7 +34,7 @@
             </div>
             <div class="tweetInfo">
               <div class="userInfo">
-                <p class="userName mr-1">{{ tweet.localTweet }}</p>
+                <p class="userName">{{ tweet.localTweet }}</p>
                 <p class="userAccount">{{ tweet.account }}</p>
                 <span class="mx-1">&#xb7;</span>
                 <p class="tweetUpdateAt">{{ tweet.updatedAt | fromNow }}</p>
@@ -63,7 +63,7 @@
                 <textarea
                   name=""
                   id=""
-                  cols="30"
+                  cols="55"
                   rows="5"
                   autofocus
                   maxlength="140"
@@ -124,6 +124,7 @@ export default {
       this.$emit("afterCloseTweetReplyModal");
     },
     createReply() {
+      // call api to create tweet
       console.log("createReply");
       this.modalOpen = false;
       console.log(this.modalOpen);
@@ -145,16 +146,19 @@ export default {
 
 /* replyTarget */
 .replyTarget {
-  border: 1px solid #000;
+  /* border: 1px solid #000; */
   position: relative;
 }
 
 .replyTarget::after {
   position: absolute;
+  bottom: 0;
+  left: 40px;
   content: "";
   display: block;
   width: 2px;
-  height: 80px;
+  transform: translateX(-50%);
+  height: calc(100% - 70px);
   background-color: #ccd6dd;
 }
 
@@ -187,6 +191,7 @@ export default {
 .userInfo p {
   font-size: 15px;
   height: 100%;
+  margin: 0;
 }
 
 .userInfo .userName {

@@ -57,11 +57,23 @@
               </div>
               <div class="textInput">
                 <!-- <textarea name="" id="" cols="30" rows="10"></textarea> -->
-                <input
+                <textarea
+                  name=""
+                  id=""
+                  cols="65"
+                  rows="5"
+                  autofocus
+                  maxlength="140"
+                  required
+                  v-model="tweetContent"
+                  placeholder="有什麼新鮮事？"
+                ></textarea>
+                <!--  -->
+                <!-- <input
                   type="text"
                   placeholder="有什麼新鮮事？"
                   v-model="tweetContent"
-                />
+                /> -->
               </div>
             </div>
           </div>
@@ -132,6 +144,8 @@ export default {
           tweetId: uuidv4(),
         };
 
+        this.tweetContent = this.tweetContent.toString();
+
         // call api to create new tweet: 回傳 tweet id?
         this.tweetContent = "";
 
@@ -170,6 +184,7 @@ export default {
   border-bottom: 10px solid #e6ecf0;
   flex-direction: column;
   padding: 10px 15px;
+  /* border: 1px solid #000; */
 }
 
 .container {
@@ -186,13 +201,24 @@ export default {
   background-color: #3c3c3c;
 }
 
+/* modal */
+.modal-content {
+  height: 300px;
+}
+
+.modal-content .container {
+  align-items: start;
+}
+
 .textInput {
   flex: 1;
   margin-left: 10px;
 }
 
+.textInput textarea,
 .textInput input {
   border: none;
+  resize: none;
   background-color: transparent;
 }
 
