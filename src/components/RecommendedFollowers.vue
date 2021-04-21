@@ -160,6 +160,7 @@ export default {
   background-color: #f5f8fa;
   border-radius: 14px;
   padding: 0;
+  display: block;
 }
 
 .title {

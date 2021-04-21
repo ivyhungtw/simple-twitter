@@ -1,6 +1,6 @@
 <template>
   <!-- FollowingUsersTweets.vue => modal id="tweetReplyModal" -->
-  <div>
+  <div class="container">
     <ul class="tweetList">
       <TweetItem
         v-for="tweet in followedTweets"
@@ -122,11 +122,22 @@ export default {
 </script>
 
 <style scoped>
-.tweetList {
-  border: 1px solid #000;
-  /* overflow-y: scroll; */
+.container {
   height: calc(100% - 175px);
-  /* height: 500px; */
-  overflow: auto;
+}
+
+.tweetList {
+  overflow-y: scroll;
+  height: 100%;
+}
+
+/* for Chrome, Safari and Opera */
+.tweetList::-webkit-scrollbar {
+  display: none;
+}
+
+.tweetList {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 </style>

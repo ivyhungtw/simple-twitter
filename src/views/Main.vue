@@ -43,7 +43,6 @@ export default {
   flex: 1;
   height: 100vh;
   border-right: 1px solid #e6ecf0;
-  border: 1px solid blue;
   overflow: hidden;
 }
 
