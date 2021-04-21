@@ -161,7 +161,6 @@ export default {
   font-weight: 500;
   font-size: 15px;
   word-wrap: break-word;
-  /* 解決 textarea 取直後超出 tag p 之問題 */
 }
 
 .tweetPanel {

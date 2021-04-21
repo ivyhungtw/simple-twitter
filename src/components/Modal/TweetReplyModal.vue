@@ -80,11 +80,11 @@
           <div class="tweetButton">
             <button
               type="button"
-              :data-dismiss="{ modal: !modalOpen }"
+              data-dismiss="modal"
               aria-label="Close"
               aria-hidden="true"
               class="btn"
-              @click="createReply"
+              @click="createReply()"
             >
               回復
               <!--               
@@ -101,6 +101,7 @@
 </template>
 
 <script>
+import { Toast } from "../../utils/helpers";
 import { emptyImageFilter } from "../../utils/mixins";
 import { fromNowFilter } from "../../utils/mixins";
 export default {
@@ -115,7 +116,6 @@ export default {
   data() {
     return {
       replyContent: "",
-      modalOpen: true,
     };
   },
   methods: {
@@ -124,10 +124,35 @@ export default {
       this.$emit("afterCloseTweetReplyModal");
     },
     createReply() {
+      // console.log(e);
+      const result = this.replyContentCheck(this.replyContent);
+      if (!result) {
+        return;
+      }
+
       // call api to create tweet
-      console.log("createReply");
-      this.modalOpen = false;
-      console.log(this.modalOpen);
+
+      // tell TweetItem to change number
+      console.log("replyContent: " + this.replyContent);
+      console.log("reply created");
+    },
+    replyContentCheck(replyContent) {
+      if (!replyContent) {
+        Toast.fire({
+          icon: "error",
+          title: "尚未輸入回覆內容！",
+        });
+
+        return false;
+      }
+      if (replyContent.length > 140) {
+        Toast.fire({
+          icon: "error",
+          title: "回復字數不得超過 140 個字！",
+        });
+        return false;
+      }
+      return true;
     },
   },
   watch: {
