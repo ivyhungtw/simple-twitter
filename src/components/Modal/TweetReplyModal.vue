@@ -202,7 +202,7 @@ export default {
 }
 
 .tweetInfo {
-  flex: 1;
+  width: calc(100% - 60px);
 }
 
 .userInfo {
@@ -240,6 +240,7 @@ export default {
   margin: 0;
   font-weight: 500;
   font-size: 15px;
+  word-wrap: break-word;
 }
 
 /* panel */
