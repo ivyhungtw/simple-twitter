@@ -11,7 +11,9 @@
         <p class="tweetUpdateAt">{{ tweet.updatedAt | fromNow }}</p>
       </div>
       <div class="tweetContent">
-        <p>{{ tweet.tweetContent }}</p>
+        <router-link to="/replydetail">
+          <p>{{ tweet.tweetContent }}</p>
+        </router-link>
       </div>
       <div class="tweetPanel">
         <div class="comments">
@@ -21,7 +23,19 @@
           </p>
         </div>
         <div class="likes">
-          <img src="../assets/likeCount.svg" alt="" />
+          <img
+            v-if="!tweet.isLiked"
+            :class="{ liked: tweet.isLiked }"
+            src="../assets/likeCount.svg"
+            alt=""
+            @click="toggleLike(tweet)"
+          />
+          <img
+            v-else
+            src="../assets/likedLikeCount.svg"
+            alt=""
+            @click="toggleLike(tweet)"
+          />
           <p>
             {{ tweet.likeCount }}
           </p>
@@ -41,6 +55,20 @@ export default {
     tweet: {
       type: Object,
       required: true,
+    },
+  },
+  methods: {
+    toggleLike(tweet) {
+      // call api to like this tweet by user
+      if (tweet.isLiked) {
+        tweet.isLiked = false;
+        tweet.likeCount -= 1;
+      } else {
+        tweet.isLiked = true;
+        tweet.likeCount += 1;
+      }
+      // tell FollowingUsersTweets.vue to change data
+      this.$emit("afterToggleLike", tweet);
     },
   },
 };
@@ -95,12 +123,17 @@ export default {
   margin-bottom: 15px;
 }
 
+.tweetContent a {
+  text-decoration: none;
+}
+
 .tweetContent p {
   margin: 0;
+  font-weight: 500;
+  font-size: 15px;
 }
 
 .tweetPanel {
-  /* border: 1px solid #000; */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -117,9 +150,22 @@ export default {
 }
 
 .tweetPanel img {
+  height: 16px;
+  width: 16px;
   margin-right: 10px;
+  color: #657786;
 }
+
+.tweetPanel .liked {
+  color: transparent;
+}
+
+.tweetPanel img:hover {
+  cursor: pointer;
+}
+
 .tweetPanel p {
   margin: 0px;
+  color: #657786;
 }
 </style>

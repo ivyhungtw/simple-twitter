@@ -6,7 +6,13 @@
         <img :src="user.image | emptyImageFilter" alt="" />
       </div>
       <div class="textInput">
-        <input type="text" disabled placeholder="有什麼新鮮事？" />
+        <p data-toggle="modal" data-target="#tweetModal">有什麼新鮮事？</p>
+        <!-- <input
+          type="text"
+          placeholder="有什麼新鮮事？"
+          data-toggle="modal"
+          data-target="#tweetModal"
+        /> -->
       </div>
     </div>
     <div class="tweetButton">
@@ -36,6 +42,7 @@
               class="start btn"
               data-dismiss="modal"
               aria-label="Close"
+              @click="tweetContent = ''"
             >
               <span aria-hidden="true"
                 ><img src="../../assets/close.svg" alt=""
@@ -83,6 +90,7 @@
 <script>
 const currentUser = {
   name: "user1",
+  account: "@user1",
   id: 1,
   image: "",
 };
@@ -111,10 +119,17 @@ export default {
       try {
         this.isProcessing = true;
 
+        // data
+        const newTweet = {
+          ...this.user,
+          tweetContent: this.tweetContent,
+        };
+
         // call api to create new tweet
-        console.log("call api to create New Tweet");
-        console.log("tweet: " + this.tweetContent);
-        // close modal
+        this.tweetContent = "";
+
+        // inform Main.vue
+        this.$emit("afterCreateTweet", newTweet);
 
         this.isProcessing = false;
       } catch (error) {
@@ -161,6 +176,16 @@ export default {
 .textInput input {
   border: none;
   background-color: transparent;
+}
+
+.textInput p {
+  font-weight: 500;
+  font-size: 18px;
+  color: #9197a3;
+}
+
+.textInput p:hover {
+  cursor: pointer;
 }
 
 .textInput input::placeholder {
