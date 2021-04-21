@@ -76,7 +76,9 @@ export default {
 .title h1 {
   font-size: 19px;
   font-weight: 700;
-  padding: 13px 0 14px 23px;
+  /* padding: 13px 0 14px 23px; */
+  padding: 10px 15px;
+
   margin: 0;
 }
 </style>

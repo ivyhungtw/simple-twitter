@@ -26,10 +26,9 @@ const routes = [
     path: '/main',
     name: 'Main',
     component: Main
-  },
-  {
+  }, {
     path: '/accountEdit',
-    name: 'AccountEdit',
+    name: 'accountEdit',
     component: () => import('../views/AccountEdit.vue')
   },
   {
