@@ -17,7 +17,13 @@
       </div>
       <div class="tweetPanel">
         <div class="comments">
-          <img src="../assets/commentCount.svg" alt="" />
+          <img
+            src="../assets/commentCount.svg"
+            alt=""
+            @click="openTweetReplyModal"
+            data-toggle="modal"
+            :data-target="`#tweetReplyModal-${tweet.tweetId}`"
+          />
           <p>
             {{ tweet.commentsCount }}
           </p>
@@ -40,23 +46,36 @@
             {{ tweet.likeCount }}
           </p>
         </div>
+        <TweetReplyModal :tweet="tweet"></TweetReplyModal>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import TweetReplyModal from "../components/Modal/TweetReplyModal";
 import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
 export default {
   name: "TweetItem",
   mixins: [fromNowFilter, emptyImageFilter],
+  components: {
+    TweetReplyModal,
+  },
+  created() {
+    // this.tweetInTweetItem = this.tweet;
+  },
   props: {
     tweet: {
       type: Object,
       required: true,
     },
   },
+  // data() {
+  //   return {
+  //     tweetInTweetItem: {},
+  //   };
+  // },
   methods: {
     toggleLike(tweet) {
       // call api to like this tweet by user
@@ -67,8 +86,14 @@ export default {
         tweet.isLiked = true;
         tweet.likeCount += 1;
       }
-      // tell FollowingUsersTweets.vue to change data
+      // tell Main.vue to change data
       this.$emit("afterToggleLike", tweet);
+    },
+    openTweetReplyModal() {
+      console.log("openTweetReplyModal");
+    },
+    afterCloseTweetReplyModal() {
+      console.log("afterCloseTweetReplyModal");
     },
   },
 };

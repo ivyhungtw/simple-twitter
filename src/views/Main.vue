@@ -16,6 +16,7 @@
       ></FollowingUsersTweets>
     </div>
     <!-- RecommendedFollowers -->
+
     <RecommendedFollowers></RecommendedFollowers>
   </div>
 </template>
@@ -27,10 +28,11 @@ const dummyData = [
     image: "",
     name: "user1",
     account: "@user1",
+    tweetId: 11,
     tweetContent:
       "sdfff s we rw weerdfdf we w sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we w",
-    commentsCount: 16,
-    likeCount: 76,
+    commentsCount: 111,
+    likeCount: 111,
     updatedAt: new Date(),
     isLiked: false,
   },
@@ -39,10 +41,11 @@ const dummyData = [
     image: "",
     name: "user2",
     account: "@user2",
+    tweetId: 135,
     tweetContent:
       "sff233 d dfsdfff s we rw weerdfdf we wdfsdfff s we rw weerdfdf we w",
-    commentsCount: 16,
-    likeCount: 76,
+    commentsCount: 222,
+    likeCount: 222,
     updatedAt: new Date(),
     isLiked: false,
   },
@@ -51,10 +54,11 @@ const dummyData = [
     image: "",
     name: "user3",
     account: "@user3",
+    tweetId: 188,
     tweetContent:
       "sdfff s we rw weesdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wrdfdf we w",
-    commentsCount: 16,
-    likeCount: 76,
+    commentsCount: 333,
+    likeCount: 333,
     updatedAt: new Date(),
     isLiked: false,
   },
@@ -63,10 +67,11 @@ const dummyData = [
     image: "",
     name: "user4",
     account: "@user4",
+    tweetId: 85,
     tweetContent:
       "asdf woej ows sodfhwoje jsd sj owijeojw e293 lskdn jwlf lsen won owinkldkfndfkns vvbd35t8 9slkdhfla;ls sldk ldnflwn !",
-    commentsCount: 16,
-    likeCount: 76,
+    commentsCount: 444,
+    likeCount: 444,
     updatedAt: new Date(),
     isLiked: false,
   },
@@ -75,70 +80,11 @@ const dummyData = [
     image: "",
     name: "user5",
     account: "@user5",
+    tweetId: 985,
     tweetContent:
       "sdfff s we rw wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we weerdfdf we w",
-    commentsCount: 16,
-    likeCount: 76,
-    updatedAt: new Date(),
-    isLiked: false,
-  },
-  {
-    id: 6,
-    image: "",
-    name: "user6",
-    account: "@user6",
-    tweetContent:
-      "sdfff s we rw wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we weerdfdf we w",
-    commentsCount: 16,
-    likeCount: 76,
-    updatedAt: new Date(),
-    isLiked: false,
-  },
-  {
-    id: 7,
-    image: "",
-    name: "user7",
-    account: "@user7",
-    tweetContent:
-      "sdfff s we rw wesdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we werdfdf we w",
-    commentsCount: 16,
-    likeCount: 76,
-    updatedAt: new Date(),
-    isLiked: false,
-  },
-  {
-    id: 8,
-    image: "",
-    name: "user8",
-    account: "@user8",
-    tweetContent:
-      "sdfff s we rw wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we weerdfdf we w",
-    commentsCount: 16,
-    likeCount: 76,
-    updatedAt: new Date(),
-    isLiked: false,
-  },
-  {
-    id: 9,
-    image: "",
-    name: "user9",
-    account: "@user9",
-    tweetContent:
-      "sdfff s we rw sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wweerdfdf we w",
-    commentsCount: 56,
-    likeCount: 7,
-    updatedAt: new Date(),
-    isLiked: false,
-  },
-  {
-    id: 10,
-    image: "",
-    name: "user10",
-    account: "@user10",
-    tweetContent:
-      "sdfff s we rw sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wweerdfdf we w",
-    commentsCount: 26,
-    likeCount: 74,
+    commentsCount: 555,
+    likeCount: 555,
     updatedAt: new Date(),
     isLiked: false,
   },
@@ -163,6 +109,18 @@ export default {
   data() {
     return {
       tweets: [],
+      tweet: {
+        id: undefined,
+        image: "",
+        name: "",
+        account: "",
+        tweetId: undefined,
+        tweetContent: "",
+        commentsCount: 0,
+        likeCount: 0,
+        updatedAt: "",
+        isLiked: false,
+      },
     };
   },
   methods: {
@@ -171,13 +129,17 @@ export default {
     },
     afterCreateTweet(newTweet) {
       console.log("afterCreateTweet");
-      console.log("tweetContent: " + newTweet.tweetContent);
+      console.log(newTweet);
+      this.tweets.unshift({
+        ...this.tweet,
+        ...newTweet,
+      });
     },
     afterToggleLike(likedTweet) {
       console.log(likedTweet);
       // 處理畫面
       this.tweets = this.tweets.map((tweet) => {
-        if (tweet.id === likedTweet.id) {
+        if (tweet.tweetId === likedTweet.tweetId) {
           return {
             ...tweet,
             isLiked: likedTweet.isLiked,

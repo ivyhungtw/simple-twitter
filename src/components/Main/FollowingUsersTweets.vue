@@ -6,7 +6,7 @@
       <!-- 找尋更好的方法 -->
       <TweetItem
         v-for="tweet in $attrs.tweets"
-        :key="tweet.id"
+        :key="tweet.tweetId"
         :tweet="tweet"
         v-on="$listeners"
       ></TweetItem>
@@ -15,10 +15,6 @@
 </template>
 
 <script>
-/////// TweetReplyModal ///////
-/////// TweetReplyModal ///////
-/////// TweetReplyModal ///////
-
 import TweetItem from "../TweetItem";
 export default {
   name: "FollowingUsersTweets",

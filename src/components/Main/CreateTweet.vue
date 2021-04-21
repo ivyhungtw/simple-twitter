@@ -95,6 +95,7 @@ const currentUser = {
   image: "",
 };
 
+import { v4 as uuidv4 } from "uuid";
 import { emptyImageFilter } from "../../utils/mixins";
 import { Toast } from "../../utils/helpers";
 export default {
@@ -116,6 +117,10 @@ export default {
       this.user = currentUser;
     },
     async createNewTweet() {
+      const contentCheck = this.contentCheck(this.tweetContent);
+      if (!contentCheck) {
+        return;
+      }
       try {
         this.isProcessing = true;
 
@@ -123,9 +128,11 @@ export default {
         const newTweet = {
           ...this.user,
           tweetContent: this.tweetContent,
+          updatedAt: new Date(),
+          tweetId: uuidv4(),
         };
 
-        // call api to create new tweet
+        // call api to create new tweet: 回傳 tweet id?
         this.tweetContent = "";
 
         // inform Main.vue
@@ -139,6 +146,17 @@ export default {
           title: "無法推文，請稍後再試！",
         });
       }
+    },
+    contentCheck(tweetContent) {
+      // 內容檢查：字數小於140、不能空白
+      if (!tweetContent) {
+        Toast.fire({
+          icon: "error",
+          title: "尚未輸入推文內容！",
+        });
+        return false;
+      }
+      return true;
     },
   },
   computed: {
