@@ -1,94 +1,34 @@
 <template>
   <!-- FollowingUsersTweets.vue => modal id="tweetReplyModal" -->
-  <div>
+  <div class="container">
     <ul class="tweetList">
+      <!-- $attrs：從祖父曾物件來的資料 -->
+      <!-- 找尋更好的方法 -->
       <TweetItem
-        v-for="tweet in followedTweets"
-        :key="tweet.id"
+        v-for="tweet in $attrs.tweets"
+        :key="tweet.tweetId"
         :tweet="tweet"
+        v-on="$listeners"
       ></TweetItem>
     </ul>
   </div>
 </template>
 
 <script>
-const dummyData = [
-  {
-    id: 1,
-    image: "",
-    name: "user1",
-    account: "user1",
-    tweet: {
-      tweetContent: "sdfff s we rw weerdfdf we w",
-      commentsCount: 16,
-      likeCount: 76,
-    },
-  },
-  {
-    id: 2,
-    image: "",
-    name: "user2",
-    account: "user2",
-    tweet: {
-      tweetContent: " wefw we ef ed w w efdfsd fwe",
-      commentsCount: 5,
-      likeCount: 46,
-    },
-  },
-  {
-    id: 3,
-    image: "",
-    name: "user3",
-    account: "user3",
-    tweet: {
-      tweetContent: "ssdf  wew 4tth  dfsw",
-      commentsCount: 15,
-      likeCount: 26,
-    },
-  },
-  {
-    id: 4,
-    image: "",
-    name: "user4",
-    account: "user4",
-    tweet: {
-      tweetContent: "ssdf  wew 4tth  dfsw",
-      commentsCount: 55,
-      likeCount: 26,
-    },
-  },
-  {
-    id: 5,
-    image: "",
-    name: "user5",
-    account: "user5",
-    tweet: {
-      tweetContent: "ssdf  wew 4tth  dfsw",
-      commentsCount: 15,
-      likeCount: 26,
-    },
-  },
-  {
-    id: 6,
-    image: "",
-    name: "user6",
-    account: "user6",
-    tweet: {
-      tweetContent: "ssdf  wew 4tth  dfsw",
-      commentsCount: 15,
-      likeCount: 26,
-    },
-  },
-];
-
 import TweetItem from "../TweetItem";
 export default {
   name: "FollowingUsersTweets",
+  prop: {
+    tweets: {
+      type: Array,
+      required: true,
+    },
+  },
   components: {
     TweetItem,
   },
   created() {
-    this.fetchFollowedTweets();
+    // this.fetchFollowedTweets();
   },
   data() {
     return {
@@ -98,15 +38,40 @@ export default {
   methods: {
     fetchFollowedTweets() {
       // async
-      this.followedTweets = dummyData;
+      // this.followedTweets = this.tweets;
     },
+    afterToggleLike() {
+      // 通知 Main 修改資料
+    },
+  },
+  watch: {
+    // tweets(newVal) {
+    //   this.fetchFollowedTweets(newVal);
+    // },
   },
 };
 </script>
 
 <style scoped>
+.container {
+  padding: 0;
+  height: calc(100% - 175px);
+  width: 100%;
+}
+
 .tweetList {
-  border: 1px solid #000;
-  padding: 15px;
+  overflow-y: scroll;
+  height: 100%;
+  width: 100%;
+}
+
+/* for Chrome, Safari and Opera */
+.tweetList::-webkit-scrollbar {
+  display: none;
+}
+
+.tweetList {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 </style>

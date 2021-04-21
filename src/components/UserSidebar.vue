@@ -1,7 +1,9 @@
 <template>
   <div class="userSidebar">
     <div class="logo">
-      <img src="../assets/logo.png" alt="" />
+      <router-link to="/main">
+        <img src="../assets/logo.png" alt="" />
+      </router-link>
     </div>
     <div class="buttonList">
       <div class="navItem index">
