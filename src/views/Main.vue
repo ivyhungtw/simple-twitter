@@ -186,8 +186,8 @@ export default {
   width: 100%;
   height: 100vh;
   border-right: 1px solid #e6ecf0;
-  /* overflow: hidden; */
   overflow-y: scroll;
+  position: relative;
 }
 
 /* for Chrome, Safari and Opera */
@@ -206,6 +206,9 @@ export default {
   padding: 10px 15px;
   display: flex;
   align-items: center;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
 }
 
 .title h1 {
