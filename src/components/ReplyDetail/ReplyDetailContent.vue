@@ -17,13 +17,19 @@
       <p class="tweetUpdateAt">{{ tweetInfo.updatedAt | fromNow }}</p>
     </div>
     <div class="feedbackCount">
-      <p>{{ tweetInfo.commentsCount }} 回復</p>
-      <p>{{ tweetInfo.likeCount }} 喜歡次數</p>
+      <p>{{ tweetInfo.commentsCount }} <span>回復 </span></p>
+      <p>{{ tweetInfo.likeCount }} <span>喜歡次數</span></p>
     </div>
     <div class="tweetPanel">
       <div class="comments">
-        <img src="../../assets/commentCount.svg" alt="" />
+        <img
+          data-toggle="modal"
+          :data-target="`#tweetReplyModal-${tweetInfo.tweetId}`"
+          src="../../assets/commentCount.svg"
+          alt=""
+        />
       </div>
+      <TweetReplyModal :tweet="tweetInfo"></TweetReplyModal>
       <div class="likes">
         <img
           v-if="!tweetInfo.isLiked"
@@ -47,10 +53,14 @@
 <script>
 import { emptyImageFilter } from "../../utils/mixins";
 import { fromNowFilter } from "../../utils/mixins";
+import TweetReplyModal from "../Modal/TweetReplyModal";
 
 export default {
   name: "ReplyDetailContent",
   mixins: [emptyImageFilter, fromNowFilter],
+  components: {
+    TweetReplyModal,
+  },
   props: {
     tweetInfo: {
       type: Object,
@@ -59,6 +69,7 @@ export default {
   },
   methods: {
     toggleLike(tweet) {
+      //async
       // call api to like this tweet by user
       if (tweet.isLiked) {
         tweet.isLiked = false;
@@ -81,7 +92,6 @@ export default {
 }
 
 .userInfo {
-  /* border: 1px solid #000; */
   display: flex;
 }
 
@@ -146,6 +156,17 @@ p {
   border-bottom: 1px solid #e6ecf0;
 }
 
+.feedbackCount p,
+.feedbackCount span {
+  font-size: 19px;
+  line-height: 19px;
+  font-weight: 700;
+}
+
+.feedbackCount span {
+  color: #657786;
+}
+
 .feedbackCount p:first-child {
   margin-right: 20px;
 }
@@ -154,11 +175,16 @@ p {
 .tweetPanel {
   padding-top: 20px;
   display: flex;
+  flex-direction: row;
 }
 
 .tweetPanel img {
   height: 25px;
   width: 25px;
+}
+
+.tweetPanel img:hover {
+  cursor: pointer;
 }
 
 .tweetPanel .comments {
