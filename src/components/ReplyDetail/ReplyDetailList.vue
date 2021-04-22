@@ -10,7 +10,7 @@
             <div class="userTitle">
               <p>{{ comment.name }}</p>
               <p>{{ comment.account }}</p>
-              <p>{{ comment.createdAt }}</p>
+              <p>{{ comment.createdAt | fromNow }}</p>
             </div>
             <div class="textContent">
               <p>{{ comment.replyContent }}</p>
@@ -25,6 +25,8 @@
 <script>
 // import TweetItem from "../TweetItem";
 import { emptyImageFilter } from "../../utils/mixins";
+import { fromNowFilter } from "../../utils/mixins";
+
 export default {
   name: "ReplyDetailList",
   props: {
@@ -32,21 +34,21 @@ export default {
       type: Array,
     },
   },
-  mixins: [emptyImageFilter],
+  mixins: [emptyImageFilter, fromNowFilter],
 };
 </script>
 
 <style scoped>
 .container {
   border-bottom: 1px solid #e6ecf0;
-  /* overflow-y: scroll; */
   padding: 15px 0;
   /* height: calc(100vh - 460px); */
+  width: 100%;
 }
 
 .commentItem {
+  width: 100%;
   border-bottom: 1px solid #e6ecf0;
-  border: 1px solid #000;
   padding: 18px 15px;
 }
 
@@ -54,7 +56,6 @@ export default {
   width: 50px;
   height: 50px;
   margin-right: 10px;
-  border: 1px solid #000;
 }
 
 .avatar img {
@@ -66,17 +67,17 @@ export default {
 .commentInfo {
   display: flex;
 }
+
 p {
   margin: 0;
 }
 
 .commentContent {
-  border: 1px solid #000;
+  /* border: 1px solid blue; */
 }
 
 .textContent p {
-  width: 100%;
-  word-wrap: break-word;
-  border: 1px solid #000;
+  /* word-wrap: break-word; */
+  word-break: break-all;
 }
 </style>

@@ -6,8 +6,8 @@
     <!-- ReplyDetail -->
     <div class="mainSection">
       <div class="title">
-        <button class="btn">
-          <img @click="$router.back()" src="../assets/lastPage.svg" alt="" />
+        <button class="btn" @click="$router.back()">
+          <img src="../assets/lastPage.svg" alt="" />
         </button>
         <h1>推文</h1>
       </div>
