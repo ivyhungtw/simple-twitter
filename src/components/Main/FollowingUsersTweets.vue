@@ -50,12 +50,12 @@ export default {
 <style scoped>
 .container {
   padding: 0;
-  height: calc(100% - 175px);
+  /* height: calc(100% - 175px); */
   width: 100%;
 }
 
 .tweetList {
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   height: 100%;
   width: 100%;
 }

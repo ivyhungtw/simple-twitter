@@ -186,7 +186,18 @@ export default {
   width: 100%;
   height: 100vh;
   border-right: 1px solid #e6ecf0;
-  overflow: hidden;
+  /* overflow: hidden; */
+  overflow-y: scroll;
+}
+
+/* for Chrome, Safari and Opera */
+.mainSection::-webkit-scrollbar {
+  display: none;
+}
+
+.mainSection {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .title {
