@@ -1,5 +1,8 @@
-<template><h1>ReplyDetailList</h1></template>
-
+<template>
+  <div class="container">
+    <h1>ReplyDetailList</h1>
+  </div>
+</template>
 <script>
 export default {
   name: "ReplyDetailList",
@@ -7,7 +10,7 @@ export default {
 </script>
 
 <style scoped>
-h1 {
-  border: 1px solid #000;
+.container {
+  border-bottom: 1px solid #e6ecf0;
 }
 </style>

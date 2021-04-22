@@ -10,7 +10,7 @@
         <h1>推文</h1>
       </div>
       <!-- ReplyDetailContent -->
-      <ReplyDetailContent></ReplyDetailContent>
+      <ReplyDetailContent :tweetInfo="tweetInfo"></ReplyDetailContent>
 
       <!-- ReplyDetailList -->
       <ReplyDetailList></ReplyDetailList>
@@ -22,6 +22,21 @@
 </template>
 
 <script>
+const tweetInfo = {
+  id: 1,
+  image: "",
+  name: "user1",
+  account: "@user1",
+  tweetId: 11,
+  tweetContent:
+    "sdfff s we rw weerdfdf we w sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we sdfff s we rw weerdfdf we w sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we ww",
+  commentsCount: 11,
+  comments: [],
+  likeCount: 11,
+  updatedAt: new Date(),
+  isLiked: true,
+};
+
 import UserSidebar from "../components/UserSidebar";
 import RecommendedFollowers from "../components/RecommendedFollowers";
 import ReplyDetailContent from "../components/ReplyDetail/ReplyDetailContent";
@@ -34,6 +49,22 @@ export default {
     RecommendedFollowers,
     ReplyDetailContent,
     ReplyDetailList,
+  },
+  created() {
+    this.fetchTweetInfo();
+  },
+  data() {
+    return {
+      tweetInfo: {},
+    };
+  },
+  methods: {
+    fetchTweetInfo() {
+      this.tweetInfo = tweetInfo;
+    },
+  },
+  watch: {
+    // tweetInfo
   },
 };
 </script>

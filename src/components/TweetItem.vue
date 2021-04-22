@@ -45,10 +45,7 @@
             {{ tweet.likeCount }}
           </p>
         </div>
-        <TweetReplyModal
-          :tweet="tweet"
-          v-on="$listeners"
-        ></TweetReplyModal>
+        <TweetReplyModal :tweet="tweet" v-on="$listeners"></TweetReplyModal>
       </div>
     </div>
   </div>
@@ -91,12 +88,6 @@ export default {
       // tell Main.vue to change data
       this.$emit("afterToggleLike", tweet);
     },
-    // openTweetReplyModal() {
-    //   console.log("openTweetReplyModal");
-    // },
-    // afterCloseTweetReplyModal() {
-    //   console.log("afterCloseTweetReplyModal");
-    // },
   },
 };
 </script>

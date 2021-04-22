@@ -23,7 +23,7 @@
           <img v-else src="../assets/profile.svg" alt="" />
         </div>
         <button class="btn">
-          <router-link to="/userProfile">
+          <router-link to="/userprofile">
             <p id="routerProfile">個人資料</p>
           </router-link>
         </button>
@@ -60,7 +60,8 @@
 export default {
   name: "UserSidebar",
   created() {
-    const location = this.$route.name;
+    const location = this.$route.path.split("/")[1];
+    console.log(location);
     this.setCurrentLocation(location);
   },
   data() {
@@ -76,11 +77,12 @@ export default {
       console.log("clearAutherization");
     },
     setCurrentLocation(location) {
+      console.log("location: " + location);
       if (location === "main") {
         this.main = true; // at main
         this.profile = false;
         this.accountEdit = false;
-      } else if (location === "user-profile") {
+      } else if (location === "userprofile") {
         this.main = false;
         this.profile = true; // at user-profile
         this.accountEdit = false;

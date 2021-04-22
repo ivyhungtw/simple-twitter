@@ -27,4 +27,7 @@ export default {
 
 
 <style scoped>
+.container {
+  display: flex;
+}
 </style>

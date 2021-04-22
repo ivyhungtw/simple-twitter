@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <form @submit.prevent.stop="handleSignIn($event)">
+    <form @submit.prevent.stop="handleSignIn">
       <div class="logo">
         <img src="../assets/logo.png" alt="" />
       </div>
@@ -48,6 +48,8 @@
 
 <script>
 import { Toast } from "../utils/helpers";
+import authorizationAPI from "../apis/authorization.js";
+
 export default {
   name: "SignIn",
   data() {
@@ -59,34 +61,38 @@ export default {
     };
   },
   methods: {
-    async handleSignIn(e) {
-      const formDataCheckResult = this.formDataCheck();
+    async handleSignIn() {
+      const payload = this.form;
+      const formDataCheckResult = this.formDataCheck(payload);
       if (!formDataCheckResult) {
         return;
       }
       try {
-        const formData = new FormData(e.target);
-        for (let [key, val] of formData) {
-          console.log(key + ": " + val);
-        }
         // call api to sign in
+        const response = await authorizationAPI.signIn(payload);
+        console.log(response);
+        //
+        this.$router.push("/main");
       } catch (error) {
+        console.log(error);
         Toast.fire({
           icon: "error",
-          title: "無法登入，請稍後再試！",
+          title: error,
         });
+        this.form.account = "";
+        this.form.password = "";
       }
     },
-    formDataCheck() {
+    formDataCheck({ account, password }) {
       let result = false;
-      if (!this.account) {
+      if (!account) {
         Toast.fire({
           icon: "info",
           title: "尚未填寫帳號！",
         });
         return false;
       }
-      if (!this.password) {
+      if (!password) {
         Toast.fire({
           icon: "info",
           title: "尚未填寫密碼！",
