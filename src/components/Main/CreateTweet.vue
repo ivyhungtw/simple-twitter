@@ -137,6 +137,10 @@ export default {
           tweetContent: this.tweetContent,
           updatedAt: new Date(),
           tweetId: uuidv4(),
+          isLiked: false,
+          commentsCount: 0,
+          comments: [],
+          likeCount: 0,
         };
 
         this.tweetContent = this.tweetContent.toString();
