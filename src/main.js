@@ -5,6 +5,9 @@ import router from './router'
 import './assets/application.css'
 // reset.css
 import './assets/reset.css'
+// import fontawesome
+import '@fortawesome/fontawesome-free/css/all.css'
+import '@fortawesome/fontawesome-free/js/all.js'
 // import store
 
 Vue.config.productionTip = false

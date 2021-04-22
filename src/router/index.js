@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Main from '../views/Main.vue'
 import SignUp from '../views/SignUp.vue'
 import NotFound from '../views/NotFound.vue'
+import AdminSignIn from '../views/AdminSignIn.vue'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
     path: '/signin',
     name: 'sign-in',
     component: () => import('../views/SignIn.vue')
+  },
+  {
+    path: '/admin/signin',
+    name: 'admin-sign-in',
+    component: AdminSignIn
   },
   {
     path: '/main',
@@ -46,6 +52,26 @@ const routes = [
     path: '/userprofile/likes',
     name: 'user-profile-Likes',
     component: () => import('../views/UserProfileLike.vue')
+  },
+  {
+    path: '/userprofile/followers',
+    name: 'user-profile-followers',
+    component: () => import('../views/UserFollowers.vue')
+  },
+  {
+    path: '/userprofile/following',
+    name: 'user-profile-following',
+    component: () => import('../views/UserFollowing.vue')
+  },
+  {
+    path: '/admin/tweets',
+    name: 'admin-tweets',
+    component: () => import('../views/AdminTweets.vue')
+  },
+  {
+    path: '/admin/users',
+    name: 'admin-users',
+    component: () => import('../views/AdminUsers.vue')
   },
   {
     path: '*',

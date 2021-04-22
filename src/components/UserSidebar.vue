@@ -1,41 +1,46 @@
 <template>
   <div class="userSidebar">
     <div class="logo">
-      <img src="../assets/logo.png" alt="" />
+      <router-link to="/main">
+        <img src="../assets/logo.png" alt="" />
+      </router-link>
     </div>
     <div class="buttonList">
       <div class="navItem index">
         <div class="icon">
-          <img src="../assets/home.svg" alt="" />
+          <img v-if="main" src="../assets/atHome.svg" alt="" />
+          <img v-else src="../assets/home.svg" alt="" />
         </div>
         <button class="btn">
           <router-link to="/main">
-            <p>首頁</p>
+            <p id="routerMain">首頁</p>
           </router-link>
         </button>
       </div>
       <div class="navItem userProfile">
         <div class="icon">
-          <img src="../assets/profile.svg" alt="" />
+          <img v-if="profile" src="../assets/atProfile.svg" alt="" />
+          <img v-else src="../assets/profile.svg" alt="" />
         </div>
         <button class="btn">
-          <router-link to="/userProfile">
-            <p>個人資料</p>
+          <router-link to="/userprofile">
+            <p id="routerProfile">個人資料</p>
           </router-link>
         </button>
       </div>
       <div class="navItem setting">
         <div class="icon">
-          <img src="../assets/setting.svg" alt="" />
+          <img v-if="accountEdit" src="../assets/atSetting.svg" alt="" />
+          <img v-else src="../assets/setting.svg" alt="" />
         </div>
         <button class="btn">
           <router-link to="/accountEdit">
-            <p>設定</p>
+            <p id="routerSetting">設定</p>
           </router-link>
         </button>
       </div>
       <div class="navItem newTweet">
-        <button class="btn">
+        <button class="btn" data-toggle="modal" data-target="#tweetModal">
           <p>推文</p>
         </button>
       </div>
@@ -54,10 +59,36 @@
 <script>
 export default {
   name: "UserSidebar",
+  created() {
+    const location = this.$route.name;
+    this.setCurrentLocation(location);
+  },
+  data() {
+    return {
+      main: false,
+      profile: false,
+      accountEdit: false,
+    };
+  },
   methods: {
     clearAutherization() {
       // 刪除 token => 登出
       console.log("clearAutherization");
+    },
+    setCurrentLocation(location) {
+      if (location === "main") {
+        this.main = true; // at main
+        this.profile = false;
+        this.accountEdit = false;
+      } else if (location === "user-profile") {
+        this.main = false;
+        this.profile = true; // at user-profile
+        this.accountEdit = false;
+      } else {
+        this.main = false;
+        this.profile = false;
+        this.accountEdit = true; // at accountEdit
+      }
     },
   },
 };
@@ -72,50 +103,50 @@ export default {
   flex-direction: column;
   border-right: 1px solid #e6ecf0;
 }
-
 .logo {
   margin-bottom: 24px;
 }
-
 .logo img {
   width: 50px;
   height: 50px;
 }
-
 .buttonList {
   flex: 1;
   position: relative;
 }
-
 .buttonList .navItem {
   height: 60px;
   display: flex;
   align-items: center;
 }
-
+.navItem .btn .active p {
+  color: #ff6600;
+}
+/* .navItem .btn .active {
+  border: 1px solid #000;
+} */
 .icon {
   height: 26px;
 }
-
-p {
+.btn a {
+  text-decoration: none;
+}
+.btn p {
   height: 26px;
   margin: 0;
   font-weight: 700;
   font-size: 18px;
   color: #1c1c1c;
 }
-
 .newTweet p {
   font-weight: 500;
 }
-
 .icon img {
   margin: 17px 0;
   width: 16px;
   height: 20px;
   margin: 0 25px 0 10px;
 }
-
 .newTweet button {
   width: 210px;
   height: 45px;
@@ -125,7 +156,6 @@ p {
 .newTweet button p {
   color: #fff;
 }
-
 .logout {
   position: absolute;
   bottom: 0;
