@@ -71,12 +71,14 @@ export default {
 .title {
   height: 55px;
   border-bottom: 1px solid #e6ecf0;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
 }
 
 .title h1 {
-  font-size: 19px;
   font-weight: 700;
-  padding: 13px 0 14px 23px;
+  font-size: 19px;
   margin: 0;
 }
 </style>

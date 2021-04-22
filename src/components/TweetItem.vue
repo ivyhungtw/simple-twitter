@@ -45,7 +45,10 @@
             {{ tweet.likeCount }}
           </p>
         </div>
-        <TweetReplyModal :tweet="tweet" v-on="$listeners"></TweetReplyModal>
+        <TweetReplyModal
+          :tweet="tweet"
+          v-on="$listeners"
+        ></TweetReplyModal>
       </div>
     </div>
   </div>
@@ -105,28 +108,34 @@ export default {
   padding: 10px 15px;
   width: 100%;
 }
+
 .avatar {
   width: 50px;
   height: 50px;
   margin-right: 10px;
 }
+
 .avatar img {
   min-width: 100%;
   height: 100%;
   border-radius: 50%;
 }
+
 .tweetInfo {
   /* width: 100%; */
   width: calc(100% - 60px);
 }
+
 .userInfo {
   display: flex;
   height: 22px;
 }
+
 .userInfo p {
   font-size: 15px;
   height: 100%;
 }
+
 .userInfo .userName {
   font-weight: 700;
 }
@@ -137,14 +146,17 @@ export default {
   color: #657786;
   line-height: 22px;
 }
+
 .tweetContent {
   width: 100%;
   margin-bottom: 15px;
 }
+
 .tweetContent a {
   display: block;
   text-decoration: none;
 }
+
 .tweetContent p {
   width: 100%;
   margin: 0;
@@ -152,6 +164,7 @@ export default {
   font-size: 15px;
   word-wrap: break-word;
 }
+
 .tweetPanel {
   display: flex;
   justify-content: space-between;
@@ -159,6 +172,7 @@ export default {
   width: 130px;
   margin: 0;
 }
+
 .tweetPanel .comments,
 .tweetPanel .likes {
   width: 40px;
@@ -166,18 +180,22 @@ export default {
   flex-direction: row;
   align-items: center;
 }
+
 .tweetPanel img {
   height: 16px;
   width: 16px;
   margin-right: 10px;
   color: #657786;
 }
+
 .tweetPanel .liked {
   color: transparent;
 }
+
 .tweetPanel img:hover {
   cursor: pointer;
 }
+
 .tweetPanel p {
   margin: 0px;
   color: #657786;

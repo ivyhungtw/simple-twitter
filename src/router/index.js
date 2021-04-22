@@ -30,13 +30,17 @@ const routes = [
   },
   {
     path: '/main',
-    name: 'Main',
+    name: 'main',
     component: Main
+  }, {
+    path: '/accountEdit',
+    name: 'account-edit',
+    component: () => import('../views/AccountEdit.vue')
   },
   {
-    path: '/accountEdit',
-    name: 'AccountEdit',
-    component: () => import('../views/AccountEdit.vue')
+    path: '/replydetail',
+    name: 'reply-detail',
+    component: () => import('../views/ReplyDetail.vue')
   },
   {
     path: '/userprofile',

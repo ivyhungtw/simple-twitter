@@ -16,4 +16,8 @@ export default {
 </script>
 
 <style scoped>
+#simple-twitter {
+  max-width: 1440px;
+  margin: auto;
+}
 </style>

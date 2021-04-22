@@ -23,7 +23,7 @@
           <img v-else src="../assets/profile.svg" alt="" />
         </div>
         <button class="btn">
-          <router-link to="/userprofile">
+          <router-link to="/userProfile">
             <p id="routerProfile">個人資料</p>
           </router-link>
         </button>
@@ -119,18 +119,23 @@ export default {
   display: flex;
   align-items: center;
 }
+
 .navItem .btn .active p {
   color: #ff6600;
 }
+
 /* .navItem .btn .active {
   border: 1px solid #000;
 } */
+
 .icon {
   height: 26px;
 }
+
 .btn a {
   text-decoration: none;
 }
+
 .btn p {
   height: 26px;
   margin: 0;

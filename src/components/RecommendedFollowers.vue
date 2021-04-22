@@ -94,6 +94,7 @@ const dummyUsers = [
     isFollowed: false,
   },
 ];
+
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 export default {
@@ -123,6 +124,7 @@ export default {
     async toggleFollow(user) {
       try {
         // call api to toggle isFollowed
+
         // render
         this.recommendedFollowers = this.recommendedFollowers.map((each) => {
           if (each.id === user.id) {
@@ -160,26 +162,32 @@ export default {
   padding: 0;
   display: block;
 }
+
 .title {
   padding: 10px 15px;
 }
+
 .title h1 {
   font-size: 18px;
   font-weight: 700;
   margin: 0;
 }
+
 hr {
   margin: 0;
 }
+
 .usersList {
   margin: 0;
 }
+
 .userContent {
   display: flex;
   padding: 10px 15px;
   justify-content: space-between;
   align-items: center;
 }
+
 .userContent .avatar {
   height: 50px;
   width: 50px;
@@ -191,34 +199,42 @@ hr {
   height: 100%;
   border-radius: 50%;
 }
+
 .userContent .info {
   flex: 1;
   margin: 0 10px;
 }
+
 .userContent .info h2 {
   font-size: 15px;
   font-weight: 700;
 }
+
 .userContent .info .account h2 {
   color: #657786;
 }
+
 button {
   border: 1px solid #ff6600;
   border-radius: 100px;
   color: #ff6600;
 }
+
 .toggleFollow button {
   font-size: 15px;
   font-weight: 700;
 }
+
 .toggleFollow .isFollowing {
   width: 92px;
   background-color: #ff6600;
   color: #fff;
 }
+
 .showMore {
   padding: 12px 0 12px 15px;
 }
+
 .showMore .btn {
   padding: 0;
   border: none;
