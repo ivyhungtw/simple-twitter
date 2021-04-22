@@ -8,31 +8,34 @@
     <div class="buttonList">
       <div class="navItem index">
         <div class="icon">
-          <img src="../assets/home.svg" alt="" />
+          <img v-if="main" src="../assets/atHome.svg" alt="" />
+          <img v-else src="../assets/home.svg" alt="" />
         </div>
         <button class="btn">
           <router-link to="/main">
-            <p>首頁</p>
+            <p id="routerMain">首頁</p>
           </router-link>
         </button>
       </div>
       <div class="navItem userProfile">
         <div class="icon">
-          <img src="../assets/profile.svg" alt="" />
+          <img v-if="profile" src="../assets/atProfile.svg" alt="" />
+          <img v-else src="../assets/profile.svg" alt="" />
         </div>
         <button class="btn">
           <router-link to="/userProfile">
-            <p>個人資料</p>
+            <p id="routerProfile">個人資料</p>
           </router-link>
         </button>
       </div>
       <div class="navItem setting">
         <div class="icon">
-          <img src="../assets/setting.svg" alt="" />
+          <img v-if="accountEdit" src="../assets/atSetting.svg" alt="" />
+          <img v-else src="../assets/setting.svg" alt="" />
         </div>
         <button class="btn">
           <router-link to="/accountEdit">
-            <p>設定</p>
+            <p id="routerSetting">設定</p>
           </router-link>
         </button>
       </div>
@@ -56,10 +59,36 @@
 <script>
 export default {
   name: "UserSidebar",
+  created() {
+    const location = this.$route.name;
+    this.setCurrentLocation(location);
+  },
+  data() {
+    return {
+      main: false,
+      profile: false,
+      accountEdit: false,
+    };
+  },
   methods: {
     clearAutherization() {
       // 刪除 token => 登出
       console.log("clearAutherization");
+    },
+    setCurrentLocation(location) {
+      if (location === "main") {
+        this.main = true; // at main
+        this.profile = false;
+        this.accountEdit = false;
+      } else if (location === "user-profile") {
+        this.main = false;
+        this.profile = true; // at user-profile
+        this.accountEdit = false;
+      } else {
+        this.main = false;
+        this.profile = false;
+        this.accountEdit = true; // at accountEdit
+      }
     },
   },
 };
@@ -95,8 +124,20 @@ export default {
   align-items: center;
 }
 
+.navItem .btn .active p {
+  color: #ff6600;
+}
+
+/* .navItem .btn .active {
+  border: 1px solid #000;
+} */
+
 .icon {
   height: 26px;
+}
+
+.btn a {
+  text-decoration: none;
 }
 
 .btn p {
