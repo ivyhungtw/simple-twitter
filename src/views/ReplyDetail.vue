@@ -51,7 +51,8 @@ const tweetInfo = {
       account: "@user3",
       image: "",
       createdAt: new Date(),
-      replyContent: "5555555555555sdfwfwf11!!",
+      replyContent:
+        "5555555555555sdfwfwf115555555555555sdfwfwf115555555555555sdfwfwf115555555555555sdfwfwf115555555555555sdfwfwf11!!",
     },
     {
       id: 2,

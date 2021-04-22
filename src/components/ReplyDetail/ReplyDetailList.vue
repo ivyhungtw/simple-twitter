@@ -47,12 +47,14 @@ export default {
 .commentItem {
   border-bottom: 1px solid #e6ecf0;
   border: 1px solid #000;
+  padding: 18px 15px;
 }
 
 .avatar {
   width: 50px;
   height: 50px;
   margin-right: 10px;
+  border: 1px solid #000;
 }
 
 .avatar img {
@@ -63,5 +65,18 @@ export default {
 
 .commentInfo {
   display: flex;
+}
+p {
+  margin: 0;
+}
+
+.commentContent {
+  border: 1px solid #000;
+}
+
+.textContent p {
+  width: 100%;
+  word-wrap: break-word;
+  border: 1px solid #000;
 }
 </style>
