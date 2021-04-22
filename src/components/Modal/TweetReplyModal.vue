@@ -15,7 +15,7 @@
             class="start btn"
             data-dismiss="modal"
             aria-label="Close"
-            @click="tweetContent = ''"
+            @click="clearReplyContent"
           >
             <span aria-hidden="true"
               ><img src="../../assets/close.svg" alt=""
@@ -84,11 +84,6 @@
               @click="createReply()"
             >
               回復
-              <!--               
-              data-dismiss="modal"
-                aria-label="Close"
-                aria-hidden="true"
-                 -->
             </button>
           </div>
         </div>
@@ -127,9 +122,8 @@ export default {
     };
   },
   methods: {
-    closeTweetReplyModal() {
-      // console.log("closeTweetReplyModal");
-      // this.$emit("afterCloseTweetReplyModal");
+    clearReplyContent() {
+      this.replyContent = "";
     },
     createReply() {
       // console.log(e);

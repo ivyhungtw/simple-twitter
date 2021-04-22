@@ -123,6 +123,7 @@ export default {
         tweetId: undefined,
         tweetContent: "",
         commentsCount: 0,
+        comments: [],
         likeCount: 0,
         updatedAt: "",
         isLiked: false,
@@ -156,16 +157,16 @@ export default {
       this.tweets = this.tweets.map((tweet) => {
         if (tweet.tweetId === newTweetReply.tweet.tweetId) {
           console.log(`tweet: ${tweet.tweetId} is commented!`);
+          tweet.comments.push({
+            id: newTweetReply.id,
+            name: newTweetReply.name,
+            account: newTweetReply.account,
+            createdAt: newTweetReply.createdAt,
+            replyContent: newTweetReply.replyContent,
+          });
           return {
             ...tweet,
             commentsCount: tweet.commentsCount + 1,
-            comments: tweet.comments.push({
-              id: newTweetReply.id,
-              name: newTweetReply.name,
-              account: newTweetReply.account,
-              createdAt: newTweetReply.createdAt,
-              replyContent: newTweetReply.replyContent,
-            }),
           };
         } else {
           return tweet;
