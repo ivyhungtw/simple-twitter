@@ -55,6 +55,7 @@
 import TweetReplyModal from "../components/Modal/TweetReplyModal";
 import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
+
 export default {
   name: "TweetItem",
   mixins: [fromNowFilter, emptyImageFilter],

@@ -156,7 +156,6 @@ export default {
     afterCreateReply(newTweetReply) {
       this.tweets = this.tweets.map((tweet) => {
         if (tweet.tweetId === newTweetReply.tweet.tweetId) {
-          console.log(`tweet: ${tweet.tweetId} is commented!`);
           tweet.comments.push({
             id: newTweetReply.id,
             name: newTweetReply.name,

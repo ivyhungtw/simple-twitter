@@ -28,9 +28,6 @@ export default {
   components: {
     TweetItem,
   },
-  created() {
-    // this.fetchFollowedTweets();
-  },
   data() {
     return {
       followedTweets: [],

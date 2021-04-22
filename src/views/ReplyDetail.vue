@@ -18,7 +18,7 @@
       ></ReplyDetailContent>
 
       <!-- ReplyDetailList -->
-      <ReplyDetailList></ReplyDetailList>
+      <ReplyDetailList :comments="tweetInfo.comments"></ReplyDetailList>
     </div>
 
     <!-- RecommendedFollowers -->
@@ -35,8 +35,41 @@ const tweetInfo = {
   tweetId: 11,
   tweetContent:
     "sdfff s we rw weerdfdf we w sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we sdfff s we rw weerdfdf we w sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we ww",
-  commentsCount: 11,
-  comments: [],
+  commentsCount: 4,
+  comments: [
+    {
+      id: 4,
+      name: "user4",
+      account: "@user4",
+      image: "",
+      createdAt: new Date(),
+      replyContent: "sdfeef!!",
+    },
+    {
+      id: 3,
+      name: "user3",
+      account: "@user3",
+      image: "",
+      createdAt: new Date(),
+      replyContent: "5555555555555sdfwfwf11!!",
+    },
+    {
+      id: 2,
+      name: "user2",
+      account: "@user2",
+      image: "",
+      createdAt: new Date(),
+      replyContent: "asdfwef wefwf223!!",
+    },
+    {
+      id: 1,
+      name: "user1",
+      account: "@user1",
+      image: "",
+      createdAt: new Date(),
+      replyContent: "sdfwff6w6f4wf!!",
+    },
+  ],
   likeCount: 11,
   updatedAt: new Date(),
   isLiked: true,
@@ -84,12 +117,25 @@ export default {
 <style scoped>
 .replyDetailContent {
   display: flex;
+  overflow-y: hidden;
 }
 
 .mainSection {
   flex: 1;
   height: 100vh;
   border-right: 1px solid #e6ecf0;
+  height: 100vh;
+  overflow-y: scroll;
+}
+
+/* for Chrome, Safari and Opera */
+.mainSection::-webkit-scrollbar {
+  display: none;
+}
+
+.mainSection {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .recommendedFollowers {
