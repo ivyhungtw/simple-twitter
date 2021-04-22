@@ -30,13 +30,13 @@
           :class="{ liked: tweetInfo.isLiked }"
           src="../../assets/likeCount.svg"
           alt=""
-          @click="toggleLike(tweet)"
+          @click="toggleLike(tweetInfo)"
         />
         <img
           v-else
           src="../../assets/likedLikeCount.svg"
           alt=""
-          @click="toggleLike(tweet)"
+          @click="toggleLike(tweetInfo)"
         />
         <p></p>
       </div>
@@ -55,6 +55,20 @@ export default {
     tweetInfo: {
       type: Object,
       required: true,
+    },
+  },
+  methods: {
+    toggleLike(tweet) {
+      // call api to like this tweet by user
+      if (tweet.isLiked) {
+        tweet.isLiked = false;
+        tweet.likeCount -= 1;
+      } else {
+        tweet.isLiked = true;
+        tweet.likeCount += 1;
+      }
+      // tell Main.vue to change data
+      this.$emit("afterToggleLike", tweet);
     },
   },
 };
@@ -145,5 +159,9 @@ p {
 .tweetPanel img {
   height: 25px;
   width: 25px;
+}
+
+.tweetPanel .comments {
+  margin-right: 155px;
 }
 </style>

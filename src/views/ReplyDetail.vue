@@ -6,11 +6,16 @@
     <!-- ReplyDetail -->
     <div class="mainSection">
       <div class="title">
-        <img @click="$router.back()" src="../assets/lastPage.svg" alt="" />
+        <button class="btn">
+          <img @click="$router.back()" src="../assets/lastPage.svg" alt="" />
+        </button>
         <h1>推文</h1>
       </div>
       <!-- ReplyDetailContent -->
-      <ReplyDetailContent :tweetInfo="tweetInfo"></ReplyDetailContent>
+      <ReplyDetailContent
+        :tweetInfo="tweetInfo"
+        @afterToggleLike="afterToggleLike"
+      ></ReplyDetailContent>
 
       <!-- ReplyDetailList -->
       <ReplyDetailList></ReplyDetailList>
@@ -62,6 +67,13 @@ export default {
     fetchTweetInfo() {
       this.tweetInfo = tweetInfo;
     },
+    afterToggleLike(likedTweet) {
+      const toggleResult = likedTweet.isLiked;
+      this.tweetInfo = {
+        ...this.tweetInfo,
+        isLiked: toggleResult,
+      };
+    },
   },
   watch: {
     // tweetInfo
@@ -92,10 +104,18 @@ export default {
   align-items: center;
 }
 
+.title .btn {
+  padding: 0;
+  height: 100%;
+  width: 20px;
+  margin-right: 43px;
+  display: flex;
+  align-items: center;
+}
+
 .title img {
   height: 14px;
   width: 17px;
-  margin-right: 43px;
 }
 
 .title img:hover {

@@ -41,9 +41,6 @@ export default {
       // async
       // this.followedTweets = this.tweets;
     },
-    afterToggleLike() {
-      // 使用 $attrs 所以本地不需要處理
-    },
   },
   watch: {
     // tweets(newVal) {
