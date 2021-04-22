@@ -128,7 +128,6 @@ export default {
       this.tweets = dummyData;
     },
     afterCreateTweet(newTweet) {
-      console.log("afterCreateTweet");
       this.tweets.unshift({
         ...this.tweet,
         ...newTweet,

@@ -139,7 +139,6 @@ export default {
           icon: "error",
           title: "尚未輸入回覆內容！",
         });
-
         return false;
       }
       if (replyContent.length > 140) {
