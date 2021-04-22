@@ -7,12 +7,6 @@
       </div>
       <div class="textInput">
         <p data-toggle="modal" data-target="#tweetModal">有什麼新鮮事？</p>
-        <!-- <input
-          type="text"
-          placeholder="有什麼新鮮事？"
-          data-toggle="modal"
-          data-target="#tweetModal"
-        /> -->
       </div>
     </div>
     <div class="tweetButton">

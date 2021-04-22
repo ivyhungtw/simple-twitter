@@ -3,6 +3,7 @@
   <div class="container">
     <ul class="tweetList">
       <!-- $attrs：從祖父曾物件來的資料 -->
+      <!-- 子層要發事件給祖父曾使用 $emit，父層用 $listeners -->
       <!-- 找尋更好的方法 -->
       <TweetItem
         v-for="tweet in $attrs.tweets"
@@ -41,7 +42,7 @@ export default {
       // this.followedTweets = this.tweets;
     },
     afterToggleLike() {
-      // 通知 Main 修改資料
+      // 使用 $attrs 所以本地不需要處理
     },
   },
   watch: {

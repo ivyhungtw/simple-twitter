@@ -45,7 +45,10 @@
             {{ tweet.likeCount }}
           </p>
         </div>
-        <TweetReplyModal :tweet="tweet"></TweetReplyModal>
+        <TweetReplyModal
+          :tweet="tweet"
+          v-on="$listeners"
+        ></TweetReplyModal>
       </div>
     </div>
   </div>
