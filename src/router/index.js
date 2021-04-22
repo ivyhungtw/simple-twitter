@@ -24,7 +24,7 @@ const routes = [
   },
   {
     path: '/main',
-    name: 'Main',
+    name: 'main',
     component: Main
   }, {
     path: '/accountEdit',

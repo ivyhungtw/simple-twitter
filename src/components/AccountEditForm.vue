@@ -103,7 +103,7 @@ export default {
   },
   methods: {
     fetchCurrentUser(newVal) {
-      console.log("newVal");
+      // console.log("newVal");
       this.form = {
         ...this.form,
         ...newVal,
