@@ -19,76 +19,10 @@
         推文
       </button>
     </div>
+
     <!-- modal -->
-    <div
-      class="modal fade"
-      id="tweetModal"
-      tabindex="-1"
-      role="dialog"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button
-              type="button"
-              class="start btn"
-              data-dismiss="modal"
-              aria-label="Close"
-              @click="tweetContent = ''"
-            >
-              <span aria-hidden="true"
-                ><img src="../../assets/close.svg" alt=""
-              /></span>
-            </button>
-          </div>
+    <CreateTweetModal v-on="$listeners" :user="user"></CreateTweetModal>
 
-          <div class="modal-body">
-            <div class="container">
-              <div class="avatar">
-                <img :src="user.image | emptyImageFilter" alt="" />
-              </div>
-              <div class="textInput">
-                <!-- <textarea name="" id="" cols="30" rows="10"></textarea> -->
-                <textarea
-                  name=""
-                  id=""
-                  cols="65"
-                  rows="5"
-                  autofocus
-                  maxlength="140"
-                  required
-                  v-model="tweetContent"
-                  placeholder="有什麼新鮮事？"
-                ></textarea>
-                <!--  -->
-                <!-- <input
-                  type="text"
-                  placeholder="有什麼新鮮事？"
-                  v-model="tweetContent"
-                /> -->
-              </div>
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <div class="tweetButton">
-              <button
-                type="button"
-                class="btn"
-                data-dismiss="modal"
-                aria-label="Close"
-                @click="createNewTweet"
-                aria-hidden="true"
-              >
-                推文
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <!-- modal -->
   </div>
 </template>
@@ -101,12 +35,16 @@ const currentUser = {
   image: "",
 };
 
+import CreateTweetModal from "../Modal/CreateTweetModal";
 import { v4 as uuidv4 } from "uuid";
 import { emptyImageFilter } from "../../utils/mixins";
 import { Toast } from "../../utils/helpers";
 export default {
   name: "CreateTweet",
   mixins: [emptyImageFilter],
+  components: {
+    CreateTweetModal,
+  },
   created() {
     this.fetchCurrentUser();
   },
@@ -202,21 +140,11 @@ export default {
   padding: 0;
 }
 
-.avatar img,
-.imagePlaceholder {
+.avatar img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
   background-color: #3c3c3c;
-}
-
-/* modal */
-.modal-content {
-  height: 300px;
-}
-
-.modal-content .container {
-  align-items: start;
 }
 
 .textInput {
@@ -262,31 +190,4 @@ export default {
   font-weight: 500;
   font-size: 18px;
 }
-
-/* modal */
-.modal-content {
-  border-radius: 14px;
-  width: 600px;
-}
-
-.modal-header {
-  border-bottom: 1px solid #e6ecf0;
-}
-
-.modal-body {
-  height: 245px;
-}
-
-.modal-body .textInput {
-}
-
-.modal-body input {
-  width: 100%;
-}
-
-.modal-footer {
-  border: none;
-}
-
-/* modal */
 </style>

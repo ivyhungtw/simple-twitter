@@ -99,7 +99,7 @@ export default {
   height: 26px;
 }
 
-p {
+.btn p {
   height: 26px;
   margin: 0;
   font-weight: 700;
