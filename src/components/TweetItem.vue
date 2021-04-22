@@ -45,7 +45,10 @@
             {{ tweet.likeCount }}
           </p>
         </div>
-        <TweetReplyModal :tweet="tweet"></TweetReplyModal>
+        <TweetReplyModal
+          :tweet="tweet"
+          v-on="$listeners"
+        ></TweetReplyModal>
       </div>
     </div>
   </div>
@@ -119,7 +122,7 @@ export default {
 }
 
 .tweetInfo {
-  width: 100%;
+  /* width: 100%; */
   width: calc(100% - 60px);
 }
 

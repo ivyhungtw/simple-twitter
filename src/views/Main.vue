@@ -13,6 +13,7 @@
       <FollowingUsersTweets
         :tweets="tweets"
         @afterToggleLike="afterToggleLike"
+        @afterCreateReply="afterCreateReply"
       ></FollowingUsersTweets>
     </div>
     <!-- RecommendedFollowers -->
@@ -31,8 +32,9 @@ const dummyData = [
     tweetId: 11,
     tweetContent:
       "sdfff s we rw weerdfdf we w sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we w",
-    commentsCount: 111,
-    likeCount: 111,
+    commentsCount: 11,
+    comments: [],
+    likeCount: 11,
     updatedAt: new Date(),
     isLiked: false,
   },
@@ -44,8 +46,9 @@ const dummyData = [
     tweetId: 135,
     tweetContent:
       "sff233 d dfsdfff s we rw weerdfdf we wdfsdfff s we rw weerdfdf we w",
-    commentsCount: 222,
-    likeCount: 222,
+    commentsCount: 22,
+    comments: [],
+    likeCount: 22,
     updatedAt: new Date(),
     isLiked: false,
   },
@@ -57,8 +60,9 @@ const dummyData = [
     tweetId: 188,
     tweetContent:
       "sdfff s we rw weesdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wrdfdf we w",
-    commentsCount: 333,
-    likeCount: 333,
+    commentsCount: 33,
+    comments: [],
+    likeCount: 33,
     updatedAt: new Date(),
     isLiked: false,
   },
@@ -70,8 +74,9 @@ const dummyData = [
     tweetId: 85,
     tweetContent:
       "asdf woej ows sodfhwoje jsd sj owijeojw e293 lskdn jwlf lsen won owinkldkfndfkns vvbd35t8 9slkdhfla;ls sldk ldnflwn !",
-    commentsCount: 444,
-    likeCount: 444,
+    commentsCount: 44,
+    comments: [],
+    likeCount: 44,
     updatedAt: new Date(),
     isLiked: false,
   },
@@ -83,8 +88,9 @@ const dummyData = [
     tweetId: 985,
     tweetContent:
       "sdfff s we rw wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we weerdfdf we w",
-    commentsCount: 555,
-    likeCount: 555,
+    commentsCount: 55,
+    comments: [],
+    likeCount: 55,
     updatedAt: new Date(),
     isLiked: false,
   },
@@ -128,7 +134,6 @@ export default {
       this.tweets = dummyData;
     },
     afterCreateTweet(newTweet) {
-      console.log("afterCreateTweet");
       this.tweets.unshift({
         ...this.tweet,
         ...newTweet,
@@ -141,6 +146,26 @@ export default {
           return {
             ...tweet,
             isLiked: likedTweet.isLiked,
+          };
+        } else {
+          return tweet;
+        }
+      });
+    },
+    afterCreateReply(newTweetReply) {
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.tweetId === newTweetReply.tweet.tweetId) {
+          console.log(`tweet: ${tweet.tweetId} is commented!`);
+          return {
+            ...tweet,
+            commentsCount: tweet.commentsCount + 1,
+            comments: tweet.comments.push({
+              id: newTweetReply.id,
+              name: newTweetReply.name,
+              account: newTweetReply.account,
+              createdAt: newTweetReply.createdAt,
+              replyContent: newTweetReply.replyContent,
+            }),
           };
         } else {
           return tweet;

@@ -7,12 +7,6 @@
       </div>
       <div class="textInput">
         <p data-toggle="modal" data-target="#tweetModal">有什麼新鮮事？</p>
-        <!-- <input
-          type="text"
-          placeholder="有什麼新鮮事？"
-          data-toggle="modal"
-          data-target="#tweetModal"
-        /> -->
       </div>
     </div>
     <div class="tweetButton">
@@ -143,6 +137,10 @@ export default {
           tweetContent: this.tweetContent,
           updatedAt: new Date(),
           tweetId: uuidv4(),
+          isLiked: false,
+          commentsCount: 0,
+          comments: [],
+          likeCount: 0,
         };
 
         this.tweetContent = this.tweetContent.toString();

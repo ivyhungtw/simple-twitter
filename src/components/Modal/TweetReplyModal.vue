@@ -98,6 +98,13 @@
 </template>
 
 <script>
+const dummyUser = {
+  name: "user1",
+  account: "@user1",
+  id: 1,
+  // tweetId:
+};
+
 import { Toast } from "../../utils/helpers";
 import { emptyImageFilter } from "../../utils/mixins";
 import { fromNowFilter } from "../../utils/mixins";
@@ -110,9 +117,13 @@ export default {
       required: true,
     },
   },
+  created() {
+    this.currentUser = dummyUser;
+  },
   data() {
     return {
       replyContent: "",
+      currentUser: {},
     };
   },
   methods: {
@@ -127,11 +138,19 @@ export default {
         return;
       }
 
-      // call api to create tweet
+      const newTweetReply = {
+        ...this.currentUser,
+        tweet: this.tweet,
+        replyContent: this.replyContent,
+        createdAt: new Date(),
+      };
+
+      // call api to create tweet reply
 
       // tell TweetItem to change number
-      console.log("replyContent: " + this.replyContent);
-      console.log("reply created");
+      // console.log("reply created in server");
+      this.$emit("afterCreateReply", newTweetReply);
+      this.replyContent = "";
     },
     replyContentCheck(replyContent) {
       if (!replyContent) {
@@ -139,7 +158,6 @@ export default {
           icon: "error",
           title: "尚未輸入回覆內容！",
         });
-
         return false;
       }
       if (replyContent.length > 140) {
@@ -155,6 +173,9 @@ export default {
   watch: {
     // tweet() {
     // },
+  },
+  computed: {
+    // ...mapState('currentUser')
   },
 };
 </script>
