@@ -150,6 +150,7 @@ export default {
       // tell TweetItem to change number
       // console.log("reply created in server");
       this.$emit("afterCreateReply", newTweetReply);
+      this.replyContent = "";
     },
     replyContentCheck(replyContent) {
       if (!replyContent) {
