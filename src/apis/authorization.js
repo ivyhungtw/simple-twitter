@@ -5,6 +5,6 @@ export default {
     return apiHelper.post('/users/login', payload)
   },
   signUp(payload) {
-    return apiHelper.post('signup', payload)
+    return apiHelper.post('users', payload)
   }
 }

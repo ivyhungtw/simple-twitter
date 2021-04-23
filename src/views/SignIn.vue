@@ -74,7 +74,7 @@ export default {
         this.isProcessing = true;
         // call api to sign in
         const { data } = await authorizationAPI.signIn(payload);
-        console.log(data);
+        // console.log(data);
 
         if (data.status !== "success") {
           throw new Error(data.message);
@@ -87,7 +87,7 @@ export default {
         this.$store.commit("setCurrentUser", data.user);
 
         // 轉址
-        // this.$router.push("/main");
+        this.$router.push("/main");
       } catch (error) {
         console.log(error);
         this.isProcessing = false;
