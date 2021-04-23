@@ -129,9 +129,8 @@ export default {
     },
     contentCheck(tweetContent) {
       // 內容檢查：不能空白
-      console.log("tweetContent");
-      console.log("length: " + tweetContent.length);
-      if (!tweetContent) {
+      const checkTarget = tweetContent.trim();
+      if (!checkTarget) {
         Toast.fire({
           icon: "error",
           title: "尚未輸入推文內容！",
@@ -139,7 +138,7 @@ export default {
         return false;
       }
       // 內容檢查：字數小於140
-      if (tweetContent.length > 140) {
+      if (checkTarget.length > 140) {
         Toast.fire({
           icon: "error",
           title: "推文字數不得超過 140 個字！",

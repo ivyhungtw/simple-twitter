@@ -2,6 +2,7 @@ import { apiHelper } from './../utils/helpers'
 
 export default {
   getCurrentUser(userId) {
-    return apiHelper.get(`/get_current_user/${userId}`)
+    console.log('userId: ' + userId)
+    return apiHelper.get(`/users/${userId}`)
   }
 }

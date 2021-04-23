@@ -93,7 +93,7 @@ export default {
         this.isProcessing = false;
         Toast.fire({
           icon: "error",
-          title: error,
+          title: "帳號密碼不正確，請再試一次！",
         });
         this.form.account = "";
         this.form.password = "";

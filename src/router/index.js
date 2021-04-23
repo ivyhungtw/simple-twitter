@@ -103,14 +103,8 @@ router.beforeEach(async (to, from, next) => {
   // if user has token in localStorage but not the same as the one in store
   if (tokenInLocalStorage && tokenInLocalStorage !== tokenInStore) {
     // check currentUser with server
-    console.log('ServerCheck: tokenInLocalStorage !== tokenInStore')
+    console.log('SERVER-CHECK: tokenInLocalStorage !== tokenInStore')
     isAuthenticated = await store.dispatch('fetchCurrentUser')
-  }
-
-  // user clear token or !tokenInLocalStorage
-  if (!tokenInLocalStorage) {
-    console.log('Error: No tokenInLocalStorage')
-    isAuthenticated = false
   }
 
   const pathsWithoutAuthentication = ['sign-in', 'sign-up', 'admin-sign-in']
@@ -118,7 +112,7 @@ router.beforeEach(async (to, from, next) => {
   // check with server when !isAuthenticated && trying to open pathsWithoutAuthentication
   if (!isAuthenticated && !pathsWithoutAuthentication.includes(to.name)) {
     next('/signin')
-    return
+    // return
   }
 
   // if token's valid, push to main
