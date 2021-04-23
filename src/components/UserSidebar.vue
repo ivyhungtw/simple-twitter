@@ -103,21 +103,17 @@ export default {
   flex-direction: column;
   border-right: 1px solid #e6ecf0;
 }
-
 .logo {
   margin-bottom: 24px;
 }
-
 .logo img {
   width: 50px;
   height: 50px;
 }
-
 .buttonList {
   flex: 1;
   position: relative;
 }
-
 .buttonList .navItem {
   height: 60px;
   display: flex;
@@ -147,18 +143,15 @@ export default {
   font-size: 18px;
   color: #1c1c1c;
 }
-
 .newTweet p {
   font-weight: 500;
 }
-
 .icon img {
   margin: 17px 0;
   width: 16px;
   height: 20px;
   margin: 0 25px 0 10px;
 }
-
 .newTweet button {
   width: 210px;
   height: 45px;
@@ -168,7 +161,6 @@ export default {
 .newTweet button p {
   color: #fff;
 }
-
 .logout {
   position: absolute;
   bottom: 0;
