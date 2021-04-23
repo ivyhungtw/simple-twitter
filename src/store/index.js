@@ -38,6 +38,7 @@ export default new Vuex.Store({
       state.isAuthenticated = false
       state.token = ''
       localStorage.removeItem('token')
+      localStorage.removeItem('userId')
     }
   },
   actions: {
