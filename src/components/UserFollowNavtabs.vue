@@ -1,0 +1,48 @@
+<template>
+  <ul class="nav nav-tabs mb-4">
+    <li v-for="tab in tabs" :key="tab.id" class="nav-item">
+      <router-link :to="tab.path" class="nav-link">
+        {{ tab.title }}
+      </router-link>
+    </li>
+  </ul>
+</template>
+
+<script>
+import { v4 as uuidv4 } from "uuid";
+export default {
+  data() {
+    return {
+      tabs: [
+        {
+          id: uuidv4(),
+          title: "跟隨者",
+          path: "/userprofile/followers",
+        },
+        {
+          id: uuidv4(),
+          title: "正在跟隨",
+          path: "/userprofile/following",
+        },
+      ],
+    };
+  },
+};
+</script>
+
+<style scoped>
+.nav-tabs .nav-link {
+  color: gray;
+  width: 150px;
+  text-align: center;
+}
+.nav-tabs .nav-link:focus,
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+  border: 1px solid #fff;
+  border-bottom-color: orangered;
+  color: orangered;
+  font-weight: 700;
+}
+</style>

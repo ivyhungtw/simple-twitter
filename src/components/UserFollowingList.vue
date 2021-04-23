@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">UserProfileCard</div>
+  <div class="hello">TweetItem2</div>
 </template>
 
 <script>
