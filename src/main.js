@@ -8,11 +8,13 @@ import './assets/reset.css'
 // import fontawesome
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@fortawesome/fontawesome-free/js/all.js'
+import store from './store'
 // import store
 
 Vue.config.productionTip = false
 
 new Vue({
   router,
-  render: h => h(App),
+  store,
+  render: h => h(App)
 }).$mount('#app')

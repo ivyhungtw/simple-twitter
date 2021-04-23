@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <form @submit.prevent.stop="handleSignIn($event)">
+    <form @submit.prevent.stop="handleSubmit">
       <div class="logo">
         <img src="../assets/logo.png" alt="" />
       </div>
@@ -31,7 +31,9 @@
       </div>
 
       <div class="row mt-4">
-        <button class="btn signin" type="submit">登入</button>
+        <button class="btn signin" type="submit" :disabled="isProcessing">
+          {{ isProcessing ? "登入中" : "登入" }}
+        </button>
       </div>
       <div class="row link-btns-container">
         <div class="link-btns">
@@ -48,6 +50,8 @@
 
 <script>
 import { Toast } from "../utils/helpers";
+import authorizationAPI from "../apis/authorization.js";
+
 export default {
   name: "SignIn",
   data() {
@@ -56,37 +60,55 @@ export default {
         account: "",
         password: "",
       },
+      isProcessing: false,
     };
   },
   methods: {
-    async handleSignIn(e) {
-      const formDataCheckResult = this.formDataCheck();
+    async handleSubmit() {
+      const payload = this.form;
+      const formDataCheckResult = this.formDataCheck(payload);
       if (!formDataCheckResult) {
         return;
       }
       try {
-        const formData = new FormData(e.target);
-        for (let [key, val] of formData) {
-          console.log(key + ": " + val);
-        }
+        this.isProcessing = true;
         // call api to sign in
+        const { data } = await authorizationAPI.signIn(payload);
+        // console.log(data);
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        // set token
+        localStorage.setItem("token", data.token);
+
+        // 透過 setCurrentUser 把使用者資料存到 Vuex 的 state 中
+        this.$store.commit("setCurrentUser", data.user);
+
+        // 轉址
+        this.$router.push("/main");
       } catch (error) {
+        console.log(error);
+        this.isProcessing = false;
         Toast.fire({
           icon: "error",
-          title: "無法登入，請稍後再試！",
+          title: "帳號密碼不正確，請再試一次！",
         });
+        this.form.account = "";
+        this.form.password = "";
       }
     },
-    formDataCheck() {
+    formDataCheck({ account, password }) {
       let result = false;
-      if (!this.account) {
+      if (!account) {
         Toast.fire({
           icon: "info",
           title: "尚未填寫帳號！",
         });
         return false;
       }
-      if (!this.password) {
+      if (!password) {
         Toast.fire({
           icon: "info",
           title: "尚未填寫密碼！",

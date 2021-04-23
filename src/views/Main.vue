@@ -156,7 +156,6 @@ export default {
     afterCreateReply(newTweetReply) {
       this.tweets = this.tweets.map((tweet) => {
         if (tweet.tweetId === newTweetReply.tweet.tweetId) {
-          console.log(`tweet: ${tweet.tweetId} is commented!`);
           tweet.comments.push({
             id: newTweetReply.id,
             name: newTweetReply.name,
@@ -187,7 +186,18 @@ export default {
   width: 100%;
   height: 100vh;
   border-right: 1px solid #e6ecf0;
-  overflow: hidden;
+  overflow-y: scroll;
+  position: relative;
+}
+
+/* for Chrome, Safari and Opera */
+.mainSection::-webkit-scrollbar {
+  display: none;
+}
+
+.mainSection {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 .title {
@@ -196,6 +206,9 @@ export default {
   padding: 10px 15px;
   display: flex;
   align-items: center;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
 }
 
 .title h1 {
