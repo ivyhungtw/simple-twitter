@@ -8,8 +8,9 @@
           </div>
           <div class="commentContent">
             <div class="userTitle">
-              <p>{{ comment.name }}</p>
+              <p mr-2>{{ comment.name }}</p>
               <p>{{ comment.account }}</p>
+              <span class="mx-1">&#xb7;</span>
               <p>{{ comment.createdAt | fromNow }}</p>
             </div>
             <div class="textContent">
@@ -74,6 +75,10 @@ p {
 
 .commentContent {
   /* border: 1px solid blue; */
+}
+
+.userTitle {
+  display: flex;
 }
 
 .textContent p {
