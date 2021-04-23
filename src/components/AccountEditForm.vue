@@ -35,6 +35,7 @@
         type="password"
         v-model="form.password"
         required
+        maxLength="12"
       />
     </div>
     <div class="row">
@@ -43,7 +44,7 @@
         id="passwordCheck"
         name="passwordCheck"
         type="password"
-        v-model="form.passwordCheck"
+        v-model="form.checkPassword"
         required
       />
     </div>
@@ -55,12 +56,16 @@
         </button>
       </div>
       <div class="row">
-        <button class="btn cancel">取消</button>
+        <button class="btn cancel" @click.stop.prevent="goBackToSignIn">
+          取消
+        </button>
       </div>
     </template>
     <template v-else>
       <div class="row">
-        <button class="btn update">儲存</button>
+        <button class="btn update" type="submit" :disabled="isProcessing">
+          {{ isProcessing ? "儲存中.." : "儲存" }}
+        </button>
       </div>
     </template>
   </form>
@@ -68,11 +73,14 @@
 
 <script>
 import { Toast } from "../utils/helpers";
+import usersAPI from "../apis/users";
 
 export default {
   name: "AccountEditForm",
   props: {
     isSignUp: {
+      // if signUp => signUp => API POST: /users
+      // if not signUp => accountEdit => API PUT: /users/:id
       type: Boolean,
       default: true,
     },
@@ -96,7 +104,7 @@ export default {
         account: "",
         email: "",
         password: "",
-        passwordCheck: "",
+        checkPassword: "",
       },
       isProcessing: false,
     };
@@ -109,34 +117,18 @@ export default {
         ...newVal,
       };
     },
-    async handleSubmit(e) {
+    goBackToSignIn() {
+      this.$router.push("/signin");
+    },
+    handleSubmit(e) {
       const formDataCheckResult = this.formDataCheck();
       if (!formDataCheckResult) {
-        return;
+        return (this.isProcessing = false);
       }
-      try {
-        this.isProcessing = true;
-        const formData = new FormData(e.target);
-        // call api to post formData
-        // if isSignup: post
-        // else: put
-
-        for (let [key, val] of formData) {
-          console.log(key + ": " + val);
-        }
-
-        Toast.fire({
-          icon: "success",
-          title: "註冊成功！",
-        });
-        // 轉址到 /signin
-        this.$router.push("/signin");
-      } catch (error) {
-        this.isProcessing = false;
-        Toast.fire({
-          icon: "error",
-          title: "發生錯誤，請稍後再試！",
-        });
+      if (this.isSignUp) {
+        this.handleSignUpSubmit(e);
+      } else {
+        this.handleSaveSetting(e);
       }
     },
     formDataCheck() {
@@ -169,22 +161,77 @@ export default {
         });
         return result;
       }
-      if (!this.form.passwordCheck) {
+      if (this.form.password.length > 12 || this.form.password.length < 6) {
+        Toast.fire({
+          icon: "info",
+          title: "密碼長度不得小於 6 超過 12！",
+        });
+        return result;
+      }
+      if (!this.form.checkPassword) {
         Toast.fire({
           icon: "info",
           title: "請填寫密碼確認！",
         });
         return result;
       }
-      if (this.form.password !== this.form.passwordCheck) {
+      if (this.form.password !== this.form.checkPassword) {
         Toast.fire({
           icon: "error",
           title: "密碼不相符！",
         });
         return result;
       }
-      result = true;
-      return result;
+      console.log("Data check passed");
+      return (result = true);
+    },
+    async handleSignUpSubmit() {
+      try {
+        this.isProcessing = true;
+        // const formData = new FormData(e.target);
+        const formData = this.form;
+        // call api to post formData
+        const { data } = await usersAPI.signUp(formData);
+        console.log(data);
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        Toast.fire({
+          icon: "success",
+          title: "註冊成功！",
+        });
+
+        // 轉址
+        this.$router.push("signin");
+      } catch (error) {
+        this.isProcessing = false;
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          // title: "無法註冊，請稍候再試！",
+          title: error,
+        });
+      }
+    },
+    async handleSaveSetting(e) {
+      const formDataCheckResult = this.formDataCheck();
+      if (!formDataCheckResult) {
+        return;
+      }
+      try {
+        this.isProcessing = true;
+        const formData = new FormData(e.target);
+        formData.append("page", "setting");
+        // const {data} = await usersAPI
+      } catch (error) {
+        this.isProcessing = false;
+        Toast.fire({
+          icon: "error",
+          title: "無法變更使用者資訊，請稍候再試！",
+        });
+      }
     },
   },
   watch: {

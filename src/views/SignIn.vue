@@ -74,7 +74,7 @@ export default {
         this.isProcessing = true;
         // call api to sign in
         const { data } = await authorizationAPI.signIn(payload);
-        console.log(data);
+        // console.log(data);
 
         if (data.status !== "success") {
           throw new Error(data.message);
