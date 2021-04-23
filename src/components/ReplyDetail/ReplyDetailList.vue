@@ -1,7 +1,11 @@
 <template>
   <div class="container">
     <ul class="tweetList">
-      <li class="commentItem" v-for="comment in comments" :key="comment.id">
+      <li
+        class="commentItem"
+        v-for="comment in comments"
+        :key="comment.replyId"
+      >
         <div class="commentInfo">
           <div class="avatar">
             <img :src="comment.image | emptyImageFilter" alt="" />

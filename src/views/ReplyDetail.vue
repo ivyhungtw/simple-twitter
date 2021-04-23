@@ -106,10 +106,10 @@ export default {
     fetchTweetInfo() {
       this.tweetInfo = tweetInfo;
       // 加入 reply id
-      this.tweetInfo = this.tweetInfo.map((each) => {
+      this.tweetInfo.comments = this.tweetInfo.comments.map((each) => {
         return {
           ...each,
-          replyId: uuidv4,
+          replyId: uuidv4(),
         };
       });
     },
