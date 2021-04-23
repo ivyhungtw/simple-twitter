@@ -133,6 +133,10 @@ export default {
   height: 26px;
 }
 
+.btn {
+  padding: 0;
+}
+
 .btn a {
   text-decoration: none;
 }
