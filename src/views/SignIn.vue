@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <form @submit.prevent.stop="handleSignIn">
+    <form @submit.prevent.stop="handleSubmit">
       <div class="logo">
         <img src="../assets/logo.png" alt="" />
       </div>
@@ -31,7 +31,9 @@
       </div>
 
       <div class="row mt-4">
-        <button class="btn signin" type="submit">登入</button>
+        <button class="btn signin" type="submit" :disabled="isProcessing">
+          {{ isProcessing ? "登入中" : "登入" }}
+        </button>
       </div>
       <div class="row link-btns-container">
         <div class="link-btns">
@@ -58,23 +60,37 @@ export default {
         account: "",
         password: "",
       },
+      isProcessing: false,
     };
   },
   methods: {
-    async handleSignIn() {
+    async handleSubmit() {
       const payload = this.form;
       const formDataCheckResult = this.formDataCheck(payload);
       if (!formDataCheckResult) {
         return;
       }
       try {
+        this.isProcessing = true;
         // call api to sign in
-        const response = await authorizationAPI.signIn(payload);
-        console.log(response);
-        //
-        this.$router.push("/main");
+        const { data } = await authorizationAPI.signIn(payload);
+        console.log(data);
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        // set token
+        localStorage.setItem("token", data.token);
+
+        // 透過 setCurrentUser 把使用者資料存到 Vuex 的 state 中
+        this.$store.commit("setCurrentUser", data.user);
+
+        // 轉址
+        // this.$router.push("/main");
       } catch (error) {
         console.log(error);
+        this.isProcessing = false;
         Toast.fire({
           icon: "error",
           title: error,
