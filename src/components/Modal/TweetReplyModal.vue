@@ -103,6 +103,7 @@ const dummyUser = {
 import { Toast } from "../../utils/helpers";
 import { emptyImageFilter } from "../../utils/mixins";
 import { fromNowFilter } from "../../utils/mixins";
+// import uuid
 
 export default {
   name: "TweetReplyModal",
@@ -143,7 +144,6 @@ export default {
       // call api to create tweet reply
 
       // tell TweetItem to change number
-      // console.log("reply created in server");
       this.$emit("afterCreateReply", newTweetReply);
       this.replyContent = "";
     },

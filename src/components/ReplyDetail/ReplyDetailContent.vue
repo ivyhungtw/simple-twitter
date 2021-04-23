@@ -29,7 +29,7 @@
           alt=""
         />
       </div>
-      <TweetReplyModal :tweet="tweetInfo"></TweetReplyModal>
+      <TweetReplyModal v-on="$listeners" :tweet="tweetInfo"></TweetReplyModal>
       <div class="likes">
         <img
           v-if="!tweetInfo.isLiked"

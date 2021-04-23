@@ -15,10 +15,14 @@
       <ReplyDetailContent
         :tweetInfo="tweetInfo"
         @afterToggleLike="afterToggleLike"
+        @afterCreateReply="afterCreateReply"
       ></ReplyDetailContent>
 
       <!-- ReplyDetailList -->
-      <ReplyDetailList :comments="tweetInfo.comments"></ReplyDetailList>
+      <ReplyDetailList
+        :tweetTarget="tweetInfo.account"
+        :comments="tweetInfo.comments"
+      ></ReplyDetailList>
     </div>
 
     <!-- RecommendedFollowers -->
@@ -80,6 +84,7 @@ import UserSidebar from "../components/UserSidebar";
 import RecommendedFollowers from "../components/RecommendedFollowers";
 import ReplyDetailContent from "../components/ReplyDetail/ReplyDetailContent";
 import ReplyDetailList from "../components/ReplyDetail/ReplyDetailList";
+import { v4 as uuidv4 } from "uuid";
 
 export default {
   name: "ReplyDetail",
@@ -100,6 +105,13 @@ export default {
   methods: {
     fetchTweetInfo() {
       this.tweetInfo = tweetInfo;
+      // 加入 reply id
+      this.tweetInfo = this.tweetInfo.map((each) => {
+        return {
+          ...each,
+          replyId: uuidv4,
+        };
+      });
     },
     afterToggleLike(likedTweet) {
       const toggleResult = likedTweet.isLiked;
@@ -107,6 +119,14 @@ export default {
         ...this.tweetInfo,
         isLiked: toggleResult,
       };
+    },
+    afterCreateReply(newTweetReply) {
+      console.log("ReplyDetail.vue");
+      console.log(newTweetReply);
+      // 在資料裡面建立多一個 comment
+      this.tweetInfo.comments.unshift({
+        ...newTweetReply,
+      });
     },
   },
   watch: {
