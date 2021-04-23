@@ -14,7 +14,7 @@
       <p>{{ tweetInfo.tweetContent }}</p>
     </div>
     <div class="updatedAt">
-      <p class="tweetUpdateAt">{{ tweetInfo.updatedAt | fromNow }}</p>
+      <p class="tweetUpdateAt">{{ tweetInfo.updatedAt | exactDate }}</p>
     </div>
     <div class="feedbackCount">
       <p>{{ tweetInfo.commentsCount }} <span>回復 </span></p>
@@ -52,12 +52,12 @@
 
 <script>
 import { emptyImageFilter } from "../../utils/mixins";
-import { fromNowFilter } from "../../utils/mixins";
+import { exactDateFilter } from "../../utils/mixins";
 import TweetReplyModal from "../Modal/TweetReplyModal";
 
 export default {
   name: "ReplyDetailContent",
-  mixins: [emptyImageFilter, fromNowFilter],
+  mixins: [emptyImageFilter, exactDateFilter],
   components: {
     TweetReplyModal,
   },
