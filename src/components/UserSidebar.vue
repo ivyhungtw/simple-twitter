@@ -48,7 +48,7 @@
         <div class="icon">
           <img src="../assets/logout.svg" alt="" />
         </div>
-        <button class="btn" @click.stop.prevent="clearAutherization">
+        <button class="btn" @click.stop.prevent="logout">
           <p>登出</p>
         </button>
       </div>
@@ -71,9 +71,10 @@ export default {
     };
   },
   methods: {
-    clearAutherization() {
-      // 刪除 token => 登出
-      console.log("clearAutherization");
+    logout() {
+      // delete token => log out
+      this.$store.commit("revokeAuthentication");
+      this.$router.push("/signin");
     },
     setCurrentLocation(location) {
       console.log("location: " + location);
