@@ -1,14 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import usersAPI from '../apis/users'
-// vuex-persistedstate for vue2
-import createPersistedState from "vuex-persistedstate";
-
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  plugins: [createPersistedState({ paths: ['currentUser.id'] })],
   state: {
     currentUser: {
       account: '',
@@ -43,6 +39,7 @@ export default new Vuex.Store({
     async fetchCurrentUser({ commit, state }) {
       try {
         const userId = state.currentUser.id
+        // 應該是使用 token 驗證才對
         const { data } = await usersAPI.getCurrentUser(userId)
 
         console.log(data)

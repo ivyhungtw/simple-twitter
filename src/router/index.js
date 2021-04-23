@@ -100,7 +100,6 @@ router.beforeEach(async (to, from, next) => {
 
   let isAuthenticated = store.state.isAuthenticated
 
-  // if user has token in localStorage but not the same as the one in store
   if (tokenInLocalStorage && tokenInLocalStorage !== tokenInStore) {
     // check currentUser with server
     console.log('SERVER-CHECK: tokenInLocalStorage !== tokenInStore')
