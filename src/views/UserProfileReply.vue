@@ -1,15 +1,4 @@
 <template>
-<<<<<<< HEAD
-  <div class="container">
-    <h1>UserProfileReply</h1>
-    <!-- UserSidebar -->
-
-    <!-- UserProfileCard -->
-    <!-- userProfileNavtabs -->
-    <UserProfileNavtabs />
-    <!-- UserProfileReplyList -->
-    <!-- RecommendedFollowers -->
-=======
   <div id="UserProfile">
     <!-- // UserSidebar -->
     <UserSidebar />
@@ -29,7 +18,6 @@
 
     <!-- // RecommendedFollowers -->
     <RecommendedFollowers />
->>>>>>> master
   </div>
 </template>
 
@@ -41,11 +29,7 @@ import UserProfileReplyList from "./../components/UserProfileReplyList";
 import RecommendedFollowers from "./../components/RecommendedFollowers";
 
 export default {
-<<<<<<< HEAD
-  name: "UserProfileReply",
-=======
   name: "UserFollowers",
->>>>>>> master
   components: {
     UserSidebar,
     UserProfileCard,
