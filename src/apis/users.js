@@ -14,7 +14,6 @@ export default {
     return apiHelper.get('/users')
   },
   followUser(payload) {
-    console.log(payload)
     return apiHelper.post('/followships', payload)
   },
   unfollowUser(userId) {

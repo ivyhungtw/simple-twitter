@@ -16,90 +16,19 @@
         @afterCreateReply="afterCreateReply"
       ></FollowingUsersTweets>
     </div>
-    <!-- RecommendedFollowers -->
 
+    <!-- RecommendedFollowers -->
     <RecommendedFollowers></RecommendedFollowers>
   </div>
 </template>
 
 <script>
-const dummyData = [
-  {
-    id: 1,
-    image: "",
-    name: "user1",
-    account: "@user1",
-    tweetId: 11,
-    tweetContent:
-      "sdfff s we rw weerdfdf we w sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we w",
-    commentsCount: 11,
-    comments: [],
-    likeCount: 11,
-    updatedAt: new Date(),
-    isLiked: false,
-  },
-  {
-    id: 2,
-    image: "",
-    name: "user2",
-    account: "@user2",
-    tweetId: 135,
-    tweetContent:
-      "sff233 d dfsdfff s we rw weerdfdf we wdfsdfff s we rw weerdfdf we w",
-    commentsCount: 22,
-    comments: [],
-    likeCount: 22,
-    updatedAt: new Date(),
-    isLiked: false,
-  },
-  {
-    id: 3,
-    image: "",
-    name: "user3",
-    account: "@user3",
-    tweetId: 188,
-    tweetContent:
-      "sdfff s we rw weesdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wrdfdf we w",
-    commentsCount: 33,
-    comments: [],
-    likeCount: 33,
-    updatedAt: new Date(),
-    isLiked: false,
-  },
-  {
-    id: 4,
-    image: "",
-    name: "user4",
-    account: "@user4",
-    tweetId: 85,
-    tweetContent:
-      "asdf woej ows sodfhwoje jsd sj owijeojw e293 lskdn jwlf lsen won owinkldkfndfkns vvbd35t8 9slkdhfla;ls sldk ldnflwn !",
-    commentsCount: 44,
-    comments: [],
-    likeCount: 44,
-    updatedAt: new Date(),
-    isLiked: false,
-  },
-  {
-    id: 5,
-    image: "",
-    name: "user5",
-    account: "@user5",
-    tweetId: 985,
-    tweetContent:
-      "sdfff s we rw wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we weerdfdf we w",
-    commentsCount: 55,
-    comments: [],
-    likeCount: 55,
-    updatedAt: new Date(),
-    isLiked: false,
-  },
-];
-
 import UserSidebar from "../components/UserSidebar";
 import RecommendedFollowers from "../components/RecommendedFollowers";
 import CreateTweet from "../components/Main/CreateTweet";
 import FollowingUsersTweets from "../components/Main/FollowingUsersTweets";
+import { Toast } from "../utils/helpers";
+import tweetsAPI from "../apis/tweets";
 
 export default {
   name: "Main",
@@ -116,23 +45,33 @@ export default {
     return {
       tweets: [],
       tweet: {
-        id: undefined,
-        image: "",
-        name: "",
-        account: "",
-        tweetId: undefined,
-        tweetContent: "",
-        commentsCount: 0,
-        comments: [],
+        userId: undefined,
+        created: "",
+        description: "",
+        id: undefined, // tweetId
         likeCount: 0,
+        replyCount: 0,
         updatedAt: "",
-        isLiked: false,
+        user: {
+          account: "",
+          name: "",
+          avatar: "",
+        },
+        isLiked: false, // 要後端補
       },
     };
   },
   methods: {
-    fetchTweets() {
-      this.tweets = dummyData;
+    async fetchTweets() {
+      try {
+        const { data } = await tweetsAPI.getAllFollowedTweets();
+        this.tweets = data;
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取得推文，請稍後再試！",
+        });
+      }
     },
     afterCreateTweet(newTweet) {
       this.tweets.unshift({
@@ -140,32 +79,25 @@ export default {
         ...newTweet,
       });
     },
-    afterToggleLike(likedTweet) {
-      // 處理畫面
+    afterToggleLike(toggleTweet) {
+      // rerender
       this.tweets = this.tweets.map((tweet) => {
-        if (tweet.tweetId === likedTweet.tweetId) {
+        if (tweet.id === toggleTweet.id) {
           return {
             ...tweet,
-            isLiked: likedTweet.isLiked,
+            isLiked: toggleTweet.isLiked,
           };
         } else {
           return tweet;
         }
       });
     },
-    afterCreateReply(newTweetReply) {
+    afterCreateReply(tweetId) {
       this.tweets = this.tweets.map((tweet) => {
-        if (tweet.tweetId === newTweetReply.tweet.tweetId) {
-          tweet.comments.push({
-            id: newTweetReply.id,
-            name: newTweetReply.name,
-            account: newTweetReply.account,
-            createdAt: newTweetReply.createdAt,
-            replyContent: newTweetReply.replyContent,
-          });
+        if (tweet.id === tweetId) {
           return {
             ...tweet,
-            commentsCount: tweet.commentsCount + 1,
+            replyCount: tweet.replyCount + 1,
           };
         } else {
           return tweet;

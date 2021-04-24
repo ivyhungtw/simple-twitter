@@ -1,7 +1,7 @@
 <template>
   <div
     class="modal fade"
-    :id="`tweetReplyModal-${tweet.tweetId}`"
+    :id="`tweetReplyModal-${initTweet.id}`"
     tabindex="-1"
     role="dialog"
     aria-labelledby="exampleModalLabel"
@@ -27,24 +27,24 @@
           <!-- tweet -->
           <div class="container replyTarget">
             <div class="avatar">
-              <img :src="tweet.image | emptyImageFilter" alt="" />
+              <img :src="initTweet.user.avatar | emptyImageFilter" alt="" />
             </div>
             <div class="tweetInfo">
               <div class="userInfo">
-                <p class="userName">{{ tweet.localTweet }}</p>
-                <p class="userAccount">{{ tweet.account }}</p>
+                <p class="userName">{{ initTweet.user.name }}</p>
+                <p class="userAccount">@{{ initTweet.user.account }}</p>
                 <span class="mx-1">&#xb7;</span>
-                <p class="tweetUpdateAt">{{ tweet.updatedAt | fromNow }}</p>
+                <p class="tweetUpdateAt">
+                  {{ initTweet.updatedAt | fromNow }}
+                </p>
               </div>
               <div class="tweetContent">
-                <p>{{ tweet.tweetContent }}</p>
+                <p>{{ initTweet.description }}</p>
               </div>
               <div class="panel">
                 <p>
                   回覆給
-                  <span>
-                    {{ tweet.name }}
-                  </span>
+                  <span> @{{ initTweet.user.name }} </span>
                 </p>
               </div>
             </div>
@@ -53,7 +53,7 @@
           <!-- comment -->
           <div class="container myReply">
             <div class="avatar">
-              <img :src="'' | emptyImageFilter" alt="" />
+              <img :src="currentUser.avatar | emptyImageFilter" alt="" />
             </div>
             <div class="tweetInf">
               <div class="input">
@@ -77,13 +77,11 @@
           <div class="tweetButton">
             <button
               type="button"
-              data-dismiss="modal"
-              aria-label="Close"
-              aria-hidden="true"
               class="btn"
-              @click="createReply()"
+              @click="createReply(initTweet.id)"
+              :disabled="isProcessing"
             >
-              回復
+              {{ isProcessing ? "回覆中.." : "回覆" }}
             </button>
           </div>
         </div>
@@ -93,17 +91,11 @@
 </template>
 
 <script>
-const dummyUser = {
-  name: "user1",
-  account: "@user1",
-  id: 1,
-  // tweetId:
-};
-
 import { Toast } from "../../utils/helpers";
 import { emptyImageFilter } from "../../utils/mixins";
 import { fromNowFilter } from "../../utils/mixins";
-// import uuid
+import { mapState } from "vuex";
+import tweetsAPI from "../../apis/tweets";
 
 export default {
   name: "TweetReplyModal",
@@ -114,38 +106,64 @@ export default {
       required: true,
     },
   },
-  created() {
-    this.currentUser = dummyUser;
-  },
   data() {
     return {
+      initTweet: {},
       replyContent: "",
-      currentUser: {},
+      isProcessing: false,
     };
   },
+  created() {
+    this.fetchTweet(this.tweet);
+  },
   methods: {
+    fetchTweet(tweet) {
+      this.initTweet = tweet;
+    },
     clearReplyContent() {
       this.replyContent = "";
     },
-    createReply() {
-      // console.log(e);
+    async createReply(tweetId) {
+      // console.log("tweetId: " + tweetId);
       const result = this.replyContentCheck(this.replyContent);
       if (!result) {
         return;
       }
+      try {
+        this.isProcessing = true;
+        const payload = { comment: this.replyContent };
+        // call api to create tweet reply
+        const { data } = await tweetsAPI.createReply(tweetId, payload);
 
-      const newTweetReply = {
-        ...this.currentUser,
-        tweet: this.tweet,
-        replyContent: this.replyContent,
-        createdAt: new Date(),
-      };
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
 
-      // call api to create tweet reply
+        // inform user
+        Toast.fire({
+          icon: "success",
+          title: "回覆成功！",
+        });
 
-      // tell TweetItem to change number
-      this.$emit("afterCreateReply", newTweetReply);
-      this.replyContent = "";
+        // close modal after successfully replied
+        this.closeModal(tweetId);
+
+        // inform TweetItem to change number of replyCount
+        this.$emit("afterCreateReply", tweetId);
+
+        // clear replyContent
+        this.clearReplyContent();
+
+        // enable button
+        this.isProcessing = false;
+      } catch (error) {
+        this.isProcessing = false;
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法回復推文，請稍後再試！",
+        });
+      }
     },
     replyContentCheck(replyContent) {
       if (!replyContent) {
@@ -158,19 +176,33 @@ export default {
       if (replyContent.length > 140) {
         Toast.fire({
           icon: "error",
-          title: "回復字數不得超過 140 個字！",
+          title: "回覆字數不得超過 140 個字！",
         });
         return false;
       }
       return true;
     },
+    closeModal(tweetId) {
+      // close modal after successfully replied with pure js
+      const modal = document.querySelector(`#tweetReplyModal-${tweetId}`);
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+      modal.setAttribute("style", "display: none");
+
+      // get modal backdrop
+      const modalBackdrops = document.getElementsByClassName("modal-backdrop");
+
+      // remove opened modal backdrop
+      document.body.removeChild(modalBackdrops[0]);
+    },
   },
   watch: {
-    // tweet() {
-    // },
+    tweetId(newVal) {
+      this.fetchTweet(newVal);
+    },
   },
   computed: {
-    // ...mapState('currentUser')
+    ...mapState(["currentUser"]),
   },
 };
 </script>
@@ -184,7 +216,6 @@ export default {
 
 /* replyTarget */
 .replyTarget {
-  /* border: 1px solid #000; */
   position: relative;
 }
 
@@ -233,6 +264,7 @@ export default {
 }
 
 .userInfo .userName {
+  margin-right: 10px;
   font-weight: 700;
 }
 .userInfo .userAccount,
@@ -291,7 +323,7 @@ export default {
 }
 
 .tweetButton .btn {
-  width: 64px;
+  min-width: 64px;
   height: 40px;
   background-color: #ff6600;
   color: #fff;

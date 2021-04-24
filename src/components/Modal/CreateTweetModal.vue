@@ -26,10 +26,9 @@
         <div class="modal-body">
           <div class="container">
             <div class="avatar">
-              <img :src="user.image | emptyImageFilter" alt="" />
+              <img :src="user.avatar | emptyImageFilter" alt="" />
             </div>
             <div class="textInput">
-              <!-- <textarea name="" id="" cols="30" rows="10"></textarea> -->
               <textarea
                 name=""
                 id=""
@@ -41,19 +40,13 @@
                 v-model="tweetContent"
                 placeholder="有什麼新鮮事？"
               ></textarea>
-              <!--  -->
-              <!-- <input
-                  type="text"
-                  placeholder="有什麼新鮮事？"
-                  v-model="tweetContent"
-                /> -->
             </div>
           </div>
         </div>
 
         <div class="modal-footer">
           <div class="tweetButton">
-            <button
+            <!-- <button
               type="button"
               class="btn"
               data-dismiss="modal"
@@ -62,6 +55,14 @@
               aria-hidden="true"
             >
               推文
+            </button> -->
+            <button
+              type="button"
+              class="btn"
+              @click="createNewTweet"
+              :disabled="isProcessing"
+            >
+              {{ isProcessing ? "推文中" : "推文" }}
             </button>
           </div>
         </div>
@@ -72,9 +73,10 @@
 
 <script>
 // import {mapState} from 'vuex'
-import { v4 as uuidv4 } from "uuid";
 import { Toast } from "../../utils/helpers";
 import { emptyImageFilter } from "../../utils/mixins";
+import tweetsAPI from "../../apis/tweets";
+import { mapState } from "vuex";
 
 export default {
   name: "CreateTweetModal",
@@ -88,6 +90,7 @@ export default {
   data() {
     return {
       tweetContent: "",
+      isProcessing: false,
     };
   },
   methods: {
@@ -99,27 +102,51 @@ export default {
       }
       try {
         this.isProcessing = true;
-
         // data
+        const payload = {
+          description: this.tweetContent,
+        };
+        // call api to create new tweet: 回傳 tweet id?
+        const { data } = await tweetsAPI.createNewTweet(payload);
+
+        // console.log(data);
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        const { id, UserId, createdAt, description, updatedAt } = data.tweet[0];
+
+        const { account, name, avatar } = this.currentUser;
+
         const newTweet = {
-          ...this.user,
-          tweetContent: this.tweetContent,
-          updatedAt: new Date(),
-          tweetId: uuidv4(),
-          isLiked: false,
-          commentsCount: 0,
-          comments: [],
-          likeCount: 0,
+          user: { account, name, avatar },
+          id,
+          UserId,
+          createdAt,
+          description,
+          updatedAt,
         };
 
-        // call api to create new tweet: 回傳 tweet id?
-        this.tweetContent = "";
+        // inform user
+        Toast.fire({
+          icon: "success",
+          title: "推文成功！",
+        });
 
-        // inform Main.vue
+        // close modal after successfully replied
+        this.closeModal("tweetModal");
+
+        // inform Main.vue to push new tweet
         this.$emit("afterCreateTweet", newTweet);
 
+        // clear tweetContent
+        this.tweetContent = "";
+
+        // enable button
         this.isProcessing = false;
       } catch (error) {
+        console.log(error);
         this.isProcessing = false;
         Toast.fire({
           icon: "error",
@@ -147,9 +174,23 @@ export default {
       }
       return true;
     },
+    closeModal(modalId) {
+      // console.log(modalId);
+      // close modal after successfully replied with pure js
+      const modal = document.querySelector(`#${modalId}`);
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+      modal.setAttribute("style", "display: none");
+
+      // get modal backdrop
+      const modalBackdrops = document.getElementsByClassName("modal-backdrop");
+
+      // remove opened modal backdrop
+      document.body.removeChild(modalBackdrops[0]);
+    },
   },
   computed: {
-    // ...mapState('currentUser')
+    ...mapState(["currentUser"]),
   },
 };
 </script>
@@ -230,7 +271,7 @@ export default {
 }
 
 .tweetButton .btn {
-  width: 64px;
+  min-width: 64px;
   height: 40px;
   background-color: #ff6600;
   color: #fff;

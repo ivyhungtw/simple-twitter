@@ -2,12 +2,13 @@
   <!-- FollowingUsersTweets.vue => modal id="tweetReplyModal" -->
   <div class="container">
     <ul class="tweetList">
-      <!-- $attrs：從祖父曾物件來的資料 -->
-      <!-- 子層要發事件給祖父曾使用 $emit，父層用 $listeners -->
-      <!-- 找尋更好的方法 -->
+      <!-- $attrs：data from grandparent element -->
+      <!-- when emitting event to grandparent element -->
+      <!-- parentElement: $listeners -->
+      <!-- find better way -->
       <TweetItem
         v-for="tweet in $attrs.tweets"
-        :key="tweet.tweetId"
+        :key="tweet.id"
         :tweet="tweet"
         v-on="$listeners"
       ></TweetItem>
@@ -28,6 +29,9 @@ export default {
   components: {
     TweetItem,
   },
+  created() {
+    this.fetchFollowedTweets();
+  },
   data() {
     return {
       followedTweets: [],
@@ -35,14 +39,13 @@ export default {
   },
   methods: {
     fetchFollowedTweets() {
-      // async
-      // this.followedTweets = this.tweets;
+      this.followedTweets = this.tweets;
     },
   },
   watch: {
-    // tweets(newVal) {
-    //   this.fetchFollowedTweets(newVal);
-    // },
+    tweets(newVal) {
+      this.fetchFollowedTweets(newVal);
+    },
   },
 };
 </script>

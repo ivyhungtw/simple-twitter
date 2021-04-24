@@ -8,7 +8,7 @@
       >
         <div class="commentInfo">
           <div class="avatar">
-            <img :src="comment.image | emptyImageFilter" alt="" />
+            <img :src="comment.avatar | emptyImageFilter" alt="" />
           </div>
           <div class="commentContent">
             <div class="userTitle">
