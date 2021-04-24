@@ -33,16 +33,14 @@ export default new Vuex.Store({
       state.isAuthenticated = false
       state.token = ''
       localStorage.removeItem('token')
-      localStorage.removeItem('userId')
     }
   },
   actions: {
     async fetchCurrentUser({ commit }) {
       try {
         console.log('fetchCurrentUser')
-        const userId = localStorage.getItem('userId')
         // 應該是使用 token 驗證才對
-        const { data } = await usersAPI.getCurrentUser(userId)
+        const { data } = await usersAPI.getCurrentUser()
 
         if (data.status === 'error') {
           throw new Error(data.message)
