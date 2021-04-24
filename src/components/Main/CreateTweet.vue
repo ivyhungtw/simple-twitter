@@ -3,7 +3,7 @@
   <div class="createTweet">
     <div class="container">
       <div class="avatar">
-        <img :src="user.image | emptyImageFilter" alt="" />
+        <img :src="user.avatar | emptyImageFilter" alt="" />
       </div>
       <div class="textInput">
         <p data-toggle="modal" data-target="#tweetModal">有什麼新鮮事？</p>
@@ -27,17 +27,10 @@
 </template>
 
 <script>
-const currentUser = {
-  name: "user1",
-  account: "@user1",
-  id: 1,
-  image: "",
-};
-
 import CreateTweetModal from "../Modal/CreateTweetModal";
-import { v4 as uuidv4 } from "uuid";
 import { emptyImageFilter } from "../../utils/mixins";
-import { Toast } from "../../utils/helpers";
+import { mapState } from "vuex";
+
 export default {
   name: "CreateTweet",
   mixins: [emptyImageFilter],
@@ -56,71 +49,11 @@ export default {
   },
   methods: {
     fetchCurrentUser() {
-      // async
-      this.user = currentUser;
-    },
-    async createNewTweet() {
-      const contentCheck = this.contentCheck(this.tweetContent);
-      if (!contentCheck) {
-        this.tweetContent = "";
-        return;
-      }
-      try {
-        this.isProcessing = true;
-
-        // data
-        const newTweet = {
-          ...this.user,
-          tweetContent: this.tweetContent,
-          updatedAt: new Date(),
-          tweetId: uuidv4(),
-          isLiked: false,
-          commentsCount: 0,
-          comments: [],
-          likeCount: 0,
-        };
-
-        this.tweetContent = this.tweetContent.toString();
-
-        // call api to create new tweet: 回傳 tweet id?
-        this.tweetContent = "";
-
-        // inform Main.vue
-        this.$emit("afterCreateTweet", newTweet);
-
-        this.isProcessing = false;
-      } catch (error) {
-        this.isProcessing = false;
-        Toast.fire({
-          icon: "error",
-          title: "無法推文，請稍後再試！",
-        });
-      }
-    },
-    contentCheck(tweetContent) {
-      // 內容檢查：不能空白
-      console.log("tweetContent");
-      console.log("length: " + tweetContent.length);
-      if (!tweetContent) {
-        Toast.fire({
-          icon: "error",
-          title: "尚未輸入推文內容！",
-        });
-        return false;
-      }
-      // 內容檢查：字數小於140
-      if (tweetContent.length > 140) {
-        Toast.fire({
-          icon: "error",
-          title: "推文字數不得超過 140 個字！",
-        });
-        return false;
-      }
-      return true;
+      this.user = this.currentUser;
     },
   },
   computed: {
-    // ...mapState('currentUser')
+    ...mapState(["currentUser"]),
   },
 };
 </script>

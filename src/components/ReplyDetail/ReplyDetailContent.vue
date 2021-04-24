@@ -2,7 +2,7 @@
   <div class="container">
     <div class="userInfo">
       <div class="avatar">
-        <img :src="tweetInfo.image | emptyImageFilter" alt="" />
+        <img :src="tweetInfo.avatar | emptyImageFilter" alt="" />
       </div>
       <div class="userTitle">
         <p>{{ tweetInfo.name }}</p>
