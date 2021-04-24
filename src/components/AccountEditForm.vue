@@ -63,9 +63,15 @@
     </template>
     <template v-else>
       <div class="row">
-        <button class="btn update" type="submit" :disabled="isProcessing">
+        <button
+          v-if="!isSaved"
+          class="btn update"
+          type="submit"
+          :disabled="isProcessing"
+        >
           {{ isProcessing ? "儲存中.." : "儲存" }}
         </button>
+        <button v-else class="btn update" disabled>已儲存</button>
       </div>
     </template>
   </form>
@@ -73,7 +79,9 @@
 
 <script>
 import { Toast } from "../utils/helpers";
+import authorizationAPI from "../apis/authorization";
 import usersAPI from "../apis/users";
+import { mapState } from "vuex";
 
 export default {
   name: "AccountEditForm",
@@ -83,15 +91,6 @@ export default {
       // if not signUp => accountEdit => API PUT: /users/:id
       type: Boolean,
       default: true,
-    },
-    currentUser: {
-      type: Object,
-      default: () => ({
-        account: "",
-        name: "",
-        email: "",
-        password: "",
-      }),
     },
   },
   created() {
@@ -107,14 +106,18 @@ export default {
         checkPassword: "",
       },
       isProcessing: false,
+      isSaved: true,
+      userChanged: false,
     };
   },
   methods: {
     fetchCurrentUser(newVal) {
-      // console.log("newVal");
+      const { name, email, account } = newVal;
       this.form = {
         ...this.form,
-        ...newVal,
+        name,
+        email,
+        account,
       };
     },
     goBackToSignIn() {
@@ -191,7 +194,7 @@ export default {
         // const formData = new FormData(e.target);
         const formData = this.form;
         // call api to post formData
-        const { data } = await usersAPI.signUp(formData);
+        const { data } = await authorizationAPI.signUp(formData);
         console.log(data);
 
         if (data.status !== "success") {
@@ -210,22 +213,39 @@ export default {
         console.log(error);
         Toast.fire({
           icon: "error",
-          // title: "無法註冊，請稍候再試！",
-          title: error,
+          title: "無法註冊，請稍候再試！",
         });
       }
     },
-    async handleSaveSetting(e) {
+    async handleSaveSetting() {
       const formDataCheckResult = this.formDataCheck();
       if (!formDataCheckResult) {
         return;
       }
       try {
         this.isProcessing = true;
-        const formData = new FormData(e.target);
-        formData.append("page", "setting");
-        // const {data} = await usersAPI
+        const userId = this.currentUser.id;
+        const formData = {
+          ...this.form,
+          page: "setting",
+        };
+
+        const { data } = await usersAPI.putUser(userId, formData);
+
+        console.log(data);
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        Toast.fire({
+          icon: "success",
+          title: "資料修改成功！",
+        });
+
+        this.isProcessing = false;
       } catch (error) {
+        console.log(error);
         this.isProcessing = false;
         Toast.fire({
           icon: "error",
@@ -238,9 +258,19 @@ export default {
     currentUser(newVal) {
       this.fetchCurrentUser(newVal);
     },
+    form: {
+      handler: function () {
+        if (!this.userChanged) {
+          // true
+          return (this.userChanged = true);
+        }
+        this.isSaved = false;
+      },
+      deep: true,
+    },
   },
   computed: {
-    // ...mapState('currentUser')
+    ...mapState(["currentUser"]),
   },
 };
 </script>
