@@ -11,7 +11,8 @@
         <p class="tweetUpdateAt">{{ initialTweet.updatedAt | fromNow }}</p>
       </div>
       <div class="tweetContent">
-        <router-link to="/replydetail">
+        <!-- <router-link to="/replydetail"> -->
+        <router-link :to="`/replydetail/${initialTweet.id}`">
           <p>{{ initialTweet.description }}</p>
         </router-link>
       </div>

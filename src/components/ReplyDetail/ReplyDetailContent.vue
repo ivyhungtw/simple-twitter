@@ -2,47 +2,50 @@
   <div class="container">
     <div class="userInfo">
       <div class="avatar">
-        <img :src="tweetInfo.avatar | emptyImageFilter" alt="" />
+        <img :src="dataForContent.avatar | emptyImageFilter" alt="" />
       </div>
       <div class="userTitle">
-        <p>{{ tweetInfo.name }}</p>
-        <p>{{ tweetInfo.account }}</p>
+        <p>{{ dataForContent.name }}</p>
+        <p>@{{ dataForContent.account }}</p>
       </div>
     </div>
 
     <div class="textContent">
-      <p>{{ tweetInfo.tweetContent }}</p>
+      <p>{{ dataForContent.description }}</p>
     </div>
     <div class="updatedAt">
-      <p class="tweetUpdateAt">{{ tweetInfo.updatedAt | exactDate }}</p>
+      <p class="tweetUpdateAt">{{ dataForContent.updatedAt | exactDate }}</p>
     </div>
     <div class="feedbackCount">
-      <p>{{ tweetInfo.commentsCount }} <span>回復 </span></p>
-      <p>{{ tweetInfo.likeCount }} <span>喜歡次數</span></p>
+      <p>{{ replyCount }} <span>回復 </span></p>
+      <p>{{ likeCount }} <span>喜歡次數</span></p>
     </div>
     <div class="tweetPanel">
       <div class="comments">
         <img
           data-toggle="modal"
-          :data-target="`#tweetReplyModal-${tweetInfo.tweetId}`"
+          :data-target="`#tweetReplyModal-${dataForContent.id}`"
           src="../../assets/commentCount.svg"
           alt=""
         />
       </div>
-      <TweetReplyModal v-on="$listeners" :tweet="tweetInfo"></TweetReplyModal>
+      <TweetReplyModal
+        v-on="$listeners"
+        :tweet="dataForModal"
+      ></TweetReplyModal>
       <div class="likes">
         <img
-          v-if="!tweetInfo.isLiked"
-          :class="{ liked: tweetInfo.isLiked }"
+          v-if="!dataForContent.isLiked"
+          :class="{ liked: dataForContent.isLiked }"
           src="../../assets/likeCount.svg"
           alt=""
-          @click="toggleLike(tweetInfo)"
+          @click="toggleLike(dataForContent.id)"
         />
         <img
           v-else
           src="../../assets/likedLikeCount.svg"
           alt=""
-          @click="toggleLike(tweetInfo)"
+          @click="toggleLike(dataForContent.id)"
         />
         <p></p>
       </div>
@@ -54,6 +57,8 @@
 import { emptyImageFilter } from "../../utils/mixins";
 import { exactDateFilter } from "../../utils/mixins";
 import TweetReplyModal from "../Modal/TweetReplyModal";
+import { Toast } from "../../utils/helpers";
+import tweetsAPI from "../../apis/tweets";
 
 export default {
   name: "ReplyDetailContent",
@@ -62,12 +67,63 @@ export default {
     TweetReplyModal,
   },
   props: {
-    tweetInfo: {
+    dataForContent: {
       type: Object,
       required: true,
     },
   },
+  data() {
+    return {
+      userId: undefined,
+      dataForModal: {},
+      replyCount: 0,
+      likeCount: 0,
+    };
+  },
   methods: {
+    async fetchFeedbackCount(UserId) {
+      try {
+        // get Likes.length, isLiked, Comments, Comments.length,
+        const userAllTweetResponse = await tweetsAPI.getAllTweetsByUserId(
+          UserId
+        );
+        const userAllTweets = userAllTweetResponse.data;
+
+        const { id } = this.dataForContent;
+        const targetTweet = userAllTweets.find((tweet) => tweet.id === id);
+        const { replyCount, likeCount } = targetTweet;
+        this.replyCount = replyCount;
+        this.likeCount = likeCount;
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得完整推文資訊，請稍後再試！",
+        });
+      }
+    },
+    setDataForModal() {
+      const {
+        id,
+        avatar,
+        name,
+        account,
+        updatedAt,
+        description,
+        createdAt,
+      } = this.dataForContent;
+      this.dataForModal = {
+        id,
+        updatedAt,
+        description,
+        createdAt,
+        user: {
+          avatar,
+          name,
+          account,
+        },
+      };
+    },
     toggleLike(tweet) {
       //async
       // call api to like this tweet by user
@@ -80,6 +136,26 @@ export default {
       }
       // tell Main.vue to change data
       this.$emit("afterToggleLike", tweet);
+    },
+  },
+  watch: {
+    dataForContent: {
+      handler: function (newVal) {
+        this.userId = newVal.UserId;
+        const userId = this.userId;
+        this.fetchFeedbackCount(userId);
+
+        this.setDataForModal();
+      },
+      deep: true,
+    },
+    replyCount(newVal) {
+      // when get data, inform ReplyDetail
+      this.$emit("afterGetReplyCount", newVal);
+    },
+    likeCount(newVal) {
+      // when get data, inform ReplyDetail
+      this.$emit("afterGetLikeCount", newVal);
     },
   },
 };

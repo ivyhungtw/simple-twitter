@@ -13,16 +13,15 @@
       </div>
       <!-- ReplyDetailContent -->
       <ReplyDetailContent
-        :tweetInfo="tweetInfo"
+        :dataForContent="dataForContent"
+        @afterGetReplyCount="afterGetReplyCount"
+        @afterGetLikeCount="afterGetLikeCount"
         @afterToggleLike="afterToggleLike"
         @afterCreateReply="afterCreateReply"
       ></ReplyDetailContent>
 
       <!-- ReplyDetailList -->
-      <ReplyDetailList
-        :tweetTarget="tweetInfo.account"
-        :comments="tweetInfo.comments"
-      ></ReplyDetailList>
+      <ReplyDetailList :dataForList="dataForList"></ReplyDetailList>
     </div>
 
     <!-- RecommendedFollowers -->
@@ -31,87 +30,81 @@
 </template>
 
 <script>
-const tweetInfo = {
-  id: 1,
-  image: "",
-  name: "user1",
-  account: "@user1",
-  tweetId: 11,
-  tweetContent:
-    "sdfff s we rw weerdfdf we w sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we sdfff s we rw weerdfdf we w sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we ww",
-  commentsCount: 4,
-  comments: [
-    {
-      id: 4,
-      name: "user4",
-      account: "@user4",
-      image: "",
-      createdAt: new Date(),
-      replyContent: "sdfeef!!",
-    },
-    {
-      id: 3,
-      name: "user3",
-      account: "@user3",
-      image: "",
-      createdAt: new Date(),
-      replyContent:
-        "5555555555555sdfwfwf115555555555555sdfwfwf115555555555555sdfwfwf115555555555555sdfwfwf115555555555555sdfwfwf11!!",
-    },
-    {
-      id: 2,
-      name: "user2",
-      account: "@user2",
-      image: "",
-      createdAt: new Date(),
-      replyContent: "asdfwef wefwf223!!",
-    },
-    {
-      id: 1,
-      name: "user1",
-      account: "@user1",
-      image: "",
-      createdAt: new Date(),
-      replyContent: "sdfwff6w6f4wf!!",
-    },
-  ],
-  likeCount: 11,
-  updatedAt: new Date(),
-  isLiked: true,
-};
-
 import UserSidebar from "../components/UserSidebar";
 import RecommendedFollowers from "../components/RecommendedFollowers";
 import ReplyDetailContent from "../components/ReplyDetail/ReplyDetailContent";
 import ReplyDetailList from "../components/ReplyDetail/ReplyDetailList";
-import { v4 as uuidv4 } from "uuid";
+// import { mapState } from "vuex";
+import { Toast } from "../utils/helpers";
+import tweetsAPI from "../apis/tweets";
+import usersApi from "../apis/users";
 
 export default {
   name: "ReplyDetail",
   components: {
-    UserSidebar,
-    RecommendedFollowers,
-    ReplyDetailContent,
-    ReplyDetailList,
+    UserSidebar, // 不需要資料
+    RecommendedFollowers, // 自行處理
+    ReplyDetailContent, // 需要 tweetId, UserId, name, account, avatar, description, updatedAt, createdAt, likeCount, replyCount
+    ReplyDetailList, // 需要 UserId, Comments
   },
   created() {
-    this.fetchTweetInfo();
+    const { id } = this.$route.params;
+    this.fetchTweetInfo(id);
   },
   data() {
     return {
       tweetInfo: {},
+      dataForContent: {},
+      // id, UserId, name, avatar, account, description, createdAt, updatedAt
+      dataForList: {},
+      // tweetId, account
+      likeCount: 0,
+      replyCount: 0,
+      isLiked: false,
     };
   },
   methods: {
-    fetchTweetInfo() {
-      this.tweetInfo = tweetInfo;
-      // 加入 reply id
-      this.tweetInfo.comments = this.tweetInfo.comments.map((each) => {
-        return {
-          ...each,
-          replyId: uuidv4(),
+    async fetchTweetInfo(tweetId) {
+      try {
+        // ReplyDetailContent
+        const { data } = await tweetsAPI.getTweet(tweetId);
+        const { UserId, createdAt, description, id, updatedAt } = data;
+
+        // get tweet author info: name, account, avatar
+        const userInfoResponse = await usersApi.getUser(UserId);
+        const { account, name, avatar } = userInfoResponse.data;
+
+        this.dataForContent = {
+          id,
+          UserId,
+          createdAt,
+          description,
+          updatedAt,
+          account,
+          name,
+          avatar,
+          // isLiked
+          replyCount: this.replyCount,
+          likeCount: this.likeCount,
         };
-      });
+
+        this.dataForList = {
+          tweetId: id,
+          account,
+        };
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得推文資訊，請稍後再試！",
+        });
+      }
+    },
+    afterGetReplyCount(newVal) {
+      this.replyCount = newVal;
+    },
+    afterGetLikeCount(newVal) {
+      this.likeCount = newVal;
     },
     afterToggleLike(likedTweet) {
       const toggleResult = likedTweet.isLiked;

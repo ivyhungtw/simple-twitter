@@ -57,7 +57,7 @@ const routes = [
     component: () => import('../views/AccountEdit.vue')
   },
   {
-    path: '/replydetail',
+    path: '/replydetail/:id',
     name: 'reply-detail',
     component: () => import('../views/ReplyDetail.vue')
   },

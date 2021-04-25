@@ -27,12 +27,17 @@
           <!-- tweet -->
           <div class="container replyTarget">
             <div class="avatar">
-              <img :src="initTweet.user.avatar | emptyImageFilter" alt="" />
+              <img v-if="initTweet.user" :src="initTweet.user.avatar" alt="" />
+              <img v-else :src="'' | emptyImageFilter" alt="" />
             </div>
             <div class="tweetInfo">
               <div class="userInfo">
-                <p class="userName">{{ initTweet.user.name }}</p>
-                <p class="userAccount">@{{ initTweet.user.account }}</p>
+                <p class="userName">
+                  {{ initTweet.user ? initTweet.user.name : "" }}
+                </p>
+                <p class="userAccount">
+                  @{{ initTweet.user ? initTweet.user.account : "" }}
+                </p>
                 <span class="mx-1">&#xb7;</span>
                 <p class="tweetUpdateAt">
                   {{ initTweet.updatedAt | fromNow }}
@@ -44,7 +49,9 @@
               <div class="panel">
                 <p>
                   回覆給
-                  <span> @{{ initTweet.user.name }} </span>
+                  <span>
+                    @ {{ initTweet.user ? initTweet.user.name : "" }}
+                  </span>
                 </p>
               </div>
             </div>
@@ -58,8 +65,8 @@
             <div class="tweetInf">
               <div class="input">
                 <textarea
-                  name=""
                   id=""
+                  name=""
                   cols="55"
                   rows="5"
                   autofocus
@@ -103,7 +110,16 @@ export default {
   props: {
     tweet: {
       type: Object,
-      required: true,
+      // required: true,
+      default: function () {
+        return {
+          user: {
+            avatar: "",
+            name: "",
+            account: "",
+          },
+        };
+      },
     },
   },
   data() {
@@ -197,8 +213,11 @@ export default {
     },
   },
   watch: {
-    tweetId(newVal) {
-      this.fetchTweet(newVal);
+    tweet: {
+      handler: function (newVal) {
+        this.fetchTweet(newVal);
+      },
+      deep: true,
     },
   },
   computed: {

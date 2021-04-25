@@ -3,8 +3,8 @@
     <ul class="tweetList">
       <li
         class="commentItem"
-        v-for="comment in comments"
-        :key="comment.replyId"
+        v-for="comment in localComments"
+        :key="comment.id"
       >
         <div class="commentInfo">
           <div class="avatar">
@@ -13,17 +13,17 @@
           <div class="commentContent">
             <div class="userTitle">
               <p>{{ comment.name }}</p>
-              <p>{{ comment.account }}</p>
+              <p>@{{ comment.account }}</p>
               <span class="mx-1">&#xb7;</span>
               <p>{{ comment.createdAt | fromNow }}</p>
             </div>
             <div class="replyTarget">
               <p>
-                回復 <span>{{ tweetTarget }}</span>
+                回復 <span>@{{ dataForList.account }}</span>
               </p>
             </div>
             <div class="textContent">
-              <p>{{ comment.replyContent }}</p>
+              <p>{{ comment.comment }}</p>
             </div>
           </div>
         </div>
@@ -36,19 +36,72 @@
 // import TweetItem from "../TweetItem";
 import { emptyImageFilter } from "../../utils/mixins";
 import { fromNowFilter } from "../../utils/mixins";
+import usersAPI from "../../apis/users";
+import { Toast } from "../../utils/helpers";
+import tweetsAPI from "../../apis/tweets";
 
 export default {
   name: "ReplyDetailList",
   props: {
-    comments: {
-      type: Array,
-    },
-    tweetTarget: {
-      type: String,
+    dataForList: {
+      type: Object,
       required: true,
     },
   },
+  data() {
+    return {
+      localComments: [],
+    };
+  },
   mixins: [emptyImageFilter, fromNowFilter],
+  methods: {
+    async fetchAllReplies(tweetId) {
+      try {
+        // 根據 tweetId => /tweets/:tweetId/replies 取得所有回覆
+        const { data } = await tweetsAPI.getTweetReplies(tweetId);
+        this.localComments = data;
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得回覆資料，請稍後再試！",
+        });
+      }
+    },
+    async fetchAllReplyUsers() {
+      this.localComments = await Promise.all(
+        this.localComments.map(async (comment) => {
+          try {
+            const { data } = await usersAPI.getUser(comment.UserId);
+            const { avatar, name, account } = data;
+            return {
+              ...comment,
+              avatar,
+              name,
+              account,
+            };
+          } catch (error) {
+            console.log(error);
+            Toast.fire({
+              icon: "error",
+              title: "無法取得完整回覆資料，請稍後再試！",
+            });
+          }
+        })
+      );
+    },
+  },
+  watch: {
+    dataForList: {
+      handler: async function (newVal) {
+        const { tweetId } = newVal;
+        await this.fetchAllReplies(tweetId);
+        await this.fetchAllReplyUsers();
+        console.log("newVal");
+      },
+      deep: true,
+    },
+  },
 };
 </script>
 
