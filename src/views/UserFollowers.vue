@@ -47,7 +47,7 @@ const dummyData = {
       account: "user1",
       tweetContent:
         "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit.",
-      isfollowing: "true",
+      isFollowing: true,
     },
     {
       id: 35,
@@ -55,7 +55,7 @@ const dummyData = {
       avatar: "https://i.imgur.com/q6bwDGO.png",
       account: "user2",
       tweetContent: "123456789",
-      isfollowing: "false",
+      isFollowing: false,
     },
   ],
 };

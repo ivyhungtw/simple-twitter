@@ -1,18 +1,18 @@
 <template>
   <div class="tweet">
     <div class="avatar">
-      <img :src="tweet.image | emptyImageFilter" alt="" />
+      <img :src="initialTweet.user.avatar | emptyImageFilter" alt="" />
     </div>
     <div class="tweetInfo">
       <div class="userInfo">
-        <p class="userName mr-1">{{ tweet.name }}</p>
-        <p class="userAccount">{{ tweet.account }}</p>
+        <p class="userName mr-1">{{ initialTweet.user.name }}</p>
+        <p class="userAccount">@{{ initialTweet.user.account }}</p>
         <span class="mx-1">&#xb7;</span>
-        <p class="tweetUpdateAt">{{ tweet.updatedAt | fromNow }}</p>
+        <p class="tweetUpdateAt">{{ initialTweet.updatedAt | fromNow }}</p>
       </div>
       <div class="tweetContent">
         <router-link to="/replydetail">
-          <p>{{ tweet.tweetContent }}</p>
+          <p>{{ initialTweet.description }}</p>
         </router-link>
       </div>
       <div class="tweetPanel">
@@ -21,31 +21,34 @@
             src="../assets/commentCount.svg"
             alt=""
             data-toggle="modal"
-            :data-target="`#tweetReplyModal-${tweet.tweetId}`"
+            :data-target="`#tweetReplyModal-${initialTweet.id}`"
           />
           <p>
-            {{ tweet.commentsCount }}
+            {{ initialTweet.replyCount }}
           </p>
         </div>
         <div class="likes">
           <img
-            v-if="!tweet.isLiked"
-            :class="{ liked: tweet.isLiked }"
+            v-if="!initialTweet.isLiked"
+            :class="{ liked: initialTweet.isLiked }"
             src="../assets/likeCount.svg"
             alt=""
-            @click="toggleLike(tweet)"
+            @click="toggleLike(initialTweet)"
           />
           <img
             v-else
             src="../assets/likedLikeCount.svg"
             alt=""
-            @click="toggleLike(tweet)"
+            @click="toggleLike(initialTweet)"
           />
           <p>
-            {{ tweet.likeCount }}
+            {{ initialTweet.likeCount }}
           </p>
         </div>
-        <TweetReplyModal :tweet="tweet" v-on="$listeners"></TweetReplyModal>
+        <TweetReplyModal
+          :tweet="initialTweet"
+          v-on="$listeners"
+        ></TweetReplyModal>
       </div>
     </div>
   </div>
@@ -55,14 +58,13 @@
 import TweetReplyModal from "../components/Modal/TweetReplyModal";
 import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
+import { Toast } from "../utils/helpers";
+import tweetsAPI from "../apis/tweets";
 export default {
   name: "TweetItem",
   mixins: [fromNowFilter, emptyImageFilter],
   components: {
     TweetReplyModal,
-  },
-  created() {
-    // this.tweetInTweetItem = this.tweet;
   },
   props: {
     tweet: {
@@ -72,28 +74,55 @@ export default {
   },
   data() {
     return {
-      tweetInTweetItem: {},
+      initialTweet: {},
     };
   },
+  created() {
+    this.fetchTweet(this.tweet);
+  },
   methods: {
-    toggleLike(tweet) {
-      // call api to like this tweet by user
-      if (tweet.isLiked) {
-        tweet.isLiked = false;
-        tweet.likeCount -= 1;
-      } else {
-        tweet.isLiked = true;
-        tweet.likeCount += 1;
-      }
-      // tell Main.vue to change data
-      this.$emit("afterToggleLike", tweet);
+    fetchTweet(newVal) {
+      this.initialTweet = newVal;
     },
-    // openTweetReplyModal() {
-    //   console.log("openTweetReplyModal");
-    // },
-    // afterCloseTweetReplyModal() {
-    //   console.log("afterCloseTweetReplyModal");
-    // },
+    async toggleLike(tweet) {
+      try {
+        let response = {};
+        // if unlike tweet
+        if (tweet.isLiked) {
+          tweet.isLiked = false;
+          tweet.likeCount -= 1;
+          // call api to like this tweet by user
+          response = await tweetsAPI.unlikeTweet(tweet.id);
+        } else {
+          // if like tweet
+          tweet.isLiked = true;
+          tweet.likeCount += 1;
+          // call api to like this tweet by user
+          response = await tweetsAPI.likeTweet(tweet.id);
+        }
+        if (response.data.status !== "success") {
+          throw new Error(response.data.message);
+        }
+        // inform user
+        Toast.fire({
+          icon: "success",
+          title: "操作成功！",
+        });
+        // tell Main.vue to change data
+        this.$emit("afterToggleLike", tweet);
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法執行此操作，請稍後再試！",
+        });
+      }
+    },
+  },
+  watch: {
+    tweet(newVal) {
+      this.fetchTweet(newVal);
+    },
   },
 };
 </script>
