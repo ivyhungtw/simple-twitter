@@ -35,7 +35,23 @@ const routes = [
     path: '/main',
     name: 'main',
     component: Main
-  }, {
+  },
+  {
+    path: '/notification',
+    name: 'notification',
+    component: () => import('../views/Notification.vue')
+  },
+  {
+    path: '/publicMessage',
+    name: 'publicMessage',
+    component: () => import('../views/PublicMessage.vue')
+  },
+  {
+    path: '/privateMessage',
+    name: 'privateMessage',
+    component: () => import('../views/PrivateMessage.vue')
+  },
+  {
     path: '/accountEdit',
     name: 'account-edit',
     component: () => import('../views/AccountEdit.vue')
