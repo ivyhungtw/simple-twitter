@@ -1,11 +1,6 @@
 <template>
-  <!-- FollowingUsersTweets.vue => modal id="tweetReplyModal" -->
   <div class="container">
     <ul class="tweetList">
-      <!-- $attrs：data from grandparent element -->
-      <!-- when emitting event to grandparent element -->
-      <!-- parentElement: $listeners -->
-      <!-- find better way -->
       <TweetItem
         v-for="tweet in tweets"
         :key="tweet.id"
@@ -63,7 +58,6 @@ export default {
       this.fetchUserTweets(newVal);
       console.log("currentUserID", this.user.id);
     },
-  
   },
 };
 </script>

@@ -105,6 +105,8 @@ export default {
       try {
         const { data } = await tweetsAPI.getAllFollowedTweets();
         this.tweets = data;
+        console.log("getAllFollowedTweets");
+        console.log(data);
       } catch (error) {
         Toast.fire({
           icon: "error",
