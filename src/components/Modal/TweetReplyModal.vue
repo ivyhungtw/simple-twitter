@@ -1,7 +1,7 @@
 <template>
   <div
     class="modal fade"
-    :id="`tweetReplyModal-${initTweet.id}`"
+    :id="`tweetReplyModal-${tweet.id}`"
     tabindex="-1"
     role="dialog"
     aria-labelledby="exampleModalLabel"
@@ -27,24 +27,29 @@
           <!-- tweet -->
           <div class="container replyTarget">
             <div class="avatar">
-              <img :src="initTweet.user.avatar | emptyImageFilter" alt="" />
+              <img v-if="tweet.user" :src="tweet.user.avatar" alt="" />
+              <img v-else :src="'' | emptyImageFilter" alt="" />
             </div>
             <div class="tweetInfo">
               <div class="userInfo">
-                <p class="userName">{{ initTweet.user.name }}</p>
-                <p class="userAccount">@{{ initTweet.user.account }}</p>
+                <p class="userName">
+                  {{ tweet.user ? tweet.user.name : "" }}
+                </p>
+                <p class="userAccount">
+                  @{{ tweet.user ? tweet.user.account : "" }}
+                </p>
                 <span class="mx-1">&#xb7;</span>
                 <p class="tweetUpdateAt">
-                  {{ initTweet.updatedAt | fromNow }}
+                  {{ tweet.updatedAt | fromNow }}
                 </p>
               </div>
               <div class="tweetContent">
-                <p>{{ initTweet.description }}</p>
+                <p>{{ tweet.description }}</p>
               </div>
               <div class="panel">
                 <p>
                   回覆給
-                  <span> @{{ initTweet.user.name }} </span>
+                  <span> @ {{ tweet.user ? tweet.user.name : "" }} </span>
                 </p>
               </div>
             </div>
@@ -58,8 +63,8 @@
             <div class="tweetInf">
               <div class="input">
                 <textarea
-                  name=""
                   id=""
+                  name=""
                   cols="55"
                   rows="5"
                   autofocus
@@ -78,7 +83,7 @@
             <button
               type="button"
               class="btn"
-              @click="createReply(initTweet.id)"
+              @click="createReply(tweet.id)"
               :disabled="isProcessing"
             >
               {{ isProcessing ? "回覆中.." : "回覆" }}
@@ -96,34 +101,39 @@ import { emptyImageFilter } from "../../utils/mixins";
 import { fromNowFilter } from "../../utils/mixins";
 import { mapState } from "vuex";
 import tweetsAPI from "../../apis/tweets";
+
 export default {
   name: "TweetReplyModal",
   mixins: [emptyImageFilter, fromNowFilter],
   props: {
     tweet: {
       type: Object,
-      required: true,
+      // required: true,
+      default: function () {
+        return {
+          user: {
+            avatar: "",
+            name: "",
+            account: "",
+          },
+        };
+      },
     },
   },
   data() {
     return {
-      initTweet: {},
+      // initTweet: {},
+
       replyContent: "",
       isProcessing: false,
     };
   },
-  created() {
-    this.fetchTweet(this.tweet);
-  },
   methods: {
-    fetchTweet(tweet) {
-      this.initTweet = tweet;
-    },
     clearReplyContent() {
       this.replyContent = "";
     },
     async createReply(tweetId) {
-      // console.log("tweetId: " + tweetId);
+
       const result = this.replyContentCheck(this.replyContent);
       if (!result) {
         return;
@@ -133,20 +143,38 @@ export default {
         const payload = { comment: this.replyContent };
         // call api to create tweet reply
         const { data } = await tweetsAPI.createReply(tweetId, payload);
+        const { id } = data;
+
         if (data.status !== "success") {
           throw new Error(data.message);
         }
+
         // inform user
         Toast.fire({
           icon: "success",
           title: "回覆成功！",
         });
+
         // close modal after successfully replied
         this.closeModal(tweetId);
-        // inform TweetItem to change number of replyCount
-        this.$emit("afterCreateReply", tweetId);
+
+        // use eventBus
+        const payloadForList = {
+          tweetId,
+          UserId: this.currentUser.id,
+          account: this.currentUser.account,
+          avatar: this.currentUser.avatar,
+          comment: this.replyContent,
+          createdAt: new Date(),
+          id,
+        };
+
+        // inform Main.vue
+        this.$bus.$emit("afterCreateReply", payloadForList);
+
         // clear replyContent
         this.clearReplyContent();
+
         // enable button
         this.isProcessing = false;
       } catch (error) {
@@ -181,15 +209,12 @@ export default {
       modal.classList.remove("show");
       modal.setAttribute("aria-hidden", "true");
       modal.setAttribute("style", "display: none");
+
       // get modal backdrop
       const modalBackdrops = document.getElementsByClassName("modal-backdrop");
+
       // remove opened modal backdrop
       document.body.removeChild(modalBackdrops[0]);
-    },
-  },
-  watch: {
-    tweetId(newVal) {
-      this.fetchTweet(newVal);
     },
   },
   computed: {
@@ -204,10 +229,12 @@ export default {
   padding: 10px 15px;
   display: flex;
 }
+
 /* replyTarget */
 .replyTarget {
   position: relative;
 }
+
 .replyTarget::after {
   position: absolute;
   bottom: 0;
@@ -219,32 +246,39 @@ export default {
   height: calc(100% - 70px);
   background-color: #ccd6dd;
 }
+
 /* modal-body */
 .modal-body {
   padding: 0;
 }
+
 .avatar {
   width: 50px;
   height: 50px;
   margin-right: 10px;
 }
+
 .avatar img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
 }
+
 .tweetInfo {
   width: calc(100% - 60px);
 }
+
 .userInfo {
   display: flex;
   height: 22px;
 }
+
 .userInfo p {
   font-size: 15px;
   height: 100%;
   margin: 0;
 }
+
 .userInfo .userName {
   margin-right: 10px;
   font-weight: 700;
@@ -256,31 +290,38 @@ export default {
   color: #657786;
   line-height: 22px;
 }
+
 .tweetContent {
   width: 100%;
   margin-bottom: 15px;
 }
+
 .tweetContent a {
   text-decoration: none;
 }
+
 .tweetContent p {
   margin: 0;
   font-weight: 500;
   font-size: 15px;
   word-wrap: break-word;
 }
+
 /* panel */
 .panel {
   font-size: 13px;
   font-weight: normal;
 }
+
 .panel p {
   margin: 0;
   color: #657786;
 }
+
 .panel span {
   color: #ff6600;
 }
+
 /* myReply */
 .myReply .input {
   width: 100%;
@@ -291,10 +332,12 @@ export default {
   width: 100%;
   resize: none;
 }
+
 /* footer */
 .modal-footer {
   border-top: none;
 }
+
 .tweetButton .btn {
   min-width: 64px;
   height: 40px;

@@ -1,18 +1,19 @@
 <template>
   <div class="tweet">
     <div class="avatar">
-      <img :src="initialTweet.user.avatar | emptyImageFilter" alt="" />
+      <img :src="tweet.user.avatar | emptyImageFilter" alt="" />
     </div>
     <div class="tweetInfo">
       <div class="userInfo">
-        <p class="userName mr-1">{{ initialTweet.user.name }}</p>
-        <p class="userAccount">@{{ initialTweet.user.account }}</p>
+        <p class="userName mr-1">{{ tweet.user.name }}</p>
+        <p class="userAccount">@{{ tweet.user.account }}</p>
         <span class="mx-1">&#xb7;</span>
         <p class="tweetUpdateAt">{{ initialTweet.updatedAt | fromNow }}</p>
       </div>
       <div class="tweetContent">
-        <router-link to="/replydetail">
-          <p>{{ initialTweet.description }}</p>
+        <!-- <router-link to="/replydetail"> -->
+        <router-link :to="`/replydetail/${tweet.id}`">
+          <p>{{ tweet.description }}</p>
         </router-link>
       </div>
       <div class="tweetPanel">
@@ -21,10 +22,10 @@
             src="../assets/commentCount.svg"
             alt=""
             data-toggle="modal"
-            :data-target="`#tweetReplyModal-${initialTweet.id}`"
+            :data-target="`#tweetReplyModal-${tweet.id}`"
           />
           <p>
-            {{ initialTweet.replyCount }}
+            {{ tweet.replyCount }}
           </p>
         </div>
         <div class="likes">
@@ -45,10 +46,7 @@
             {{ initialTweet.likeCount }}
           </p>
         </div>
-        <TweetReplyModal
-          :tweet="initialTweet"
-          v-on="$listeners"
-        ></TweetReplyModal>
+        <TweetReplyModal :tweet="tweet"></TweetReplyModal>
       </div>
     </div>
   </div>
@@ -60,6 +58,7 @@ import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 import tweetsAPI from "../apis/tweets";
+
 export default {
   name: "TweetItem",
   mixins: [fromNowFilter, emptyImageFilter],
@@ -74,19 +73,24 @@ export default {
   },
   data() {
     return {
-      initialTweet: {},
+      // initialTweet: {},
     };
   },
   created() {
-    this.fetchTweet(this.tweet);
+    // this.fetchTweet(this.tweet);
+    // eventbus for afterCreateReply
+    this.$bus.$on("afterCreateReply", () => {
+      this.afterCreateReply();
+    });
   },
   methods: {
-    fetchTweet(newVal) {
-      this.initialTweet = newVal;
-    },
+    // fetchTweet(newVal) {
+    //   this.initialTweet = newVal;
+    // },
     async toggleLike(tweet) {
       try {
         let response = {};
+
         // if unlike tweet
         if (tweet.isLiked) {
           tweet.isLiked = false;
@@ -100,14 +104,17 @@ export default {
           // call api to like this tweet by user
           response = await tweetsAPI.likeTweet(tweet.id);
         }
+
         if (response.data.status !== "success") {
           throw new Error(response.data.message);
         }
+
         // inform user
         Toast.fire({
           icon: "success",
           title: "操作成功！",
         });
+
         // tell Main.vue to change data
         this.$emit("afterToggleLike", tweet);
       } catch (error) {
@@ -118,11 +125,18 @@ export default {
         });
       }
     },
+    afterCreateReply() {
+      this.tweet.replyCount++;
+    },
   },
   watch: {
-    tweet(newVal) {
-      this.fetchTweet(newVal);
-    },
+    // tweet: {
+    //   function(newVal) {
+    //     console.log("newval in tweetItem");
+    //     this.fetchTweet(newVal);
+    //   },
+    //   deep: true,
+    // },
   },
 };
 </script>
@@ -134,28 +148,34 @@ export default {
   padding: 10px 15px;
   width: 100%;
 }
+
 .avatar {
   width: 50px;
   height: 50px;
   margin-right: 10px;
 }
+
 .avatar img {
   min-width: 100%;
   height: 100%;
   border-radius: 50%;
 }
+
 .tweetInfo {
   /* width: 100%; */
   width: calc(100% - 60px);
 }
+
 .userInfo {
   display: flex;
   height: 22px;
 }
+
 .userInfo p {
   font-size: 15px;
   height: 100%;
 }
+
 .userInfo .userName {
   font-weight: 700;
 }
@@ -166,14 +186,17 @@ export default {
   color: #657786;
   line-height: 22px;
 }
+
 .tweetContent {
   width: 100%;
   margin-bottom: 15px;
 }
+
 .tweetContent a {
   display: block;
   text-decoration: none;
 }
+
 .tweetContent p {
   width: 100%;
   margin: 0;
@@ -181,6 +204,7 @@ export default {
   font-size: 15px;
   word-wrap: break-word;
 }
+
 .tweetPanel {
   display: flex;
   justify-content: space-between;
@@ -188,6 +212,7 @@ export default {
   width: 130px;
   margin: 0;
 }
+
 .tweetPanel .comments,
 .tweetPanel .likes {
   width: 40px;
@@ -195,18 +220,22 @@ export default {
   flex-direction: row;
   align-items: center;
 }
+
 .tweetPanel img {
   height: 16px;
   width: 16px;
   margin-right: 10px;
   color: #657786;
 }
+
 .tweetPanel .liked {
   color: transparent;
 }
+
 .tweetPanel img:hover {
   cursor: pointer;
 }
+
 .tweetPanel p {
   margin: 0px;
   color: #657786;

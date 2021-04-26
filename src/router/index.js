@@ -6,13 +6,16 @@ import NotFound from '../views/NotFound.vue'
 import AdminSignIn from '../views/AdminSignIn.vue'
 import store from './../store'
 
+// store
+import store from '../store'
+
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
     name: 'root',
-    redirect: '/signup'
+    redirect: '/signin'
   },
   {
     path: '/signup',
@@ -36,13 +39,33 @@ const routes = [
   },
   {
     path: '/main',
-    name: 'Main',
+    name: 'main',
     component: Main
   },
   {
+    path: '/notification',
+    name: 'notification',
+    component: () => import('../views/Notification.vue')
+  },
+  {
+    path: '/publicMessage',
+    name: 'publicMessage',
+    component: () => import('../views/PublicMessage.vue')
+  },
+  {
+    path: '/privateMessage',
+    name: 'privateMessage',
+    component: () => import('../views/PrivateMessage.vue')
+  },
+  {
     path: '/accountEdit',
-    name: 'AccountEdit',
+    name: 'account-edit',
     component: () => import('../views/AccountEdit.vue')
+  },
+  {
+    path: '/replydetail/:id',
+    name: 'reply-detail',
+    component: () => import('../views/ReplyDetail.vue')
   },
   {
     path: '/userprofile',
@@ -93,9 +116,30 @@ const router = new VueRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  // do something
-  store.dispatch('fetchCurrentUser')
-  console.log(to)
+  // get token from localStorage
+  const tokenInLocalStorage = localStorage.getItem('token')
+  const tokenInStore = store.state.token
+
+  let isAuthenticated = store.state.isAuthenticated
+
+  if (tokenInLocalStorage && tokenInLocalStorage !== tokenInStore) {
+    // check currentUser with server
+    console.log('SERVER-CHECK: tokenInLocalStorage !== tokenInStore')
+    isAuthenticated = await store.dispatch('fetchCurrentUser')
+  }
+
+  const pathsWithoutAuthentication = ['sign-in', 'sign-up', 'admin-sign-in']
+
+  // check with server when !isAuthenticated && trying to open pathsWithoutAuthentication
+  if (!isAuthenticated && !pathsWithoutAuthentication.includes(to.name)) {
+    next('/signin')
+    // return
+  }
+
+  // if token's valid, push to main
+  if (isAuthenticated && pathsWithoutAuthentication.includes(to.name)) {
+    next('/main')
+  }
   next()
 })
 

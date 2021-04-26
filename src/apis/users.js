@@ -7,8 +7,12 @@ export default {
   getCurrentUser() {
     return apiHelper.get('/users/current_user')
   },
+
   getTotalUser() {
     return apiHelper.get('/admin/users')
+  },
+  getUser(userId) {
+    return apiHelper.get(`/users/${userId}`)
   },
   setUser(payload) {
     return apiHelper.post('/users', payload)

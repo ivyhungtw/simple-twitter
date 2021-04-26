@@ -18,6 +18,15 @@ export default {
     console.log(tweetId)
     return apiHelper.get(`/users/${tweetId}/followers`)
   },
+  getTweet(tweetId) {
+    return apiHelper.get(`/tweets/${tweetId}`)
+  },
+  getTweetReplies(tweetId) {
+    return apiHelper.get(`/tweets/${tweetId}/replies`)
+  },
+  getAllTweetsByUserId(userId) {
+    return apiHelper.get(`/users/${userId}/tweets`)
+  },
   createReply(tweetId, payload) {
     return apiHelper.post(`/tweets/${tweetId}/replies`, payload)
   },
