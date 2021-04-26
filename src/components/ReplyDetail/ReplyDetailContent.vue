@@ -2,11 +2,11 @@
   <div class="container">
     <div class="userInfo">
       <div class="avatar">
-        <img :src="dataForContent.avatar | emptyImageFilter" alt="" />
+        <img :src="dataForContent.user.avatar | emptyImageFilter" alt="" />
       </div>
       <div class="userTitle">
-        <p>{{ dataForContent.name }}</p>
-        <p>@{{ dataForContent.account }}</p>
+        <p>{{ dataForContent.user.name }}</p>
+        <p>@{{ dataForContent.user.account }}</p>
       </div>
     </div>
 
@@ -17,8 +17,8 @@
       <p class="tweetUpdateAt">{{ dataForContent.updatedAt | exactDate }}</p>
     </div>
     <div class="feedbackCount">
-      <p>{{ replyCount }} <span>回復 </span></p>
-      <p>{{ likeCount }} <span>喜歡次數</span></p>
+      <p>{{ dataForContent.commentsLength }} <span>回復 </span></p>
+      <p>{{ dataForContent.likesLength }} <span>喜歡次數</span></p>
     </div>
     <div class="tweetPanel">
       <div class="comments">
@@ -57,8 +57,8 @@
 import { emptyImageFilter } from "../../utils/mixins";
 import { exactDateFilter } from "../../utils/mixins";
 import TweetReplyModal from "../Modal/TweetReplyModal";
-import { Toast } from "../../utils/helpers";
-import tweetsAPI from "../../apis/tweets";
+// import { Toast } from "../../utils/helpers";
+// import tweetsAPI from "../../apis/tweets";
 
 export default {
   name: "ReplyDetailContent",
@@ -84,32 +84,30 @@ export default {
     return {
       userId: undefined,
       dataForModal: {},
-      replyCount: 0,
-      likeCount: 0,
     };
   },
   methods: {
-    async fetchFeedbackCount(UserId) {
-      try {
-        // get Likes.length, isLiked, Comments, Comments.length,
-        const userAllTweetResponse = await tweetsAPI.getAllTweetsByUserId(
-          UserId
-        );
-        const userAllTweets = userAllTweetResponse.data;
+    // async fetchFeedbackCount(UserId) {
+    //   try {
+    //     // get Likes.length, isLiked, Comments, Comments.length,
+    //     const userAllTweetResponse = await tweetsAPI.getAllTweetsByUserId(
+    //       UserId
+    //     );
+    //     const userAllTweets = userAllTweetResponse.data;
 
-        const { id } = this.dataForContent;
-        const targetTweet = userAllTweets.find((tweet) => tweet.id === id);
-        const { replyCount, likeCount } = targetTweet;
-        this.replyCount = replyCount;
-        this.likeCount = likeCount;
-      } catch (error) {
-        console.log(error);
-        Toast.fire({
-          icon: "error",
-          title: "無法取得完整推文資訊，請稍後再試！",
-        });
-      }
-    },
+    //     const { id } = this.dataForContent;
+    //     const targetTweet = userAllTweets.find((tweet) => tweet.id === id);
+    //     const { replyCount, likeCount } = targetTweet;
+    //     this.replyCount = replyCount;
+    //     this.likeCount = likeCount;
+    //   } catch (error) {
+    //     console.log(error);
+    //     Toast.fire({
+    //       icon: "error",
+    //       title: "無法取得完整推文資訊，請稍後再試！",
+    //     });
+    // }
+    // },
     setDataForModal() {
       const {
         id,
@@ -148,11 +146,12 @@ export default {
   },
   watch: {
     dataForContent: {
-      handler: async function (newVal) {
+      handler: function (newVal) {
         console.log("new val from ReplyDetail.vue");
-        this.userId = newVal.UserId;
-        const userId = this.userId;
-        await this.fetchFeedbackCount(userId);
+        console.log(newVal);
+        // this.userId = newVal.UserId;
+        // const userId = this.userId;
+        // await this.fetchFeedbackCount(userId);
 
         this.setDataForModal();
       },

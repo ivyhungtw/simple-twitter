@@ -36,7 +36,7 @@ import ReplyDetailList from "../components/ReplyDetail/ReplyDetailList";
 // import { mapState } from "vuex";
 import { Toast } from "../utils/helpers";
 import tweetsAPI from "../apis/tweets";
-import usersApi from "../apis/users";
+// import usersApi from "../apis/users";
 
 export default {
   name: "ReplyDetail",
@@ -69,29 +69,34 @@ export default {
       try {
         // ReplyDetailContent
         const { data } = await tweetsAPI.getTweet(tweetId);
-        const { UserId, createdAt, description, id, updatedAt } = data;
-
-        // get tweet author info: name, account, avatar
-        const userInfoResponse = await usersApi.getUser(UserId);
-        const { account, name, avatar } = userInfoResponse.data;
-
-        this.dataForContent = {
-          id,
-          UserId,
+        const {
+          commentsLength,
           createdAt,
           description,
+          id,
+          isLiked,
+          likesLength,
           updatedAt,
-          account,
-          name,
-          avatar,
-          // isLiked
-          replyCount: this.replyCount,
-          likeCount: this.likeCount,
+          user, //avatar, name, id
+        } = data;
+
+        // get tweet author info: name, account, avatar
+        // const userInfoResponse = await usersApi.getUser(UserId);
+        // const { account, name, avatar } = userInfoResponse.data;
+
+        this.dataForContent = {
+          user,
+          description,
+          createdAt,
+          updatedAt,
+          isLiked,
+          commentsLength,
+          likesLength,
         };
 
         this.dataForList = {
           tweetId: id,
-          account,
+          user,
         };
       } catch (error) {
         console.log(error);
