@@ -60,7 +60,9 @@
           <img v-else src="../assets/profile.svg" alt="" />
         </div>
         <button class="btn">
-          <router-link to="/userprofile">
+          <router-link
+            :to="{ name: 'user-profile', params: { id: currentUser.id } }"
+          >
             <p :class="{ active: profile }" id="routerProfile">個人資料</p>
           </router-link>
         </button>
@@ -94,6 +96,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "UserSidebar",
   created() {
@@ -129,6 +132,9 @@ export default {
     //     this.accountEdit = true; // at accountEdit
     //   }
     // },
+  },
+  computed: {
+    ...mapState(["currentUser"]),
   },
 };
 </script>
