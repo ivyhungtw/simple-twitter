@@ -13,6 +13,15 @@
         <p class="userAccount">@{{ tweet.user.account }}</p>
         <span class="mx-1">&#xb7;</span>
         <p class="tweetUpdateAt">{{ tweet.createdAt | fromNow }}</p>
+        <!-- isMine -->
+        <button
+          class="btn deleteTweet"
+          v-if="currentUser.id === tweet.UserId"
+          @click.stop.prevent="deleteTweet(tweet.id)"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+        <!-- isMine -->
       </div>
       <div class="tweetContent">
         <!-- <router-link to="/replydetail"> -->
@@ -62,6 +71,7 @@ import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 import tweetsAPI from "../apis/tweets";
+import { mapState } from "vuex";
 
 export default {
   name: "TweetItem",
@@ -76,7 +86,9 @@ export default {
     },
   },
   data() {
-    return {};
+    return {
+      isMine: false,
+    };
   },
   created() {
     // eventbus for afterCreateReply
@@ -126,6 +138,32 @@ export default {
     afterCreateReply() {
       this.tweet.replyCount++;
     },
+    async deleteTweet(tweetId) {
+      try {
+        const { data } = await tweetsAPI.deleteTweet(tweetId);
+        console.log(data);
+
+        if (data.status !== "success") {
+          throw new Error();
+        }
+
+        // inform user
+        Toast.fire({
+          icon: "success",
+          title: "成功刪除推文！",
+        });
+
+        // inform Main.vue & UserProfile to rerender view
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "API尚未建立，請下個月再試！",
+        });
+      }
+    },
+  },
+  computed: {
+    ...mapState(["currentUser"]),
   },
 };
 </script>
@@ -136,6 +174,10 @@ export default {
   display: flex;
   padding: 10px 15px;
   width: 100%;
+}
+
+.tweet:hover {
+  background-color: hsl(205deg 92% 95%);
 }
 
 .avatar {
@@ -157,10 +199,16 @@ export default {
 
 .userInfo {
   display: flex;
+  align-items: center;
   height: 22px;
+  position: relative;
 }
 
 .userInfo p {
+  margin: 0;
+}
+
+.userInfo i {
   font-size: 15px;
   height: 100%;
 }
@@ -174,6 +222,21 @@ export default {
   font-weight: 500;
   color: #657786;
   line-height: 22px;
+}
+
+.deleteTweet {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 0;
+  height: 22px;
+  width: 22px;
+}
+
+.deleteTweet p {
+  margin: auto;
 }
 
 .tweetContent {

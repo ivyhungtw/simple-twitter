@@ -147,7 +147,10 @@ export default {
   width: 100%;
   border-bottom: 1px solid #e6ecf0;
   padding: 18px 15px;
-  /* border: 1px solid #000; */
+}
+
+.commentItem:hover {
+  background-color: hsl(205deg 92% 95%);
 }
 
 .avatar {
