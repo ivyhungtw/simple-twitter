@@ -1,7 +1,7 @@
 <template>
   <div
     class="modal fade"
-    :id="`tweetReplyModal-${initTweet.id}`"
+    :id="`tweetReplyModal-${tweet.id}`"
     tabindex="-1"
     role="dialog"
     aria-labelledby="exampleModalLabel"
@@ -27,31 +27,29 @@
           <!-- tweet -->
           <div class="container replyTarget">
             <div class="avatar">
-              <img v-if="initTweet.user" :src="initTweet.user.avatar" alt="" />
+              <img v-if="tweet.user" :src="tweet.user.avatar" alt="" />
               <img v-else :src="'' | emptyImageFilter" alt="" />
             </div>
             <div class="tweetInfo">
               <div class="userInfo">
                 <p class="userName">
-                  {{ initTweet.user ? initTweet.user.name : "" }}
+                  {{ tweet.user ? tweet.user.name : "" }}
                 </p>
                 <p class="userAccount">
-                  @{{ initTweet.user ? initTweet.user.account : "" }}
+                  @{{ tweet.user ? tweet.user.account : "" }}
                 </p>
                 <span class="mx-1">&#xb7;</span>
                 <p class="tweetUpdateAt">
-                  {{ initTweet.updatedAt | fromNow }}
+                  {{ tweet.updatedAt | fromNow }}
                 </p>
               </div>
               <div class="tweetContent">
-                <p>{{ initTweet.description }}</p>
+                <p>{{ tweet.description }}</p>
               </div>
               <div class="panel">
                 <p>
                   回覆給
-                  <span>
-                    @ {{ initTweet.user ? initTweet.user.name : "" }}
-                  </span>
+                  <span> @ {{ tweet.user ? tweet.user.name : "" }} </span>
                 </p>
               </div>
             </div>
@@ -85,7 +83,7 @@
             <button
               type="button"
               class="btn"
-              @click="createReply(initTweet.id)"
+              @click="createReply(tweet.id)"
               :disabled="isProcessing"
             >
               {{ isProcessing ? "回覆中.." : "回覆" }}
@@ -124,23 +122,16 @@ export default {
   },
   data() {
     return {
-      initTweet: {},
+      // initTweet: {},
       replyContent: "",
       isProcessing: false,
     };
   },
-  created() {
-    this.fetchTweet(this.tweet);
-  },
   methods: {
-    fetchTweet(tweet) {
-      this.initTweet = tweet;
-    },
     clearReplyContent() {
       this.replyContent = "";
     },
     async createReply(tweetId) {
-      // console.log("tweetId: " + tweetId);
       const result = this.replyContentCheck(this.replyContent);
       if (!result) {
         return;
@@ -150,6 +141,7 @@ export default {
         const payload = { comment: this.replyContent };
         // call api to create tweet reply
         const { data } = await tweetsAPI.createReply(tweetId, payload);
+        const { id } = data;
 
         if (data.status !== "success") {
           throw new Error(data.message);
@@ -168,7 +160,16 @@ export default {
         // this.$emit("afterCreateReply");
 
         // use eventBus
-        this.$bus.$emit("afterCreateReply", tweetId);
+        const payloadForList = {
+          tweetId,
+          UserId: this.currentUser.id,
+          account: this.currentUser.account,
+          avatar: this.currentUser.avatar,
+          comment: this.replyContent,
+          createdAt: new Date(),
+          id,
+        };
+        this.$bus.$emit("afterCreateReply", payloadForList);
 
         // clear replyContent
         this.clearReplyContent();
@@ -213,14 +214,6 @@ export default {
 
       // remove opened modal backdrop
       document.body.removeChild(modalBackdrops[0]);
-    },
-  },
-  watch: {
-    tweet: {
-      handler: function (newVal) {
-        this.fetchTweet(newVal);
-      },
-      deep: true,
     },
   },
   computed: {

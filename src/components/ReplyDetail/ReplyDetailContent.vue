@@ -2,11 +2,22 @@
   <div class="container">
     <div class="userInfo">
       <div class="avatar">
-        <img :src="dataForContent.user.avatar | emptyImageFilter" alt="" />
+        <img
+          v-if="dataForContent.user"
+          :src="dataForContent.user.avatar"
+          alt=""
+        />
+        <img v-else src="'' | emptyImageFilter" alt="" />
       </div>
       <div class="userTitle">
-        <p>{{ dataForContent.user.name }}</p>
-        <p>@{{ dataForContent.user.account }}</p>
+        <p>
+          {{ dataForContent.user ? dataForContent.user.name : "資料讀取中" }}
+        </p>
+        <p>
+          @{{
+            dataForContent.user ? dataForContent.user.account : "資料讀取中"
+          }}
+        </p>
       </div>
     </div>
 
@@ -39,13 +50,13 @@
           :class="{ liked: dataForContent.isLiked }"
           src="../../assets/likeCount.svg"
           alt=""
-          @click="toggleLike(dataForContent.id)"
+          @click="toggleLike()"
         />
         <img
           v-else
           src="../../assets/likedLikeCount.svg"
           alt=""
-          @click="toggleLike(dataForContent.id)"
+          @click="toggleLike()"
         />
         <p></p>
       </div>
@@ -57,8 +68,8 @@
 import { emptyImageFilter } from "../../utils/mixins";
 import { exactDateFilter } from "../../utils/mixins";
 import TweetReplyModal from "../Modal/TweetReplyModal";
-// import { Toast } from "../../utils/helpers";
-// import tweetsAPI from "../../apis/tweets";
+import { Toast } from "../../utils/helpers";
+import tweetsAPI from "../../apis/tweets";
 
 export default {
   name: "ReplyDetailContent",
@@ -74,46 +85,18 @@ export default {
   },
   created() {
     // eventbus for afterCreateReply
-    this.$bus.$on("afterCreateReply", (tweetId) => {
-      console.log("in ReplyDetailContent");
-      console.log(tweetId);
-      this.replyCount++;
-    });
+    // this.$bus.$on("afterCreateReply", this.afterCreateReply());
   },
   data() {
     return {
-      userId: undefined,
       dataForModal: {},
     };
   },
   methods: {
-    // async fetchFeedbackCount(UserId) {
-    //   try {
-    //     // get Likes.length, isLiked, Comments, Comments.length,
-    //     const userAllTweetResponse = await tweetsAPI.getAllTweetsByUserId(
-    //       UserId
-    //     );
-    //     const userAllTweets = userAllTweetResponse.data;
-
-    //     const { id } = this.dataForContent;
-    //     const targetTweet = userAllTweets.find((tweet) => tweet.id === id);
-    //     const { replyCount, likeCount } = targetTweet;
-    //     this.replyCount = replyCount;
-    //     this.likeCount = likeCount;
-    //   } catch (error) {
-    //     console.log(error);
-    //     Toast.fire({
-    //       icon: "error",
-    //       title: "無法取得完整推文資訊，請稍後再試！",
-    //     });
-    // }
-    // },
     setDataForModal() {
       const {
         id,
-        avatar,
-        name,
-        account,
+        user,
         updatedAt,
         description,
         createdAt,
@@ -123,47 +106,53 @@ export default {
         updatedAt,
         description,
         createdAt,
-        user: {
-          avatar,
-          name,
-          account,
-        },
+        user,
       };
     },
-    toggleLike(tweet) {
-      //async
-      // call api to like this tweet by user
-      if (tweet.isLiked) {
-        tweet.isLiked = false;
-        tweet.likeCount -= 1;
-      } else {
-        tweet.isLiked = true;
-        tweet.likeCount += 1;
+    async toggleLike() {
+      try {
+        // call api to like this tweet by user
+        const id = this.dataForContent.id;
+        const tweet = this.dataForContent;
+
+        if (tweet.isLiked) {
+          const { data } = await tweetsAPI.unlikeTweet(id);
+          if (data.status !== "success") {
+            throw new Error(data.message);
+          }
+          tweet.isLiked = false;
+          tweet.likesLength -= 1;
+        } else {
+          const { data } = await tweetsAPI.likeTweet(id);
+          if (data.status !== "success") {
+            throw new Error(data.message);
+          }
+          tweet.isLiked = true;
+          tweet.likesLength += 1;
+        }
+
+        // inform user
+        Toast.fire({
+          icon: "success",
+          title: "動作執行成功！",
+        });
+
+        // tell Main.vue to change data
+        this.$emit("afterToggleLike", tweet.isLiked);
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法執行動作，請稍後再試！",
+        });
       }
-      // tell Main.vue to change data
-      this.$emit("afterToggleLike", tweet);
     },
   },
   watch: {
     dataForContent: {
-      handler: function (newVal) {
-        console.log("new val from ReplyDetail.vue");
-        console.log(newVal);
-        // this.userId = newVal.UserId;
-        // const userId = this.userId;
-        // await this.fetchFeedbackCount(userId);
-
+      handler: function () {
         this.setDataForModal();
       },
       deep: true,
-    },
-    replyCount(newVal) {
-      // when get data, inform ReplyDetail
-      this.$emit("afterGetReplyCount", newVal);
-    },
-    likeCount(newVal) {
-      // when get data, inform ReplyDetail
-      this.$emit("afterGetLikeCount", newVal);
     },
   },
 };

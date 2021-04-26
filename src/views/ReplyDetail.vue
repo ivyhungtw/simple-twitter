@@ -11,11 +11,8 @@
         </button>
         <h1>推文</h1>
       </div>
-      <!-- ReplyDetailContent -->
       <ReplyDetailContent
         :dataForContent="dataForContent"
-        @afterGetReplyCount="afterGetReplyCount"
-        @afterGetLikeCount="afterGetLikeCount"
         @afterToggleLike="afterToggleLike"
       ></ReplyDetailContent>
 
@@ -50,8 +47,8 @@ export default {
     const { id } = this.$route.params;
     this.fetchTweetInfo(id);
     // eventbus for afterCreateReply
-    this.$bus.$on("afterCreateReply", (tweetId) => {
-      this.afterCreateReply(tweetId);
+    this.$bus.$on("afterCreateReply", () => {
+      this.afterCreateReply();
     });
   },
   data() {
@@ -59,9 +56,6 @@ export default {
       tweetInfo: {},
       dataForContent: {},
       dataForList: {},
-      likeCount: 0,
-      replyCount: 0,
-      isLiked: false,
     };
   },
   methods: {
@@ -69,31 +63,15 @@ export default {
       try {
         // ReplyDetailContent
         const { data } = await tweetsAPI.getTweet(tweetId);
-        const {
-          commentsLength,
-          createdAt,
-          description,
-          id,
-          isLiked,
-          likesLength,
-          updatedAt,
-          user, //avatar, name, id
-        } = data;
+        const { id, user } = data;
 
-        // get tweet author info: name, account, avatar
-        // const userInfoResponse = await usersApi.getUser(UserId);
-        // const { account, name, avatar } = userInfoResponse.data;
+        // all data in ReplyDetail
+        this.tweetInfo = { ...data };
 
-        this.dataForContent = {
-          user,
-          description,
-          createdAt,
-          updatedAt,
-          isLiked,
-          commentsLength,
-          likesLength,
-        };
+        // data for ReplyDetailContent
+        this.dataForContent = { ...data };
 
+        // data for ReplyDetailList
         this.dataForList = {
           tweetId: id,
           user,
@@ -106,33 +84,28 @@ export default {
         });
       }
     },
-    afterGetReplyCount(newVal) {
-      this.replyCount = newVal;
-      this.dataForContent = {
-        ...this.dataForContent,
-        replyCount: this.replyCount,
-      };
-    },
-    afterGetLikeCount(newVal) {
-      this.likeCount = newVal;
-      this.dataForContent = {
-        ...this.dataForContent,
-        likeCount: this.likeCount,
-      };
-    },
-    afterToggleLike(likedTweet) {
-      const toggleResult = likedTweet.isLiked;
+    afterToggleLike(boolean) {
+      const result = boolean;
       this.tweetInfo = {
         ...this.tweetInfo,
-        isLiked: toggleResult,
+        isLiked: result,
       };
     },
     afterCreateReply() {
-      this.replyCount++;
+      const newNum = this.tweetInfo.commentsLength + 1;
+      this.tweetInfo = {
+        ...this.tweetInfo,
+        commentsLength: newNum,
+      };
     },
   },
   watch: {
-    // tweetInfo
+    tweetInfo: {
+      deep: true,
+      handler: function (newVal) {
+        this.dataForContent = newVal;
+      },
+    },
   },
 };
 </script>

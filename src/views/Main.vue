@@ -101,8 +101,6 @@ export default {
       });
     },
     afterCreateReply(tweetId) {
-      console.log("inside afterCreateReply");
-      console.log("tweetId: " + tweetId);
       this.tweets = this.tweets.map((tweet) => {
         if (tweet.id === tweetId) {
           console.log("tweets changed!");

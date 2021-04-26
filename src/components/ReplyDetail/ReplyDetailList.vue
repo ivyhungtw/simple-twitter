@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <ul class="tweetList">
+      <p class="noComment" v-if="!localComments.length">成為第一個留言的人!</p>
       <li
         class="commentItem"
         v-for="comment in localComments"
@@ -52,15 +53,7 @@ export default {
   created() {
     // eventbus for afterCreateReply
     this.$bus.$on("afterCreateReply", (tweetId) => {
-      console.log("in ReplyDetailList");
-      console.log(tweetId);
-      this.localComments.unshift({
-        TweetId: this.dataForList.tweetId,
-        UserId: this.currentUserid,
-        account: this.currentUser.account,
-        avatar: this.currentUser.avatar,
-        //// 暫時進行到這邊，因為api會改，所以先等
-      });
+      this.afterCreateReply(tweetId);
     });
   },
   data() {
@@ -105,6 +98,9 @@ export default {
         })
       );
     },
+    afterCreateReply(newReply) {
+      this.localComments.unshift(newReply);
+    },
   },
   watch: {
     dataForList: {
@@ -128,6 +124,12 @@ export default {
   padding: 0;
   /* height: calc(100vh - 460px); */
   width: 100%;
+}
+
+.noComment {
+  text-align: center;
+  padding: 10px;
+  color: #657786;
 }
 
 .commentItem {
