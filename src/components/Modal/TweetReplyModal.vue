@@ -1,7 +1,7 @@
 <template>
   <div
     class="modal fade"
-    :id="`tweetReplyModal-${initTweet.id}`"
+    :id="`tweetReplyModal-${tweet.id}`"
     tabindex="-1"
     role="dialog"
     aria-labelledby="exampleModalLabel"
@@ -27,24 +27,29 @@
           <!-- tweet -->
           <div class="container replyTarget">
             <div class="avatar">
-              <img :src="initTweet.user.avatar | emptyImageFilter" alt="" />
+              <img v-if="tweet.user" :src="tweet.user.avatar" alt="" />
+              <img v-else :src="'' | emptyImageFilter" alt="" />
             </div>
             <div class="tweetInfo">
               <div class="userInfo">
-                <p class="userName">{{ initTweet.user.name }}</p>
-                <p class="userAccount">@{{ initTweet.user.account }}</p>
+                <p class="userName">
+                  {{ tweet.user ? tweet.user.name : "" }}
+                </p>
+                <p class="userAccount">
+                  @{{ tweet.user ? tweet.user.account : "" }}
+                </p>
                 <span class="mx-1">&#xb7;</span>
                 <p class="tweetUpdateAt">
-                  {{ initTweet.updatedAt | fromNow }}
+                  {{ tweet.updatedAt | fromNow }}
                 </p>
               </div>
               <div class="tweetContent">
-                <p>{{ initTweet.description }}</p>
+                <p>{{ tweet.description }}</p>
               </div>
               <div class="panel">
                 <p>
                   回覆給
-                  <span> @{{ initTweet.user.name }} </span>
+                  <span> @ {{ tweet.user ? tweet.user.name : "" }} </span>
                 </p>
               </div>
             </div>
@@ -58,8 +63,8 @@
             <div class="tweetInf">
               <div class="input">
                 <textarea
-                  name=""
                   id=""
+                  name=""
                   cols="55"
                   rows="5"
                   autofocus
@@ -78,7 +83,7 @@
             <button
               type="button"
               class="btn"
-              @click="createReply(initTweet.id)"
+              @click="createReply(tweet.id)"
               :disabled="isProcessing"
             >
               {{ isProcessing ? "回覆中.." : "回覆" }}
@@ -103,28 +108,30 @@ export default {
   props: {
     tweet: {
       type: Object,
-      required: true,
+      // required: true,
+      default: function () {
+        return {
+          user: {
+            avatar: "",
+            name: "",
+            account: "",
+          },
+        };
+      },
     },
   },
   data() {
     return {
-      initTweet: {},
+      // initTweet: {},
       replyContent: "",
       isProcessing: false,
     };
   },
-  created() {
-    this.fetchTweet(this.tweet);
-  },
   methods: {
-    fetchTweet(tweet) {
-      this.initTweet = tweet;
-    },
     clearReplyContent() {
       this.replyContent = "";
     },
     async createReply(tweetId) {
-      // console.log("tweetId: " + tweetId);
       const result = this.replyContentCheck(this.replyContent);
       if (!result) {
         return;
@@ -134,6 +141,7 @@ export default {
         const payload = { comment: this.replyContent };
         // call api to create tweet reply
         const { data } = await tweetsAPI.createReply(tweetId, payload);
+        const { id } = data;
 
         if (data.status !== "success") {
           throw new Error(data.message);
@@ -148,8 +156,19 @@ export default {
         // close modal after successfully replied
         this.closeModal(tweetId);
 
-        // inform TweetItem to change number of replyCount
-        this.$emit("afterCreateReply", tweetId);
+        // use eventBus
+        const payloadForList = {
+          tweetId,
+          UserId: this.currentUser.id,
+          account: this.currentUser.account,
+          avatar: this.currentUser.avatar,
+          comment: this.replyContent,
+          createdAt: new Date(),
+          id,
+        };
+
+        // inform Main.vue
+        this.$bus.$emit("afterCreateReply", payloadForList);
 
         // clear replyContent
         this.clearReplyContent();
@@ -194,11 +213,6 @@ export default {
 
       // remove opened modal backdrop
       document.body.removeChild(modalBackdrops[0]);
-    },
-  },
-  watch: {
-    tweetId(newVal) {
-      this.fetchTweet(newVal);
     },
   },
   computed: {

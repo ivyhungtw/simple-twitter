@@ -11,18 +11,13 @@
         </button>
         <h1>推文</h1>
       </div>
-      <!-- ReplyDetailContent -->
       <ReplyDetailContent
-        :tweetInfo="tweetInfo"
+        :dataForContent="dataForContent"
         @afterToggleLike="afterToggleLike"
-        @afterCreateReply="afterCreateReply"
       ></ReplyDetailContent>
 
       <!-- ReplyDetailList -->
-      <ReplyDetailList
-        :tweetTarget="tweetInfo.account"
-        :comments="tweetInfo.comments"
-      ></ReplyDetailList>
+      <ReplyDetailList :dataForList="dataForList"></ReplyDetailList>
     </div>
 
     <!-- RecommendedFollowers -->
@@ -31,106 +26,86 @@
 </template>
 
 <script>
-const tweetInfo = {
-  id: 1,
-  image: "",
-  name: "user1",
-  account: "@user1",
-  tweetId: 11,
-  tweetContent:
-    "sdfff s we rw weerdfdf we w sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we sdfff s we rw weerdfdf we w sdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we wsdfff s we rw weerdfdf we ww",
-  commentsCount: 4,
-  comments: [
-    {
-      id: 4,
-      name: "user4",
-      account: "@user4",
-      image: "",
-      createdAt: new Date(),
-      replyContent: "sdfeef!!",
-    },
-    {
-      id: 3,
-      name: "user3",
-      account: "@user3",
-      image: "",
-      createdAt: new Date(),
-      replyContent:
-        "5555555555555sdfwfwf115555555555555sdfwfwf115555555555555sdfwfwf115555555555555sdfwfwf115555555555555sdfwfwf11!!",
-    },
-    {
-      id: 2,
-      name: "user2",
-      account: "@user2",
-      image: "",
-      createdAt: new Date(),
-      replyContent: "asdfwef wefwf223!!",
-    },
-    {
-      id: 1,
-      name: "user1",
-      account: "@user1",
-      image: "",
-      createdAt: new Date(),
-      replyContent: "sdfwff6w6f4wf!!",
-    },
-  ],
-  likeCount: 11,
-  updatedAt: new Date(),
-  isLiked: true,
-};
-
 import UserSidebar from "../components/UserSidebar";
 import RecommendedFollowers from "../components/RecommendedFollowers";
 import ReplyDetailContent from "../components/ReplyDetail/ReplyDetailContent";
 import ReplyDetailList from "../components/ReplyDetail/ReplyDetailList";
-import { v4 as uuidv4 } from "uuid";
+// import { mapState } from "vuex";
+import { Toast } from "../utils/helpers";
+import tweetsAPI from "../apis/tweets";
+// import usersApi from "../apis/users";
 
 export default {
   name: "ReplyDetail",
   components: {
-    UserSidebar,
-    RecommendedFollowers,
-    ReplyDetailContent,
-    ReplyDetailList,
+    UserSidebar, // 不需要資料
+    RecommendedFollowers, // 自行處理
+    ReplyDetailContent, // 需要 tweetId, UserId, name, account, avatar, description, updatedAt, createdAt, likeCount, replyCount
+    ReplyDetailList, // 需要 UserId, Comments
   },
   created() {
-    this.fetchTweetInfo();
+    const { id } = this.$route.params;
+    this.fetchTweetInfo(id);
+    // eventbus for afterCreateReply
+    this.$bus.$on("afterCreateReply", () => {
+      this.afterCreateReply();
+    });
   },
   data() {
     return {
       tweetInfo: {},
+      dataForContent: {},
+      dataForList: {},
     };
   },
   methods: {
-    fetchTweetInfo() {
-      this.tweetInfo = tweetInfo;
-      // 加入 reply id
-      this.tweetInfo.comments = this.tweetInfo.comments.map((each) => {
-        return {
-          ...each,
-          replyId: uuidv4(),
+    async fetchTweetInfo(tweetId) {
+      try {
+        // ReplyDetailContent
+        const { data } = await tweetsAPI.getTweet(tweetId);
+        const { id, user } = data;
+
+        // all data in ReplyDetail
+        this.tweetInfo = { ...data };
+
+        // data for ReplyDetailContent
+        this.dataForContent = { ...data };
+
+        // data for ReplyDetailList
+        this.dataForList = {
+          tweetId: id,
+          user,
         };
-      });
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得推文資訊，請稍後再試！",
+        });
+      }
     },
-    afterToggleLike(likedTweet) {
-      const toggleResult = likedTweet.isLiked;
+    afterToggleLike(boolean) {
+      const result = boolean;
       this.tweetInfo = {
         ...this.tweetInfo,
-        isLiked: toggleResult,
+        isLiked: result,
       };
     },
-    afterCreateReply(newTweetReply) {
-      console.log("ReplyDetail.vue");
-      console.log(newTweetReply);
-      // 在資料裡面建立多一個 comment
-      this.tweetInfo.comments.unshift({
-        ...newTweetReply,
-      });
+    afterCreateReply() {
+      const newNum = this.tweetInfo.commentsLength + 1;
+      this.tweetInfo = {
+        ...this.tweetInfo,
+        commentsLength: newNum,
+      };
     },
   },
   watch: {
-    // tweetInfo
+    tweetInfo: {
+      deep: true,
+      handler: function (newVal) {
+        this.dataForContent = newVal;
+      },
+    },
   },
 };
 </script>
@@ -150,13 +125,24 @@ export default {
 }
 
 /* for Chrome, Safari and Opera */
-.mainSection::-webkit-scrollbar {
-  display: none;
+.mainSection {
+  -ms-overflow-style: scrollbar;
+  /* IE and Edge */
+  /* scrollbar-width: 8px; */
+  /* Firefox */
 }
 
-.mainSection {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+.mainSection::-webkit-scrollbar {
+  width: 8px;
+}
+
+.mainSection::-webkit-scrollbar-thumb {
+  background-color: #9197a3;
+  border-radius: 15px;
+}
+
+.mainSection::-webkit-scrollbar-track {
+  background-color: #ddd;
 }
 
 .recommendedFollowers {

@@ -28,7 +28,9 @@
     </div>
 
     <div class="row">
-      <label for="password">密碼</label>
+      <label for="password"
+        >密碼<span class="note ml-5">*密碼長度需介於4和12之間</span></label
+      >
       <input
         id="password"
         name="password"
@@ -39,7 +41,9 @@
       />
     </div>
     <div class="row">
-      <label for="passwordCheck">密碼確認</label>
+      <label for="passwordCheck"
+        >密碼確認<span class="note ml-3">*密碼長度需介於4和12之間</span></label
+      >
       <input
         id="passwordCheck"
         name="passwordCheck"
@@ -164,10 +168,10 @@ export default {
         });
         return result;
       }
-      if (this.form.password.length > 12 || this.form.password.length < 6) {
+      if (this.form.password.length > 12 || this.form.password.length < 4) {
         Toast.fire({
           icon: "info",
-          title: "密碼長度不得小於 6 超過 12！",
+          title: "密碼長度不得小於 4 或超過 12！",
         });
         return result;
       }
@@ -191,11 +195,9 @@ export default {
     async handleSignUpSubmit() {
       try {
         this.isProcessing = true;
-        // const formData = new FormData(e.target);
         const formData = this.form;
         // call api to post formData
         const { data } = await authorizationAPI.signUp(formData);
-        console.log(data);
 
         if (data.status !== "success") {
           throw new Error(data.message);
@@ -210,10 +212,18 @@ export default {
         this.$router.push("signin");
       } catch (error) {
         this.isProcessing = false;
-        console.log(error);
+
+        let message = "無法註冊，請稍候再試！";
+
+        const duplicacte =
+          "Error: A user with test2@gmail.com already exists. Choose a different address or login directly.";
+
+        // when duplicacte email
+        if (error === duplicacte) message = "已經使用過相同信箱註冊！";
+
         Toast.fire({
           icon: "error",
-          title: "無法註冊，請稍候再試！",
+          title: message,
         });
       }
     },
@@ -244,6 +254,10 @@ export default {
         });
 
         this.isProcessing = false;
+        this.isSaved = true;
+        this.userChanged = true;
+        this.form.password = "";
+        this.form.checkPassword = "";
       } catch (error) {
         console.log(error);
         this.isProcessing = false;
@@ -302,6 +316,12 @@ form {
   border: none;
   border-bottom: 2px solid #657786;
 }
+
+.note {
+  font-size: 15px;
+  color: #ff6600;
+}
+
 .btn {
   width: 100%;
   border-radius: 50px;

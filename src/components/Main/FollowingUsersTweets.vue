@@ -1,16 +1,10 @@
 <template>
-  <!-- FollowingUsersTweets.vue => modal id="tweetReplyModal" -->
   <div class="container">
     <ul class="tweetList">
-      <!-- $attrs：data from grandparent element -->
-      <!-- when emitting event to grandparent element -->
-      <!-- parentElement: $listeners -->
-      <!-- find better way -->
       <TweetItem
         v-for="tweet in $attrs.tweets"
         :key="tweet.id"
         :tweet="tweet"
-        v-on="$listeners"
       ></TweetItem>
     </ul>
   </div>
@@ -43,8 +37,12 @@ export default {
     },
   },
   watch: {
-    tweets(newVal) {
-      this.fetchFollowedTweets(newVal);
+    tweets: {
+      handler: function (newVal) {
+        console.log("new val from Main.vue");
+        this.fetchFollowedTweets(newVal);
+      },
+      deep: true,
     },
   },
 };

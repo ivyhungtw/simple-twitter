@@ -38,8 +38,6 @@ export default new Vuex.Store({
   actions: {
     async fetchCurrentUser({ commit }) {
       try {
-        console.log('fetchCurrentUser')
-        // 應該是使用 token 驗證才對
         const { data } = await usersAPI.getCurrentUser()
 
         if (data.status === 'error') {

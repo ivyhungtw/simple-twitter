@@ -17,6 +17,43 @@
           </router-link>
         </button>
       </div>
+      <!--  -->
+
+      <div class="navItem userProfile">
+        <div class="icon">
+          <i class="far fa-bell tempIcon"></i>
+        </div>
+        <button class="btn">
+          <router-link to="/notification">
+            <p id="routerNotification">通知</p>
+          </router-link>
+        </button>
+      </div>
+      <!--  -->
+
+      <div class="navItem userProfile">
+        <div class="icon">
+          <i class="far fa-envelope tempIcon"></i>
+        </div>
+        <button class="btn">
+          <router-link to="/publicMessage">
+            <p id="routerPublicMessage">公開聊天室</p>
+          </router-link>
+        </button>
+      </div>
+      <!--  -->
+
+      <div class="navItem userProfile">
+        <div class="icon">
+          <i class="far fa-envelope tempIcon"></i>
+        </div>
+        <button class="btn">
+          <router-link to="/privateMessage">
+            <p id="routerPrivateMessage">私人訊息</p>
+          </router-link>
+        </button>
+      </div>
+      <!--  -->
       <div class="navItem userProfile">
         <div class="icon">
           <img v-if="profile" src="../assets/atProfile.svg" alt="" />
@@ -60,8 +97,8 @@
 export default {
   name: "UserSidebar",
   created() {
-    const location = this.$route.path.split("/")[1];
-    this.setCurrentLocation(location);
+    // const location = this.$route.path.split("/")[1];
+    // this.setCurrentLocation(location);
   },
   data() {
     return {
@@ -76,22 +113,22 @@ export default {
       this.$store.commit("revokeAuthentication");
       this.$router.push("/signin");
     },
-    setCurrentLocation(location) {
-      console.log("location: " + location);
-      if (location === "main" || location === "replydetail") {
-        this.main = true; // at main
-        this.profile = false;
-        this.accountEdit = false;
-      } else if (location === "userprofile") {
-        this.main = false;
-        this.profile = true; // at user-profile
-        this.accountEdit = false;
-      } else {
-        this.main = false;
-        this.profile = false;
-        this.accountEdit = true; // at accountEdit
-      }
-    },
+    // setCurrentLocation(location) {
+    //   console.log("location: " + location);
+    //   if (location === "main" || location === "replydetail") {
+    //     this.main = true; // at main
+    //     this.profile = false;
+    //     this.accountEdit = false;
+    //   } else if (location === "userprofile") {
+    //     this.main = false;
+    //     this.profile = true; // at user-profile
+    //     this.accountEdit = false;
+    //   } else {
+    //     this.main = false;
+    //     this.profile = false;
+    //     this.accountEdit = true; // at accountEdit
+    //   }
+    // },
   },
 };
 </script>
@@ -126,10 +163,6 @@ export default {
   color: #ff6600;
 }
 
-/* .navItem .btn .active {
-  border: 1px solid #000;
-} */
-
 .icon {
   height: 26px;
 }
@@ -149,15 +182,19 @@ export default {
   font-size: 18px;
   color: #1c1c1c;
 }
+
 .newTweet p {
   font-weight: 500;
 }
-.icon img {
+
+.icon img,
+.icon .tempIcon {
   margin: 17px 0;
   width: 16px;
   height: 20px;
   margin: 0 25px 0 10px;
 }
+
 .newTweet button {
   width: 210px;
   height: 45px;

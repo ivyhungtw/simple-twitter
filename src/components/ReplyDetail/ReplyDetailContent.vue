@@ -2,47 +2,61 @@
   <div class="container">
     <div class="userInfo">
       <div class="avatar">
-        <img :src="tweetInfo.avatar | emptyImageFilter" alt="" />
+        <img
+          v-if="dataForContent.user"
+          :src="dataForContent.user.avatar"
+          alt=""
+        />
+        <img v-else src="'' | emptyImageFilter" alt="" />
       </div>
       <div class="userTitle">
-        <p>{{ tweetInfo.name }}</p>
-        <p>{{ tweetInfo.account }}</p>
+        <p>
+          {{ dataForContent.user ? dataForContent.user.name : "資料讀取中" }}
+        </p>
+        <p>
+          @{{
+            dataForContent.user ? dataForContent.user.account : "資料讀取中"
+          }}
+        </p>
       </div>
     </div>
 
     <div class="textContent">
-      <p>{{ tweetInfo.tweetContent }}</p>
+      <p>{{ dataForContent.description }}</p>
     </div>
     <div class="updatedAt">
-      <p class="tweetUpdateAt">{{ tweetInfo.updatedAt | exactDate }}</p>
+      <p class="tweetUpdateAt">{{ dataForContent.updatedAt | exactDate }}</p>
     </div>
     <div class="feedbackCount">
-      <p>{{ tweetInfo.commentsCount }} <span>回復 </span></p>
-      <p>{{ tweetInfo.likeCount }} <span>喜歡次數</span></p>
+      <p>{{ dataForContent.commentsLength }} <span>回復 </span></p>
+      <p>{{ dataForContent.likesLength }} <span>喜歡次數</span></p>
     </div>
     <div class="tweetPanel">
       <div class="comments">
         <img
           data-toggle="modal"
-          :data-target="`#tweetReplyModal-${tweetInfo.tweetId}`"
+          :data-target="`#tweetReplyModal-${dataForContent.id}`"
           src="../../assets/commentCount.svg"
           alt=""
         />
       </div>
-      <TweetReplyModal v-on="$listeners" :tweet="tweetInfo"></TweetReplyModal>
+      <TweetReplyModal
+        v-on="$listeners"
+        :tweet="dataForModal"
+      ></TweetReplyModal>
       <div class="likes">
         <img
-          v-if="!tweetInfo.isLiked"
-          :class="{ liked: tweetInfo.isLiked }"
+          v-if="!dataForContent.isLiked"
+          :class="{ liked: dataForContent.isLiked }"
           src="../../assets/likeCount.svg"
           alt=""
-          @click="toggleLike(tweetInfo)"
+          @click="toggleLike()"
         />
         <img
           v-else
           src="../../assets/likedLikeCount.svg"
           alt=""
-          @click="toggleLike(tweetInfo)"
+          @click="toggleLike()"
         />
         <p></p>
       </div>
@@ -54,6 +68,8 @@
 import { emptyImageFilter } from "../../utils/mixins";
 import { exactDateFilter } from "../../utils/mixins";
 import TweetReplyModal from "../Modal/TweetReplyModal";
+import { Toast } from "../../utils/helpers";
+import tweetsAPI from "../../apis/tweets";
 
 export default {
   name: "ReplyDetailContent",
@@ -62,24 +78,81 @@ export default {
     TweetReplyModal,
   },
   props: {
-    tweetInfo: {
+    dataForContent: {
       type: Object,
       required: true,
     },
   },
+  created() {
+    // eventbus for afterCreateReply
+    // this.$bus.$on("afterCreateReply", this.afterCreateReply());
+  },
+  data() {
+    return {
+      dataForModal: {},
+    };
+  },
   methods: {
-    toggleLike(tweet) {
-      //async
-      // call api to like this tweet by user
-      if (tweet.isLiked) {
-        tweet.isLiked = false;
-        tweet.likeCount -= 1;
-      } else {
-        tweet.isLiked = true;
-        tweet.likeCount += 1;
+    setDataForModal() {
+      const {
+        id,
+        user,
+        updatedAt,
+        description,
+        createdAt,
+      } = this.dataForContent;
+      this.dataForModal = {
+        id,
+        updatedAt,
+        description,
+        createdAt,
+        user,
+      };
+    },
+    async toggleLike() {
+      try {
+        // call api to like this tweet by user
+        const id = this.dataForContent.id;
+        const tweet = this.dataForContent;
+
+        if (tweet.isLiked) {
+          const { data } = await tweetsAPI.unlikeTweet(id);
+          if (data.status !== "success") {
+            throw new Error(data.message);
+          }
+          tweet.isLiked = false;
+          tweet.likesLength -= 1;
+        } else {
+          const { data } = await tweetsAPI.likeTweet(id);
+          if (data.status !== "success") {
+            throw new Error(data.message);
+          }
+          tweet.isLiked = true;
+          tweet.likesLength += 1;
+        }
+
+        // inform user
+        Toast.fire({
+          icon: "success",
+          title: "動作執行成功！",
+        });
+
+        // tell Main.vue to change data
+        this.$emit("afterToggleLike", tweet.isLiked);
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法執行動作，請稍後再試！",
+        });
       }
-      // tell Main.vue to change data
-      this.$emit("afterToggleLike", tweet);
+    },
+  },
+  watch: {
+    dataForContent: {
+      handler: function () {
+        this.setDataForModal();
+      },
+      deep: true,
     },
   },
 };

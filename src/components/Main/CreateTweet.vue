@@ -21,7 +21,7 @@
     </div>
 
     <!-- modal -->
-    <CreateTweetModal v-on="$listeners" :user="user"></CreateTweetModal>
+    <CreateTweetModal :user="user"></CreateTweetModal>
     <!-- modal -->
   </div>
 </template>

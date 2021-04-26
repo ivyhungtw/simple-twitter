@@ -1,18 +1,19 @@
 <template>
   <div class="tweet">
     <div class="avatar">
-      <img :src="initialTweet.user.avatar | emptyImageFilter" alt="" />
+      <img :src="tweet.user.avatar | emptyImageFilter" alt="" />
     </div>
     <div class="tweetInfo">
       <div class="userInfo">
-        <p class="userName mr-1">{{ initialTweet.user.name }}</p>
-        <p class="userAccount">@{{ initialTweet.user.account }}</p>
+        <p class="userName mr-1">{{ tweet.user.name }}</p>
+        <p class="userAccount">@{{ tweet.user.account }}</p>
         <span class="mx-1">&#xb7;</span>
-        <p class="tweetUpdateAt">{{ initialTweet.updatedAt | fromNow }}</p>
+        <p class="tweetUpdateAt">{{ tweet.updatedAt | fromNow }}</p>
       </div>
       <div class="tweetContent">
-        <router-link to="/replydetail">
-          <p>{{ initialTweet.description }}</p>
+        <!-- <router-link to="/replydetail"> -->
+        <router-link :to="`/replydetail/${tweet.id}`">
+          <p>{{ tweet.description }}</p>
         </router-link>
       </div>
       <div class="tweetPanel">
@@ -21,34 +22,31 @@
             src="../assets/commentCount.svg"
             alt=""
             data-toggle="modal"
-            :data-target="`#tweetReplyModal-${initialTweet.id}`"
+            :data-target="`#tweetReplyModal-${tweet.id}`"
           />
           <p>
-            {{ initialTweet.replyCount }}
+            {{ tweet.replyCount }}
           </p>
         </div>
         <div class="likes">
           <img
-            v-if="!initialTweet.isLiked"
-            :class="{ liked: initialTweet.isLiked }"
+            v-if="!tweet.isLiked"
+            :class="{ liked: tweet.isLiked }"
             src="../assets/likeCount.svg"
             alt=""
-            @click="toggleLike(initialTweet)"
+            @click="toggleLike(tweet)"
           />
           <img
             v-else
             src="../assets/likedLikeCount.svg"
             alt=""
-            @click="toggleLike(initialTweet)"
+            @click="toggleLike(tweet)"
           />
           <p>
-            {{ initialTweet.likeCount }}
+            {{ tweet.likeCount }}
           </p>
         </div>
-        <TweetReplyModal
-          :tweet="initialTweet"
-          v-on="$listeners"
-        ></TweetReplyModal>
+        <TweetReplyModal :tweet="tweet"></TweetReplyModal>
       </div>
     </div>
   </div>
@@ -75,16 +73,20 @@ export default {
   },
   data() {
     return {
-      initialTweet: {},
+      // initialTweet: {},
     };
   },
   created() {
-    this.fetchTweet(this.tweet);
+    // this.fetchTweet(this.tweet);
+    // eventbus for afterCreateReply
+    this.$bus.$on("afterCreateReply", () => {
+      this.afterCreateReply();
+    });
   },
   methods: {
-    fetchTweet(newVal) {
-      this.initialTweet = newVal;
-    },
+    // fetchTweet(newVal) {
+    //   this.initialTweet = newVal;
+    // },
     async toggleLike(tweet) {
       try {
         let response = {};
@@ -123,11 +125,18 @@ export default {
         });
       }
     },
+    afterCreateReply() {
+      this.tweet.replyCount++;
+    },
   },
   watch: {
-    tweet(newVal) {
-      this.fetchTweet(newVal);
-    },
+    // tweet: {
+    //   function(newVal) {
+    //     console.log("newval in tweetItem");
+    //     this.fetchTweet(newVal);
+    //   },
+    //   deep: true,
+    // },
   },
 };
 </script>
