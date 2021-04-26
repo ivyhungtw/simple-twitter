@@ -28,7 +28,9 @@
     </div>
 
     <div class="row">
-      <label for="password">密碼</label>
+      <label for="password"
+        >密碼<span class="note ml-5">*密碼長度需介於4和12之間</span></label
+      >
       <input
         id="password"
         name="password"
@@ -39,7 +41,9 @@
       />
     </div>
     <div class="row">
-      <label for="passwordCheck">密碼確認</label>
+      <label for="passwordCheck"
+        >密碼確認<span class="note ml-3">*密碼長度需介於4和12之間</span></label
+      >
       <input
         id="passwordCheck"
         name="passwordCheck"
@@ -164,10 +168,10 @@ export default {
         });
         return result;
       }
-      if (this.form.password.length > 12 || this.form.password.length < 6) {
+      if (this.form.password.length > 12 || this.form.password.length < 4) {
         Toast.fire({
           icon: "info",
-          title: "密碼長度不得小於 6 超過 12！",
+          title: "密碼長度不得小於 4 或超過 12！",
         });
         return result;
       }
@@ -302,6 +306,12 @@ form {
   border: none;
   border-bottom: 2px solid #657786;
 }
+
+.note {
+  font-size: 15px;
+  color: #ff6600;
+}
+
 .btn {
   width: 100%;
   border-radius: 50px;

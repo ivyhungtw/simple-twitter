@@ -19,7 +19,7 @@
             </div>
             <div class="replyTarget">
               <p>
-                回復 <span>@{{ dataForList.account }}</span>
+                回覆 <span>@{{ dataForList.account }}</span>
               </p>
             </div>
             <div class="textContent">
@@ -39,6 +39,7 @@ import { fromNowFilter } from "../../utils/mixins";
 import usersAPI from "../../apis/users";
 import { Toast } from "../../utils/helpers";
 import tweetsAPI from "../../apis/tweets";
+import { mapState } from "vuex";
 
 export default {
   name: "ReplyDetailList",
@@ -47,6 +48,20 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  created() {
+    // eventbus for afterCreateReply
+    this.$bus.$on("afterCreateReply", (tweetId) => {
+      console.log("in ReplyDetailList");
+      console.log(tweetId);
+      this.localComments.unshift({
+        TweetId: this.dataForList.tweetId,
+        UserId: this.currentUserid,
+        account: this.currentUser.account,
+        avatar: this.currentUser.avatar,
+        //// 暫時進行到這邊，因為api會改，所以先等
+      });
+    });
   },
   data() {
     return {
@@ -97,10 +112,12 @@ export default {
         const { tweetId } = newVal;
         await this.fetchAllReplies(tweetId);
         await this.fetchAllReplyUsers();
-        console.log("newVal");
       },
       deep: true,
     },
+  },
+  computed: {
+    ...mapState(["currentUser"]),
   },
 };
 </script>

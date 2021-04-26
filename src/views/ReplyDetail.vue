@@ -17,7 +17,6 @@
         @afterGetReplyCount="afterGetReplyCount"
         @afterGetLikeCount="afterGetLikeCount"
         @afterToggleLike="afterToggleLike"
-        @afterCreateReply="afterCreateReply"
       ></ReplyDetailContent>
 
       <!-- ReplyDetailList -->
@@ -50,14 +49,16 @@ export default {
   created() {
     const { id } = this.$route.params;
     this.fetchTweetInfo(id);
+    // eventbus for afterCreateReply
+    this.$bus.$on("afterCreateReply", (tweetId) => {
+      this.afterCreateReply(tweetId);
+    });
   },
   data() {
     return {
       tweetInfo: {},
       dataForContent: {},
-      // id, UserId, name, avatar, account, description, createdAt, updatedAt
       dataForList: {},
-      // tweetId, account
       likeCount: 0,
       replyCount: 0,
       isLiked: false,
@@ -102,9 +103,17 @@ export default {
     },
     afterGetReplyCount(newVal) {
       this.replyCount = newVal;
+      this.dataForContent = {
+        ...this.dataForContent,
+        replyCount: this.replyCount,
+      };
     },
     afterGetLikeCount(newVal) {
       this.likeCount = newVal;
+      this.dataForContent = {
+        ...this.dataForContent,
+        likeCount: this.likeCount,
+      };
     },
     afterToggleLike(likedTweet) {
       const toggleResult = likedTweet.isLiked;
@@ -113,13 +122,8 @@ export default {
         isLiked: toggleResult,
       };
     },
-    afterCreateReply(newTweetReply) {
-      console.log("ReplyDetail.vue");
-      console.log(newTweetReply);
-      // 在資料裡面建立多一個 comment
-      this.tweetInfo.comments.unshift({
-        ...newTweetReply,
-      });
+    afterCreateReply() {
+      this.replyCount++;
     },
   },
   watch: {

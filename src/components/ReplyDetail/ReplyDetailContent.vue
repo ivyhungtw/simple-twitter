@@ -72,6 +72,14 @@ export default {
       required: true,
     },
   },
+  created() {
+    // eventbus for afterCreateReply
+    this.$bus.$on("afterCreateReply", (tweetId) => {
+      console.log("in ReplyDetailContent");
+      console.log(tweetId);
+      this.replyCount++;
+    });
+  },
   data() {
     return {
       userId: undefined,
@@ -140,10 +148,11 @@ export default {
   },
   watch: {
     dataForContent: {
-      handler: function (newVal) {
+      handler: async function (newVal) {
+        console.log("new val from ReplyDetail.vue");
         this.userId = newVal.UserId;
         const userId = this.userId;
-        this.fetchFeedbackCount(userId);
+        await this.fetchFeedbackCount(userId);
 
         this.setDataForModal();
       },

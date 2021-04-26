@@ -6,6 +6,7 @@
       <!-- when emitting event to grandparent element -->
       <!-- parentElement: $listeners -->
       <!-- find better way -->
+      <!-- use eventBus!!! -->
       <TweetItem
         v-for="tweet in $attrs.tweets"
         :key="tweet.id"
@@ -43,8 +44,12 @@ export default {
     },
   },
   watch: {
-    tweets(newVal) {
-      this.fetchFollowedTweets(newVal);
+    tweets: {
+      handler: function (newVal) {
+        console.log("new val from Main.vue");
+        this.fetchFollowedTweets(newVal);
+      },
+      deep: true,
     },
   },
 };

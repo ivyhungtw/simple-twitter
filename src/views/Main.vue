@@ -10,10 +10,14 @@
       <!-- CreateTweet -->
       <CreateTweet @afterCreateTweet="afterCreateTweet"></CreateTweet>
       <!-- FollowingUsersTweets -->
-      <FollowingUsersTweets
+      <!-- <FollowingUsersTweets
         :tweets="tweets"
         @afterToggleLike="afterToggleLike"
         @afterCreateReply="afterCreateReply"
+      ></FollowingUsersTweets> -->
+      <FollowingUsersTweets
+        :tweets="tweets"
+        @afterToggleLike="afterToggleLike"
       ></FollowingUsersTweets>
     </div>
 
@@ -40,6 +44,10 @@ export default {
   },
   created() {
     this.fetchTweets();
+    // eventbus for afterCreateReply
+    this.$bus.$on("afterCreateReply", (tweetId) => {
+      this.afterCreateReply(tweetId);
+    });
   },
   data() {
     return {
@@ -93,8 +101,11 @@ export default {
       });
     },
     afterCreateReply(tweetId) {
+      console.log("inside afterCreateReply");
+      console.log("tweetId: " + tweetId);
       this.tweets = this.tweets.map((tweet) => {
         if (tweet.id === tweetId) {
+          console.log("tweets changed!");
           return {
             ...tweet,
             replyCount: tweet.replyCount + 1,

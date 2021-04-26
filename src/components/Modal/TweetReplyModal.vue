@@ -165,7 +165,10 @@ export default {
         this.closeModal(tweetId);
 
         // inform TweetItem to change number of replyCount
-        this.$emit("afterCreateReply", tweetId);
+        // this.$emit("afterCreateReply");
+
+        // use eventBus
+        this.$bus.$emit("afterCreateReply", tweetId);
 
         // clear replyContent
         this.clearReplyContent();
