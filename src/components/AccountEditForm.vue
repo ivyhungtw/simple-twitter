@@ -195,11 +195,9 @@ export default {
     async handleSignUpSubmit() {
       try {
         this.isProcessing = true;
-        // const formData = new FormData(e.target);
         const formData = this.form;
         // call api to post formData
         const { data } = await authorizationAPI.signUp(formData);
-        console.log(data);
 
         if (data.status !== "success") {
           throw new Error(data.message);
@@ -214,10 +212,18 @@ export default {
         this.$router.push("signin");
       } catch (error) {
         this.isProcessing = false;
-        console.log(error);
+
+        let message = "無法註冊，請稍候再試！";
+
+        const duplicacte =
+          "Error: A user with test2@gmail.com already exists. Choose a different address or login directly.";
+
+        // when duplicacte email
+        if (error === duplicacte) message = "已經使用過相同信箱註冊！";
+
         Toast.fire({
           icon: "error",
-          title: "無法註冊，請稍候再試！",
+          title: message,
         });
       }
     },
@@ -248,6 +254,10 @@ export default {
         });
 
         this.isProcessing = false;
+        this.isSaved = true;
+        this.userChanged = true;
+        this.form.password = "";
+        this.form.checkPassword = "";
       } catch (error) {
         console.log(error);
         this.isProcessing = false;

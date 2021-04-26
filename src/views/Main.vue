@@ -132,13 +132,24 @@ export default {
 }
 
 /* for Chrome, Safari and Opera */
-.mainSection::-webkit-scrollbar {
-  display: none;
+.mainSection {
+  -ms-overflow-style: scrollbar;
+  /* IE and Edge */
+  /* scrollbar-width: 8px; */
+  /* Firefox */
 }
 
-.mainSection {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+.mainSection::-webkit-scrollbar {
+  width: 8px;
+}
+
+.mainSection::-webkit-scrollbar-thumb {
+  background-color: #9197a3;
+  border-radius: 15px;
+}
+
+.mainSection::-webkit-scrollbar-track {
+  background-color: #ddd;
 }
 
 .title {

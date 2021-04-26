@@ -1,12 +1,6 @@
 <template>
-  <!-- FollowingUsersTweets.vue => modal id="tweetReplyModal" -->
   <div class="container">
     <ul class="tweetList">
-      <!-- $attrs：data from grandparent element -->
-      <!-- when emitting event to grandparent element -->
-      <!-- parentElement: $listeners -->
-      <!-- find better way -->
-      <!-- use eventBus!!! -->
       <TweetItem
         v-for="tweet in $attrs.tweets"
         :key="tweet.id"
