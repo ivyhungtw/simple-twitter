@@ -1,11 +1,15 @@
 <template>
   <div class="tweet">
     <div class="avatar">
-      <img :src="tweet.user.avatar | emptyImageFilter" alt="" />
+      <router-link to="/userprofile">
+        <img :src="tweet.user.avatar | emptyImageFilter" alt="" />
+      </router-link>
     </div>
     <div class="tweetInfo">
       <div class="userInfo">
-        <p class="userName mr-1">{{ tweet.user.name }}</p>
+        <router-link to="/userprofile">
+          <p class="userName mr-1">{{ tweet.user.name }}</p>
+        </router-link>
         <p class="userAccount">@{{ tweet.user.account }}</p>
         <span class="mx-1">&#xb7;</span>
         <p class="tweetUpdateAt">{{ tweet.createdAt | fromNow }}</p>

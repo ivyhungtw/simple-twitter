@@ -249,6 +249,10 @@ export default {
   color: gray;
 }
 
+.follow-condition a:hover {
+  text-decoration: none;
+}
+
 .following-count {
   margin-right: 15px;
 }
