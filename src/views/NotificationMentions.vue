@@ -14,7 +14,7 @@
           <router-link to="/notification/mentions">提及</router-link>
         </button>
       </div>
-      <h1>noti</h1>
+      <h1>noti mentions</h1>
     </div>
 
     <!-- RecommededFollowers -->
@@ -27,7 +27,7 @@ import UserSidebar from "../components/UserSidebar";
 import RecommededFollowers from "../components/RecommendedFollowers";
 
 export default {
-  name: "notification",
+  name: "notification-mentions",
   components: { UserSidebar, RecommededFollowers },
 };
 </script>
@@ -97,7 +97,7 @@ export default {
   border: none;
 }
 
-.navtabs button:first-child {
+.navtabs button:nth-child(2) {
   border-bottom: 2px solid rgb(29, 161, 242);
 }
 
