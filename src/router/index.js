@@ -7,7 +7,7 @@ import AdminSignIn from '../views/AdminSignIn.vue'
 import store from './../store'
 
 // store
-import store from '../store'
+// import store from '../store'
 
 Vue.use(VueRouter)
 
@@ -41,6 +41,11 @@ const routes = [
     path: '/main',
     name: 'main',
     component: Main
+  },
+  {
+    path: '/notification/mentions',
+    name: 'notification-mentions',
+    component: () => import('../views/NotificationMentions.vue')
   },
   {
     path: '/notification',

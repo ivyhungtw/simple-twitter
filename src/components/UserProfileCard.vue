@@ -106,12 +106,12 @@
         <div class="follow-condition row">
           <div class="following-count">
             <router-link to="/userprofile/following"
-              ><span>{{ user.followingCount }}個</span>跟隨中</router-link
+              ><span>{{ user.followingCount }} 個</span>跟隨中</router-link
             >
           </div>
           <div class="follows-count">
             <router-link to="/userprofile/followers"
-              ><span>{{ user.followerCount }}位</span>跟隨者</router-link
+              ><span>{{ user.followerCount }} 位</span>跟隨者</router-link
             >
           </div>
         </div>
@@ -121,7 +121,6 @@
 </template>
 
 <script>
-// import { Toast } from './../utils/helpers'
 import { emptyImageFilter } from "../utils/mixins";
 // import { mapState } from "vuex";
 
@@ -129,43 +128,19 @@ export default {
   name: "UserProfileCard",
   mixins: [emptyImageFilter],
   props: {
-    User: {
+    userData: {
       type: Object,
       required: true,
     },
-    // initialUser: {
-    //   type: Object,
-    //   default: () => {
-    //     return {
-    //       name: '',
-    //       cover: '',
-    //       avatar: '',
-    //       introduction: '',
-    //     }
-    //   }
-    // },
   },
   data() {
     return {
       user: this.User,
-      // user: {
-      //   ...this.initialUser
-      // },
-      // isLoading: true
     };
   },
-  // watch: {
-  //   initialUser (newValue) {
-  //     this.user = {
-  //       ...this.user,
-  //       ...newValue
-  //     }
-  //   }
-  // },
-  //  created () {
-  //   const { id } = this.$route.params
-  //   this.fetchUser(id)
-  // },
+  created() {
+    this.user = this.userData;
+  },
   methods: {
     editUserModal(user) {
       this.user = user;
@@ -180,18 +155,6 @@ export default {
         this.user.image = imageURL;
       }
     },
-    //     fetchUser (userId) {
-    //   console.log('fetchUser id:', userId)
-    //   const { user } = dummyData
-    //   this.user = {
-    //     ...this.user,
-    //     id: user.id,
-    //     name: user.name,
-    //     cover: user.cover,
-    //     avatar: user.avatar,
-    //     introduction: user.introduction,
-    //   }
-    // },
     handleSubmit(e) {
       const form = e.target;
       const formData = new FormData(form);
@@ -205,18 +168,23 @@ export default {
 
 <style scoped>
 .container {
-  width: 596px;
+  width: 100%;
   height: 390px;
   margin: 0;
   padding: 0;
 }
+
 .container .card {
-  width: 596px;
-  min-width: 596px;
+  width: 100%;
+  width: 100%;
   margin-bottom: 10px;
   padding: 0;
   background-color: white;
   border: none;
+}
+
+.background-img {
+  width: 100%;
 }
 
 .background-img img {
@@ -279,7 +247,10 @@ export default {
 
 .follow-condition a {
   color: gray;
-  font-size: 3px;
+}
+
+.follow-condition a:hover {
+  text-decoration: none;
 }
 
 .following-count {

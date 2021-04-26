@@ -10,12 +10,11 @@ export default {
   deleteTweet({ tweetId }) {
     return apiHelper.delete(`/admin/tweets/${tweetId}`)
   },
-  getUserTweet({ tweetId }) {
-    console.log(tweetId)
-    return apiHelper.get(`/users/${tweetId}/tweets`)
+  getUserTweet(userId) {
+    // get one users' all tweets
+    return apiHelper.get(`/users/${userId}/tweets`)
   },
   getUserFollowersTweet({ tweetId }) {
-    console.log(tweetId)
     return apiHelper.get(`/users/${tweetId}/followers`)
   },
   getTweet(tweetId) {
