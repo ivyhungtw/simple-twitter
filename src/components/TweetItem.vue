@@ -8,7 +8,7 @@
         <p class="userName mr-1">{{ tweet.user.name }}</p>
         <p class="userAccount">@{{ tweet.user.account }}</p>
         <span class="mx-1">&#xb7;</span>
-        <p class="tweetUpdateAt">{{ tweet.updatedAt | fromNow }}</p>
+        <p class="tweetUpdateAt">{{ tweet.createdAt | fromNow }}</p>
       </div>
       <div class="tweetContent">
         <!-- <router-link to="/replydetail"> -->
