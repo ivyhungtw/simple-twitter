@@ -42,7 +42,7 @@
           />
           <img
             v-else
-            src="../assets/likedlikeCount.svg"
+            src="../assets/likedLikeCount.svg"
             alt=""
             @click="toggleLike(tweet)"
           />
