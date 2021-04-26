@@ -9,7 +9,19 @@
           <div class="name">{{ follower.name }}</div>
           <div class="account">@{{ follower.account }}</div>
         </div>
-        <button>跟隨</button>
+
+        <div class="toggleFollow">
+          <button
+            v-if="follower.isFollowing"
+            class="btn isFollowing"
+            @click.prevent.stop="deleteFollowing"
+          >
+            正在跟隨
+          </button>
+          <button v-else class="btn" @click.prevent.stop="addFollowing">
+            跟隨
+          </button>
+        </div>
       </div>
       <p>{{ follower.tweetContent }}</p>
     </div>
@@ -17,6 +29,8 @@
 </template>
 
 <script>
+// import { Toast } from "../utils/helpers";
+
 export default {
   name: "UserFollowersList",
   props: {
@@ -30,28 +44,40 @@ export default {
       follower: this.Follower,
     };
   },
+  methods: {
+    addFollowing() {
+      this.follower = {
+        ...this.follower, // 保留餐廳內原有資料
+        isFollowing: true,
+      };
+    },
+    deleteFollowing() {
+      this.follower = {
+        ...this.follower, // 保留餐廳內原有資料
+        isFollowing: false,
+      };
+    },
+  },
 };
 </script>
 
 <style scoped>
 .container {
   display: flex;
-  height: auto;
-  min-height: 100px;
-  padding: 15px 15px 25px;
+  height: 100px;
+  padding: 0 15px;
   border-bottom: 1px solid #e6ecf0;
-  margin: 5px;
+  margin: 0;
 }
 
 .follower-info {
   width: 100%;
-  /* border: 1px solid green; */
+  margin: 0;
 }
 
 .isfollowed-info {
   display: flex;
   justify-content: space-between;
-  /* border: 1px solid red; */
 }
 .name {
   font-weight: 900;
@@ -60,6 +86,7 @@ export default {
   min-width: 50px;
   height: 50px;
   margin-right: 10px;
+  margin-top: 15px;
 }
 .avatar img {
   min-width: 100%;
@@ -77,12 +104,17 @@ button {
   border: 1px solid #ff6600;
   border-radius: 100px;
   color: #ff6600;
-  background-color: white;
-  width: 62px;
-  height: 30px;
+  margin-top: 7px;
   font-size: 15px;
   font-weight: 700;
-  margin-top: 7px;
-  padding-bottom: 2.8px;
+}
+
+.toggleFollow .isFollowing {
+  width: 92px;
+  background-color: #ff6600;
+  color: #fff;
+}
+.follower-info p {
+  margin: 0;
 }
 </style>

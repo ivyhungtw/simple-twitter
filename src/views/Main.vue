@@ -104,6 +104,7 @@ export default {
       this.tweets = this.tweets.map((tweet) => {
         if (tweet.id === tweetId) {
           console.log("tweets changed!");
+
           return {
             ...tweet,
             replyCount: tweet.replyCount + 1,

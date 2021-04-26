@@ -4,6 +4,7 @@ import Main from '../views/Main.vue'
 import SignUp from '../views/SignUp.vue'
 import NotFound from '../views/NotFound.vue'
 import AdminSignIn from '../views/AdminSignIn.vue'
+import store from './../store'
 
 // store
 import store from '../store'
@@ -25,6 +26,11 @@ const routes = [
     path: '/signin',
     name: 'sign-in',
     component: () => import('../views/SignIn.vue')
+  },
+  {
+    path: '/admin',
+    name: 'admin-root',
+    redirect: '/admin/signin'
   },
   {
     path: '/admin/signin',

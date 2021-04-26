@@ -36,6 +36,10 @@ export default {
 </script>
 
 <style scoped>
+.nav .nav-tabs {
+  margin-top: 20px;
+  border: 1px solid red;
+}
 .nav-tabs .nav-link {
   color: gray;
   width: 150px;

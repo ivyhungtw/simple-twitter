@@ -1,16 +1,16 @@
 <template>
   <div class="container">
     <div class="avatar">
-      <img :src="tweet.avatar" alt="" />
+      <img :src="tweet.user.avatar | emptyImageFilter" alt="" />
     </div>
     <div class="tweet-info">
       <div class="title">
-        <span>{{ tweet.name }}</span> @{{ tweet.account }}・{{
+        <span>{{ tweet.user.name }}</span> @{{ tweet.user.account }}・{{
           tweet.createdAt | fromNow
         }}
       </div>
       <p>
-        {{ tweet.tweetContent }}
+        {{ tweet.description | slice }}
       </p>
     </div>
     <div class="delete" @click.stop.prevent="handleDeleteButtonClick(tweet.id)">
@@ -20,19 +20,14 @@
 </template>
 
 <script>
-import moment from "moment";
+import { fromNowFilter } from "../utils/mixins";
+import { emptyImageFilter } from "../utils/mixins";
+import { Toast } from "../utils/helpers";
 
 export default {
   name: "AdminTweetItem",
-  filters: {
-    fromNow(datetime) {
-      if (!datetime) {
-        return "-";
-      }
-      // 使用 moment 提供的 fromNow 方法
-      return moment(datetime).fromNow();
-    },
-  },
+  mixins: [fromNowFilter, emptyImageFilter],
+
   props: {
     Tweet: {
       type: Object,
@@ -45,11 +40,22 @@ export default {
     };
   },
   methods: {
-    handleDeleteButtonClick(tweetId) {
-      console.log("handleDeleteButtonClick", tweetId);
-      // TODO: 請求 API 伺服器刪除 id 為 commentId 的評論
-      // 觸發父層事件 - $emit( '事件名稱' , 傳遞的資料 )
-      this.$emit("after-delete-tweet", tweetId);
+    async handleDeleteButtonClick(tweetId) {
+      try {
+        this.$emit("after-delete-tweet", tweetId);
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法將餐廳移除最愛，請稍後再試",
+        });
+        console.log("error", error);
+      }
+    },
+  },
+  filters: {
+    slice(description) {
+      if (!description) return "-";
+      return description.slice(0, 50);
     },
   },
 };

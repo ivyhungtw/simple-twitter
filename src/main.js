@@ -8,6 +8,7 @@ import './assets/reset.css'
 // import fontawesome
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@fortawesome/fontawesome-free/js/all.js'
+import store from './store'
 // import store
 import store from './store'
 // import eventbus
