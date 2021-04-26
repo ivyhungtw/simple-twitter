@@ -8,7 +8,7 @@
         <p class="userName mr-1">{{ tweet.user.name }}</p>
         <p class="userAccount">@{{ tweet.user.account }}</p>
         <span class="mx-1">&#xb7;</span>
-        <p class="tweetUpdateAt">{{ initialTweet.updatedAt | fromNow }}</p>
+        <p class="tweetUpdateAt">{{ tweet.updatedAt | fromNow }}</p>
       </div>
       <div class="tweetContent">
         <!-- <router-link to="/replydetail"> -->
@@ -30,20 +30,20 @@
         </div>
         <div class="likes">
           <img
-            v-if="!initialTweet.isLiked"
-            :class="{ liked: initialTweet.isLiked }"
+            v-if="!tweet.isLiked"
+            :class="{ liked: tweet.isLiked }"
             src="../assets/likeCount.svg"
             alt=""
-            @click="toggleLike(initialTweet)"
+            @click="toggleLike(tweet)"
           />
           <img
             v-else
-            src="../assets/likedLikeCount.svg"
+            src="../assets/likedlikeCount.svg"
             alt=""
-            @click="toggleLike(initialTweet)"
+            @click="toggleLike(tweet)"
           />
           <p>
-            {{ initialTweet.likeCount }}
+            {{ tweet.likeCount }}
           </p>
         </div>
         <TweetReplyModal :tweet="tweet"></TweetReplyModal>
@@ -72,21 +72,15 @@ export default {
     },
   },
   data() {
-    return {
-      // initialTweet: {},
-    };
+    return {};
   },
   created() {
-    // this.fetchTweet(this.tweet);
     // eventbus for afterCreateReply
     this.$bus.$on("afterCreateReply", () => {
       this.afterCreateReply();
     });
   },
   methods: {
-    // fetchTweet(newVal) {
-    //   this.initialTweet = newVal;
-    // },
     async toggleLike(tweet) {
       try {
         let response = {};
@@ -128,15 +122,6 @@ export default {
     afterCreateReply() {
       this.tweet.replyCount++;
     },
-  },
-  watch: {
-    // tweet: {
-    //   function(newVal) {
-    //     console.log("newval in tweetItem");
-    //     this.fetchTweet(newVal);
-    //   },
-    //   deep: true,
-    // },
   },
 };
 </script>
