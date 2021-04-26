@@ -22,6 +22,7 @@
 
     <!-- modal -->
     <CreateTweetModal :user="user"></CreateTweetModal>
+
     <!-- modal -->
   </div>
 </template>

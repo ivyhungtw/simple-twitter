@@ -100,6 +100,7 @@ export default {
     },
     formDataCheck({ account, password }) {
       let result = false;
+
       // if sign in with admin
 
       if (!account) {
@@ -127,7 +128,6 @@ export default {
 .logo {
   margin: 60px 0 30px 0;
 }
-
 .logo img {
   width: 50px;
   height: 50px;
@@ -137,54 +137,45 @@ form {
   flex-direction: column;
   align-items: center;
 }
-
 .row {
   width: 540px;
   margin: 10px;
 }
-
 .row label {
   color: #657786;
   font-weight: 700;
 }
-
 .title h1 {
   width: 100%;
   text-align: center;
   font-weight: 900;
   font-size: 23px;
 }
-
 input {
   background-color: #f5f8fa;
   width: 100%;
   border: none;
   border-bottom: 2px solid #657786;
 }
-
 .btn {
   width: 100%;
   border-radius: 50px;
   height: 50px;
 }
-
 button.signin {
   background-color: #ff6600;
   color: #fff;
   font-size: 18px;
   font-weight: 700;
 }
-
 .link-btns-container {
   position: relative;
   height: 26px;
 }
-
 .link-btns {
   position: absolute;
   right: 0;
 }
-
 .routerLink {
   font-weight: 700;
   color: #0099ff;

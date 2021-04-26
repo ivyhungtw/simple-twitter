@@ -38,7 +38,7 @@
           />
           <img
             v-else
-            src="../assets/likedLikeCount.svg"
+            src="../assets/likedlikeCount.svg"
             alt=""
             @click="toggleLike(tweet)"
           />
@@ -72,21 +72,15 @@ export default {
     },
   },
   data() {
-    return {
-      // initialTweet: {},
-    };
+    return {};
   },
   created() {
-    // this.fetchTweet(this.tweet);
     // eventbus for afterCreateReply
     this.$bus.$on("afterCreateReply", () => {
       this.afterCreateReply();
     });
   },
   methods: {
-    // fetchTweet(newVal) {
-    //   this.initialTweet = newVal;
-    // },
     async toggleLike(tweet) {
       try {
         let response = {};
@@ -128,15 +122,6 @@ export default {
     afterCreateReply() {
       this.tweet.replyCount++;
     },
-  },
-  watch: {
-    // tweet: {
-    //   function(newVal) {
-    //     console.log("newval in tweetItem");
-    //     this.fetchTweet(newVal);
-    //   },
-    //   deep: true,
-    // },
   },
 };
 </script>

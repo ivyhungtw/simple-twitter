@@ -108,7 +108,6 @@ export default {
         const { id, UserId, createdAt, description, updatedAt } = data.tweet[0];
 
         const { account, name, avatar } = this.currentUser;
-
         const newTweet = {
           user: { account, name, avatar },
           id,

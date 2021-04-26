@@ -36,29 +36,9 @@ import UserSidebar from "./../components/UserSidebar";
 import UserFollowNavtabs from "./../components/UserFollowNavtabs";
 import UserFollowersList from "./../components/UserFollowersList";
 import RecommendedFollowers from "./../components/RecommendedFollowers";
-
-const dummyData = {
-  followers: [
-    {
-      id: 34,
-      name: "user1",
-      avatar:
-        "https://s3-alpha-sig.figma.com/img/7075/8e0a/7c0f47389595381eca543235de212578?Expires=1620000000&Signature=NPGKM~T5uRhNRXlPmNslZfE2oPmtp4FxaIduK3IgFsLVr5OgpjlXe2Az28ZYxdHxOalBETrOrUb2rx1t86cthAmQVnL-b92nBKRTpag3EHMchy3hspFH1YhSg-dnmpSZqXxEer2lZqjWP1g5Yn2lv2rX16GpPq1v1W2~ZXVe6kQEm8Yg8K3E6Gh6lktIX65OViGN3UGBpjM9gvU8ZD4g7tx6eV6PbDKgm0aWEZMl~DS359hGwg6dGCZ2z2p-oel3~Q4WdRcFb-SNCessB~RAvpeZiX-qmgj1OM44L1AKH9n7lZi-YMVAOXiFgpEjL9VUGVLSOaLgcg7jR8s5GudcoA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-      account: "user1",
-      tweetContent:
-        "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit.",
-      isfollowing: "true",
-    },
-    {
-      id: 35,
-      name: "user2",
-      avatar: "https://i.imgur.com/q6bwDGO.png",
-      account: "user2",
-      tweetContent: "123456789",
-      isfollowing: "false",
-    },
-  ],
-};
+import { Toast } from "../utils/helpers";
+import tweetsAPI from "../apis/tweets";
+import { mapState } from "vuex";
 
 export default {
   name: "UserFollowers",
@@ -71,19 +51,41 @@ export default {
   data() {
     return {
       followers: [],
+        user: {
+        ...this.currentUser
+      },
     };
   },
+  computed: {
+    ...mapState(["currentUser", "isAuthenticated"]),
+  },
+  watch: {
+    currentUser(newValue) {
+      this.user = {
+        ...this.user,
+        ...newValue,
+      };
+    },
+  },
   created() {
-    this.fetchFollowers();
+    this.fetchFollowers(this.currentUser.id);
   },
   methods: {
-    fetchFollowers() {
-      const { followers } = dummyData;
-      this.followers = followers;
+    async fetchFollowers(tweetId) {
+      try {
+        const { followers } = await tweetsAPI.getUserFollowersTweet({
+          tweetId,
+        });
+
+        this.followers = followers;
+      } catch (error) {
+        console.log("error", error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得跟隨者資料，請稍後再試",
+        });
+      }
     },
-    // afterDeleteTweet(tweetId) {
-    //   this.tweets = this.tweets.filter((tweet) => tweet.id !== tweetId);
-    // },
   },
 };
 </script>

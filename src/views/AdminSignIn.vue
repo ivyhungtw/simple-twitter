@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import authorizationAPI from "./../apis/authorization";
 import { Toast } from "../utils/helpers";
 export default {
   name: "AdminSignin",
@@ -72,21 +73,30 @@ export default {
           return;
         }
 
-        // this.isProcessing = true;
+        this.isProcessing = true;
         // 使用 authorizationAPI 的 signIn 方法
-        // const response = await authorizationAPI.signIn({
-        //   account: this.account,
-        //   password: this.password,
-        // });
+        const response = await authorizationAPI.signIn({
+          account: this.account,
+          password: this.password,
+        });
+        console.log("response:", response);
+        const { data } = response;
 
-        // const { data } = response;
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
 
-        // if (data.status !== "success") {
-        //   throw new Error(data.message);
-        // }
+        if (data.user.role !== "admin") {
+          Toast.fire({
+            icon: "warning",
+            title: "您非管理者身分!",
+          });
+          this.isProcessing = false;
+          return;
+        }
 
-        // localStorage.setItem("token", data.token);
-        // this.$router.push("/admin/tweets");
+        localStorage.setItem("token", data.token);
+        this.$router.push("/admin/tweets");
       } catch (error) {
         this.password = "";
         this.isProcessing = false;

@@ -123,6 +123,7 @@ export default {
   data() {
     return {
       // initTweet: {},
+
       replyContent: "",
       isProcessing: false,
     };
@@ -132,6 +133,7 @@ export default {
       this.replyContent = "";
     },
     async createReply(tweetId) {
+
       const result = this.replyContentCheck(this.replyContent);
       if (!result) {
         return;
