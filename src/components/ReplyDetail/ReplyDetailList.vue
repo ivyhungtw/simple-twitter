@@ -1,34 +1,42 @@
 <template>
   <div class="container">
     <ul class="tweetList">
-      <p class="noComment" v-if="!localComments.length">成為第一個留言的人!</p>
-      <li
-        class="commentItem"
-        v-for="comment in localComments"
-        :key="comment.id"
-      >
-        <div class="commentInfo">
-          <div class="avatar">
-            <img :src="comment.avatar | emptyImageFilter" alt="" />
+      <template v-if="isLoading">
+        <p class="loading">資料讀取中...</p>
+      </template>
+
+      <template v-else>
+        <p class="noComment" v-if="!localComments.length">
+          成為第一個留言的人!
+        </p>
+        <li
+          class="commentItem"
+          v-for="comment in localComments"
+          :key="comment.id"
+        >
+          <div class="commentInfo">
+            <div class="avatar">
+              <img :src="comment.avatar | emptyImageFilter" alt="" />
+            </div>
+            <div class="commentContent">
+              <div class="userTitle">
+                <p>{{ comment.name }}</p>
+                <p>@{{ comment.account }}</p>
+                <span class="mx-1">&#xb7;</span>
+                <p>{{ comment.createdAt | fromNow }}</p>
+              </div>
+              <div class="replyTarget">
+                <p>
+                  回覆 <span>@{{ dataForList.account }}</span>
+                </p>
+              </div>
+              <div class="textContent">
+                <p>{{ comment.comment }}</p>
+              </div>
+            </div>
           </div>
-          <div class="commentContent">
-            <div class="userTitle">
-              <p>{{ comment.name }}</p>
-              <p>@{{ comment.account }}</p>
-              <span class="mx-1">&#xb7;</span>
-              <p>{{ comment.createdAt | fromNow }}</p>
-            </div>
-            <div class="replyTarget">
-              <p>
-                回覆 <span>@{{ dataForList.account }}</span>
-              </p>
-            </div>
-            <div class="textContent">
-              <p>{{ comment.comment }}</p>
-            </div>
-          </div>
-        </div>
-      </li>
+        </li>
+      </template>
     </ul>
   </div>
 </template>
@@ -59,6 +67,7 @@ export default {
   data() {
     return {
       localComments: [],
+      isLoading: true,
     };
   },
   mixins: [emptyImageFilter, fromNowFilter],
@@ -106,8 +115,10 @@ export default {
     dataForList: {
       handler: async function (newVal) {
         const { tweetId } = newVal;
+        this.isLoading = true;
         await this.fetchAllReplies(tweetId);
         await this.fetchAllReplyUsers();
+        this.isLoading = false;
       },
       deep: true,
     },
@@ -122,10 +133,10 @@ export default {
 .container {
   border-bottom: 1px solid #e6ecf0;
   padding: 0;
-  /* height: calc(100vh - 460px); */
   width: 100%;
 }
 
+.loading,
 .noComment {
   text-align: center;
   padding: 10px;
