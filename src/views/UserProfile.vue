@@ -20,11 +20,6 @@
         <UserProfileNavtabs />
 
         <!--  UserProfileTweetsList -->
-        <!-- <UserProfileTweetsList
-          :tweets="tweets"
-          @afterToggleLike="afterToggleLike"
-          @afterCreateReply="afterCreateReply"
-        /> -->
         <UserProfileTweetsList :tweets="tweets" />
       </div>
     </div>

@@ -1,17 +1,15 @@
 <template>
   <div id="UserProfile">
-    <!-- // UserSidebar -->
+    <!-- UserSidebar -->
     <UserSidebar />
-    <div class="UserProfilePanel">
+    <div class="mainSection">
       <div class="title">
-        <div class="pre-page">
-          <router-link to="/userprofile"
-            ><i class="fas fa-arrow-left"></i
-          ></router-link>
-        </div>
-        <div class="title-info">
-          <div class="name">John Doe</div>
-          <div class="tweet-count">25推文</div>
+        <button class="btn" @click="$router.back()">
+          <img src="../assets/lastPage.svg" alt="" />
+        </button>
+        <div class="nameTag">
+          <p>{{ user.name }}</p>
+          <p>{{ tweets.length }} 則推文</p>
         </div>
       </div>
       <div class="admin-users-card">
@@ -146,12 +144,43 @@ export default {
   justify-content: center;
 }
 
-.UserProfilePanel {
+.mainSection {
+  flex: 1;
+  min-width: 598px;
+  max-width: 598px;
+  height: 100vh;
+  border-right: 1px solid #e6ecf0;
+  overflow-y: scroll;
+  position: relative;
+}
+
+/* for Chrome, Safari and Opera */
+.mainSection {
+  -ms-overflow-style: scrollbar;
+  /* IE and Edge */
+  /* scrollbar-width: 8px; */
+  /* Firefox */
+}
+
+.mainSection::-webkit-scrollbar {
+  width: 8px;
+}
+
+.mainSection::-webkit-scrollbar-thumb {
+  background-color: #9197a3;
+  border-radius: 15px;
+}
+
+.mainSection::-webkit-scrollbar-track {
+  background-color: #ddd;
+}
+
+/* .UserProfilePanel {
   flex: 1;
   min-width: 598px;
   max-width: 598px;
   border-right: 1px solid #e6ecf0;
-}
+} */
 
 .admin-users-card {
   margin-top: 5px;
