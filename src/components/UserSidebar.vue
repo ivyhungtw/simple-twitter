@@ -13,7 +13,7 @@
         </div>
         <button class="btn">
           <router-link to="/main">
-            <p id="routerMain">首頁</p>
+            <p :class="{ active: main }" id="routerMain">首頁</p>
           </router-link>
         </button>
       </div>
@@ -24,7 +24,7 @@
         </div>
         <button class="btn">
           <router-link to="/userprofile">
-            <p id="routerProfile">個人資料</p>
+            <p :class="{ active: profile }" id="routerProfile">個人資料</p>
           </router-link>
         </button>
       </div>
@@ -35,7 +35,7 @@
         </div>
         <button class="btn">
           <router-link to="/accountEdit">
-            <p id="routerSetting">設定</p>
+            <p :class="{ active: accountEdit }" id="routerSetting">設定</p>
           </router-link>
         </button>
       </div>
@@ -48,7 +48,7 @@
         <div class="icon">
           <img src="../assets/logout.svg" alt="" />
         </div>
-        <button class="btn" @click.stop.prevent="clearAutherization">
+        <button class="btn" @click.stop.prevent="logout">
           <p>登出</p>
         </button>
       </div>
@@ -60,7 +60,7 @@
 export default {
   name: "UserSidebar",
   created() {
-    const location = this.$route.name;
+    const location = this.$route.path.split("/")[1];
     this.setCurrentLocation(location);
   },
   data() {
@@ -71,16 +71,18 @@ export default {
     };
   },
   methods: {
-    clearAutherization() {
-      // 刪除 token => 登出
-      console.log("clearAutherization");
+    logout() {
+      // delete token => log out
+      this.$store.commit("revokeAuthentication");
+      this.$router.push("/signin");
     },
     setCurrentLocation(location) {
-      if (location === "main") {
+      console.log("location: " + location);
+      if (location === "main" || location === "replydetail") {
         this.main = true; // at main
         this.profile = false;
         this.accountEdit = false;
-      } else if (location === "user-profile") {
+      } else if (location === "userprofile") {
         this.main = false;
         this.profile = true; // at user-profile
         this.accountEdit = false;
@@ -127,6 +129,9 @@ export default {
 } */
 .icon {
   height: 26px;
+}
+.btn {
+  padding: 0;
 }
 .btn a {
   text-decoration: none;

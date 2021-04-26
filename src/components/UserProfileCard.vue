@@ -105,13 +105,13 @@
         </p>
         <div class="follow-condition row">
           <div class="following-count">
-            <a href=""
-              ><span>{{ user.followingCount }}個</span>跟隨中</a
+            <router-link to="/userprofile/following"
+              ><span>{{ user.followingCount }}個</span>跟隨中</router-link
             >
           </div>
           <div class="follows-count">
-            <a href=""
-              ><span>{{ user.followerCount }}位</span>跟隨者</a
+            <router-link to="/userprofile/followers"
+              ><span>{{ user.followerCount }}位</span>跟隨者</router-link
             >
           </div>
         </div>
@@ -122,9 +122,12 @@
 
 <script>
 // import { Toast } from './../utils/helpers'
+import { emptyImageFilter } from "../utils/mixins";
+// import { mapState } from "vuex";
 
 export default {
   name: "UserProfileCard",
+  mixins: [emptyImageFilter],
   props: {
     User: {
       type: Object,

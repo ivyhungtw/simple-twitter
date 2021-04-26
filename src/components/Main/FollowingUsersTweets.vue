@@ -7,63 +7,45 @@
       <!-- parentElement: $listeners -->
       <!-- find better way -->
       <TweetItem
-        v-for="tweet in tweets"
+        v-for="tweet in $attrs.tweets"
         :key="tweet.id"
         :tweet="tweet"
+        v-on="$listeners"
       ></TweetItem>
     </ul>
   </div>
 </template>
 
 <script>
-import TweetItem from "./TweetItem";
-import { mapState } from "vuex";
-import { Toast } from "../utils/helpers";
-import tweetsAPI from "../apis/tweets";
-
+import TweetItem from "../TweetItem";
 export default {
-  name: "UserProfileTweetsList.vue",
+  name: "FollowingUsersTweets",
+  prop: {
+    tweets: {
+      type: Array,
+      required: true,
+    },
+  },
   components: {
     TweetItem,
   },
-  computed: {
-    ...mapState(["currentUser", "isAuthenticated"]),
-  },
   created() {
-    this.fetchCurrentUser();
-    this.fetchUserTweets(this.user.id);
-    console.log("currentUserID", this.user);
+    this.fetchFollowedTweets();
   },
   data() {
     return {
-      tweets: [],
-      user: {},
+      followedTweets: [],
     };
   },
   methods: {
-    async fetchUserTweets(tweetId) {
-      try {
-        console.log(tweetId);
-        const { data } = await tweetsAPI.getUserTweet({ tweetId });
-        this.tweets = data;
-      } catch (error) {
-        console.log("error", error);
-        Toast.fire({
-          icon: "error",
-          title: "無法取得推文資料，請稍後再試",
-        });
-      }
-    },
-    fetchCurrentUser() {
-      this.user = this.currentUser;
+    fetchFollowedTweets() {
+      this.followedTweets = this.tweets;
     },
   },
   watch: {
     tweets(newVal) {
-      this.fetchUserTweets(newVal);
-      console.log("currentUserID", this.user.id);
+      this.fetchFollowedTweets(newVal);
     },
-  
   },
 };
 </script>

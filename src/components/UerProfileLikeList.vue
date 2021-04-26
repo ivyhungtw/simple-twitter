@@ -1,10 +1,10 @@
 <template>
-  <div class="hello">UserProfileReplyList</div>
+  <div class="hello">UserProfileLikeList</div>
 </template>
 
 <script>
 export default {
-  name: "UserProfileReplyList",
+  name: "UserProfileLikeList",
 };
 </script>
 

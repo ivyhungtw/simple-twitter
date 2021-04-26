@@ -1,17 +1,145 @@
 <template>
-  <h1>Main</h1>
+  <div class="main">
+    <!-- UserSidebar -->
+    <UserSidebar></UserSidebar>
+    <!-- Main -->
+    <div class="mainSection">
+      <div class="title">
+        <h1>首頁</h1>
+      </div>
+      <!-- CreateTweet -->
+      <CreateTweet @afterCreateTweet="afterCreateTweet"></CreateTweet>
+      <!-- FollowingUsersTweets -->
+      <FollowingUsersTweets
+        :tweets="tweets"
+        @afterToggleLike="afterToggleLike"
+        @afterCreateReply="afterCreateReply"
+      ></FollowingUsersTweets>
+    </div>
+
+    <!-- RecommendedFollowers -->
+    <RecommendedFollowers></RecommendedFollowers>
+  </div>
 </template>
 
 <script>
-// UserSidebar
-// RecommendedFollowers
-// CreateTweet.vue => modal id="tweetModal"
-// FollowingUsersTweets.vue => modal id="tweetReplyModal"
-
+import UserSidebar from "../components/UserSidebar";
+import RecommendedFollowers from "../components/RecommendedFollowers";
+import CreateTweet from "../components/Main/CreateTweet";
+import FollowingUsersTweets from "../components/Main/FollowingUsersTweets";
+import { Toast } from "../utils/helpers";
+import tweetsAPI from "../apis/tweets";
 export default {
   name: "Main",
+  components: {
+    UserSidebar,
+    RecommendedFollowers,
+    CreateTweet,
+    FollowingUsersTweets,
+  },
+  created() {
+    this.fetchTweets();
+  },
+  data() {
+    return {
+      tweets: [],
+      tweet: {
+        userId: undefined,
+        created: "",
+        description: "",
+        id: undefined, // tweetId
+        likeCount: 0,
+        replyCount: 0,
+        updatedAt: "",
+        user: {
+          account: "",
+          name: "",
+          avatar: "",
+        },
+        isLiked: false, // 要後端補
+      },
+    };
+  },
+  methods: {
+    async fetchTweets() {
+      try {
+        const { data } = await tweetsAPI.getAllFollowedTweets();
+        this.tweets = data;
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取得推文，請稍後再試！",
+        });
+      }
+    },
+    afterCreateTweet(newTweet) {
+      this.tweets.unshift({
+        ...this.tweet,
+        ...newTweet,
+      });
+    },
+    afterToggleLike(toggleTweet) {
+      // rerender
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.id === toggleTweet.id) {
+          return {
+            ...tweet,
+            isLiked: toggleTweet.isLiked,
+          };
+        } else {
+          return tweet;
+        }
+      });
+    },
+    afterCreateReply(tweetId) {
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.id === tweetId) {
+          return {
+            ...tweet,
+            replyCount: tweet.replyCount + 1,
+          };
+        } else {
+          return tweet;
+        }
+      });
+    },
+  },
 };
 </script>
 
 <style scoped>
+.main {
+  display: flex;
+}
+.mainSection {
+  flex: 1;
+  width: 100%;
+  height: 100vh;
+  border-right: 1px solid #e6ecf0;
+  overflow-y: scroll;
+  position: relative;
+}
+/* for Chrome, Safari and Opera */
+.mainSection::-webkit-scrollbar {
+  display: none;
+}
+.mainSection {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.title {
+  height: 55px;
+  border-bottom: 1px solid #e6ecf0;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+}
+.title h1 {
+  font-weight: 700;
+  font-size: 19px;
+  margin: 0;
+}
 </style>

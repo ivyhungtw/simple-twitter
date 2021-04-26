@@ -7,6 +7,17 @@ export default {
   createNewTweet(payload) {
     return apiHelper.post('/tweets', payload)
   },
+  deleteTweet({ tweetId }) {
+    return apiHelper.delete(`/admin/tweets/${tweetId}`)
+  },
+  getUserTweet({ tweetId }) {
+    console.log(tweetId)
+    return apiHelper.get(`/users/${tweetId}/tweets`)
+  },
+  getUserFollowersTweet({ tweetId }) {
+    console.log(tweetId)
+    return apiHelper.get(`/users/${tweetId}/followers`)
+  },
   createReply(tweetId, payload) {
     return apiHelper.post(`/tweets/${tweetId}/replies`, payload)
   },

@@ -4,6 +4,7 @@ import Main from '../views/Main.vue'
 import SignUp from '../views/SignUp.vue'
 import NotFound from '../views/NotFound.vue'
 import AdminSignIn from '../views/AdminSignIn.vue'
+import store from './../store'
 
 Vue.use(VueRouter)
 
@@ -22,6 +23,11 @@ const routes = [
     path: '/signin',
     name: 'sign-in',
     component: () => import('../views/SignIn.vue')
+  },
+  {
+    path: '/admin',
+    name: 'admin-root',
+    redirect: '/admin/signin'
   },
   {
     path: '/admin/signin',
@@ -88,6 +94,7 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
   // do something
+  store.dispatch('fetchCurrentUser')
   console.log(to)
   next()
 })

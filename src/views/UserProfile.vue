@@ -19,8 +19,12 @@
         <UserProfileCard v-for="user in users" :key="user.id" :user="user" />
         <!-- // UserProfileNavtabs -->
         <UserProfileNavtabs />
-        <!-- // TweetItem -->
-        <TweetItem />
+        <!-- // UserProfileTweetsList -->
+        <UserProfileTweetsList
+          :tweets="tweets"
+          @afterToggleLike="afterToggleLike"
+          @afterCreateReply="afterCreateReply"
+        />
       </div>
     </div>
 
@@ -33,8 +37,10 @@
 import UserSidebar from "./../components/UserSidebar";
 import UserProfileCard from "./../components/UserProfileCard";
 import UserProfileNavtabs from "./../components/UserProfileNavtabs";
-import TweetItem from "./../components/TweetItem";
+import UserProfileTweetsList from "./../components/UserProfileTweetsList";
 import RecommendedFollowers from "./../components/RecommendedFollowers";
+import { Toast } from "../utils/helpers";
+import tweetsAPI from "../apis/tweets";
 
 const dummyData = {
   users: [
@@ -62,25 +68,80 @@ export default {
     UserSidebar,
     UserProfileCard,
     UserProfileNavtabs,
-   TweetItem,
+    UserProfileTweetsList,
     RecommendedFollowers,
   },
   data() {
     return {
       users: [],
+      tweets: [],
+      tweet: {
+        userId: undefined,
+        created: "",
+        description: "",
+        id: undefined, // tweetId
+        likeCount: 0,
+        replyCount: 0,
+        updatedAt: "",
+        user: {
+          account: "",
+          name: "",
+          avatar: "",
+        },
+        isLiked: false, // 要後端補
+      },
     };
   },
   created() {
     this.fetchUsers();
+    this.fetchTweets();
   },
   methods: {
     fetchUsers() {
       const { users } = dummyData;
       this.users = users;
     },
+    async fetchTweets() {
+      try {
+        const { data } = await tweetsAPI.getAllFollowedTweets();
+        this.tweets = data;
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取得推文，請稍後再試！",
+        });
+      }
+    },
+    afterToggleLike(toggleTweet) {
+      // rerender
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.id === toggleTweet.id) {
+          return {
+            ...tweet,
+            isLiked: toggleTweet.isLiked,
+          };
+        } else {
+          return tweet;
+        }
+      });
+    },
+    afterCreateReply(tweetId) {
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.id === tweetId) {
+          return {
+            ...tweet,
+            replyCount: tweet.replyCount + 1,
+          };
+        } else {
+          return tweet;
+        }
+      });
+    },
   },
 };
 </script>
+
+
 
 <style scoped>
 #UserProfile {
