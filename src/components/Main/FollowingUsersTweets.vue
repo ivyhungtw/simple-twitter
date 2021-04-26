@@ -7,12 +7,6 @@
       <!-- parentElement: $listeners -->
       <!-- find better way -->
       <!-- use eventBus!!! -->
-      <!-- <TweetItem
-        v-for="tweet in $attrs.tweets"
-        :key="tweet.id"
-        :tweet="tweet"
-        v-on="$listeners"
-      ></TweetItem> -->
       <TweetItem
         v-for="tweet in $attrs.tweets"
         :key="tweet.id"

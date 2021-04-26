@@ -8,13 +8,10 @@
         <h1>首頁</h1>
       </div>
       <!-- CreateTweet -->
-      <CreateTweet @afterCreateTweet="afterCreateTweet"></CreateTweet>
+      <!-- <CreateTweet @afterCreateTweet="afterCreateTweet"></CreateTweet> -->
+      <CreateTweet></CreateTweet>
+
       <!-- FollowingUsersTweets -->
-      <!-- <FollowingUsersTweets
-        :tweets="tweets"
-        @afterToggleLike="afterToggleLike"
-        @afterCreateReply="afterCreateReply"
-      ></FollowingUsersTweets> -->
       <FollowingUsersTweets
         :tweets="tweets"
         @afterToggleLike="afterToggleLike"
@@ -47,6 +44,9 @@ export default {
     // eventbus for afterCreateReply
     this.$bus.$on("afterCreateReply", (tweetId) => {
       this.afterCreateReply(tweetId);
+    });
+    this.$bus.$on("afterCreateTweet", (newTweet) => {
+      this.afterCreateTweet(newTweet);
     });
   },
   data() {

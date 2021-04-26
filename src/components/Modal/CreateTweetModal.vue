@@ -46,16 +46,6 @@
 
         <div class="modal-footer">
           <div class="tweetButton">
-            <!-- <button
-              type="button"
-              class="btn"
-              data-dismiss="modal"
-              aria-label="Close"
-              @click="createNewTweet"
-              aria-hidden="true"
-            >
-              推文
-            </button> -->
             <button
               type="button"
               class="btn"
@@ -138,7 +128,7 @@ export default {
         this.closeModal("tweetModal");
 
         // inform Main.vue to push new tweet
-        this.$emit("afterCreateTweet", newTweet);
+        this.$bus.$emit("afterCreateTweet", newTweet);
 
         // clear tweetContent
         this.tweetContent = "";
@@ -223,9 +213,6 @@ export default {
 
 .modal-body {
   height: 245px;
-}
-
-.modal-body .textInput {
 }
 
 .modal-body input {

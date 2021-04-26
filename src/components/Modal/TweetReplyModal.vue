@@ -156,9 +156,6 @@ export default {
         // close modal after successfully replied
         this.closeModal(tweetId);
 
-        // inform TweetItem to change number of replyCount
-        // this.$emit("afterCreateReply");
-
         // use eventBus
         const payloadForList = {
           tweetId,
@@ -169,6 +166,8 @@ export default {
           createdAt: new Date(),
           id,
         };
+
+        // inform Main.vue
         this.$bus.$emit("afterCreateReply", payloadForList);
 
         // clear replyContent
