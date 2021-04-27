@@ -13,12 +13,12 @@
         </div>
       </div>
       <div class="admin-users-card">
-        <!-- // UserProfileCard -->
+        <!--  UserProfileCard -->
         <UserProfileCard :userData="user" />
-        <!-- // UserProfileNavtabs -->
+        <!--  UserProfileNavtabs -->
         <UserProfileNavtabs :userData="user" />
-        <!-- // UserProfileLikeList -->
-        <!-- <UserProfileLikeList /> -->
+        <!--  UserProfileLikeList -->
+        <UserProfileLikeList :userData="user" />
       </div>
     </div>
 
@@ -51,15 +51,9 @@ export default {
     try {
       next((vm) => {
         // vue instance not created yet, use next to invoke this
-        console.log("fetch data in beforeRouteEnter");
+        console.log("fetchUser @ beforeRouteEnter");
         const { id } = to.params;
-        // vm.fetchUser(id).then(() => {
-        //   vm.fetchUserTweets(id);
-        // });
-        vm.fetchUser(id).then((res) => console.log(res));
-        // Promise.all([vm.fetchUser(id), vm.fetchUserTweets(id)]);
-        // await vm.fetchUser(id);
-        // await vm.fetchUserTweets(id);
+        vm.fetchUser(id);
         vm.fetchingData = true;
       });
     } catch (error) {
@@ -68,13 +62,11 @@ export default {
   },
   // if entering from userProfiles
   async beforeRouteUpdate(to, from, next) {
+    console.log("fetchUser @ beforeRouteUpdate");
     try {
-      console.log("fetch data in beforeRouteUpdate");
       if (this.fetchingData) next();
-
       const { id } = to.params;
       await this.fetchUser(id);
-      // await this.fetchUserTweets(id);
       next();
     } catch (error) {
       console.log(error);
@@ -89,11 +81,13 @@ export default {
   },
   methods: {
     async fetchUser(userId) {
+      console.log("fetchUser in UserProfile");
       console.log("fetchUser:" + userId);
       try {
         const { data } = await usersAPI.getUser(userId);
         this.user = data;
       } catch (error) {
+        console.log(error);
         Toast.fire({
           icon: "error",
           title: "無法取得使用者資訊，請稍後再試！",

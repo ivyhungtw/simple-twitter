@@ -23,28 +23,6 @@ export default {
   components: {
     TweetItem,
   },
-  created() {
-    this.fetchFollowedTweets();
-  },
-  data() {
-    return {
-      followedTweets: [],
-    };
-  },
-  methods: {
-    fetchFollowedTweets() {
-      this.followedTweets = this.tweets;
-    },
-  },
-  watch: {
-    tweets: {
-      handler: function (newVal) {
-        console.log("new val from Main.vue");
-        this.fetchFollowedTweets(newVal);
-      },
-      deep: true,
-    },
-  },
 };
 </script>
 

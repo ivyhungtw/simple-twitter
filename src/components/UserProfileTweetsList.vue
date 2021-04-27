@@ -13,6 +13,8 @@
 <script>
 import TweetItem from "./TweetItem";
 import { mapState } from "vuex";
+import { Toast } from "../utils/helpers";
+import tweetsAPI from "../apis/tweets";
 
 export default {
   name: "UserProfileTweetsList.vue",
@@ -20,45 +22,65 @@ export default {
     TweetItem,
   },
   props: {
-    tweets: {
-      type: Array,
-      required: true,
-    },
     userData: {
       type: Object,
       required: true,
     },
   },
-  created() {
-    // this.fetchCurrentUser();
-  },
   data() {
     return {
-      localTweets: [],
       user: {},
+      tweets: {},
     };
   },
   methods: {
-    fetchUserTweets(newVal) {
-      this.localTweets = newVal;
-    },
-    fetchCurrentUser(newVal) {
+    fetchUser(newVal) {
       this.user = newVal;
+    },
+    async fetchUserTweets(userId) {
+      console.log("fetchUserTweets in List");
+      console.log("fetchUser:" + userId);
+      try {
+        const { data } = await tweetsAPI.getUserTweet(userId);
+        this.tweets = data;
+
+        this.tweets = this.tweets.map((tweet) => {
+          return {
+            ...tweet,
+            UserId: this.user.id,
+            user: {
+              account: this.user.account,
+              avatar: this.user.avatar,
+              name: this.user.name,
+            },
+          };
+        });
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得推文，請稍後再試！",
+        });
+      }
     },
   },
   computed: {
-    ...mapState(["currentUser", "isAuthenticated"]),
+    ...mapState(["currentUser"]),
   },
   watch: {
-    tweets: {
-      handler: function (newVal) {
-        this.fetchUserTweets(newVal);
-      },
-      deep: true,
-    },
     userData: {
-      handler: function (newVal) {
-        this.fetchCurrentUser(newVal);
+      handler: async function (newVal) {
+        try {
+          this.fetchUser(newVal);
+          const userId = this.user.id;
+          await this.fetchUserTweets(userId);
+        } catch (error) {
+          console.log(error);
+          Toast.fire({
+            icon: "error",
+            title: "無法取得推文資料，請稍後再試！",
+          });
+        }
       },
       deep: true,
     },

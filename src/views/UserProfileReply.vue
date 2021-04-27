@@ -18,7 +18,7 @@
         <!--  UserProfileNavtabs -->
         <UserProfileNavtabs :userData="user" />
         <!--  UserProfileReplyList -->
-        <UserProfileReplyList :tweets="tweets" />
+        <UserProfileReplyList :userData="user" />
       </div>
     </div>
 
@@ -34,7 +34,6 @@ import UserProfileNavtabs from "./../components/UserProfileNavtabs";
 import UserProfileReplyList from "./../components/UserProfileReplyList";
 import RecommendedFollowers from "./../components/RecommendedFollowers";
 import { Toast } from "../utils/helpers";
-import tweetsAPI from "../apis/tweets";
 import usersAPI from "../apis/users";
 
 export default {
@@ -47,75 +46,50 @@ export default {
     RecommendedFollowers,
   },
   // if entering from none userProfiles
-  beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      // vue instance not created yet, use next to invoke this
-      console.log("beforeRouteEnter");
-      const { id } = to.params;
-      console.log("id: " + id);
-      vm.fetchUser(id);
-      vm.fetchUserTweets(id);
-      vm.fetchingData = true;
-    });
+  async beforeRouteEnter(to, from, next) {
+    try {
+      next((vm) => {
+        // vue instance not created yet, use next to invoke this
+        console.log("fetchUser @ beforeRouteEnter");
+        const { id } = to.params;
+        vm.fetchUser(id);
+        vm.fetchingData = true;
+      });
+    } catch (error) {
+      console.log(error);
+    }
   },
   // if entering from userProfiles
-  beforeRouteUpdate(to, from, next) {
-    if (this.fetchingData) next();
-    console.log("beforeRouteUpdate");
-    const { id } = to.params;
-    console.log("id: " + id);
-    this.fetchUser(id);
-    this.fetchUserTweets(id);
-    next();
+  async beforeRouteUpdate(to, from, next) {
+    console.log("fetchUser @ beforeRouteUpdate");
+    try {
+      if (this.fetchingData) next();
+      const { id } = to.params;
+      await this.fetchUser(id);
+      next();
+    } catch (error) {
+      console.log(error);
+    }
   },
   data() {
     return {
       user: {},
       tweets: [],
-      tweet: {},
       fetchingData: false,
     };
   },
   methods: {
     async fetchUser(userId) {
-      console.log("fetchUser");
+      console.log("fetchUser in UserProfile");
+      console.log("fetchUser:" + userId);
       try {
         const { data } = await usersAPI.getUser(userId);
-        console.log(data);
-        console.log("fetchUser");
         this.user = data;
       } catch (error) {
-        console.log("error in fetch user");
-        Toast.fire({
-          icon: "error",
-          title: "無法取得使用者資訊，請稍後再試！",
-        });
-      }
-    },
-    async fetchUserTweets(userId) {
-      console.log("userId in fetchUsersTweet: " + userId);
-      console.log("fetchUserTweets");
-      try {
-        const { data } = await tweetsAPI.getUserTweet(userId);
-        this.tweets = data;
-
-        this.tweets = this.tweets.map((tweet) => {
-          return {
-            ...tweet,
-            UserId: this.currentUser.id,
-            user: {
-              account: this.currentUser.account,
-              avatar: this.currentUser.avatar,
-              name: this.currentUser.name,
-            },
-          };
-        });
-      } catch (error) {
-        console.log("error in fetch userTweets");
         console.log(error);
         Toast.fire({
           icon: "error",
-          title: "無法取得推文，請稍後再試！",
+          title: "無法取得使用者資訊，請稍後再試！",
         });
       }
     },
