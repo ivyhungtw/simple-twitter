@@ -27,7 +27,7 @@
               </div>
               <div class="replyTarget">
                 <p>
-                  回覆 <span>@{{ dataForList.account }}</span>
+                  回覆 <span>@{{ dataForList.user.account }}</span>
                 </p>
               </div>
               <div class="textContent">
@@ -86,6 +86,7 @@ export default {
       }
     },
     async fetchAllReplyUsers() {
+      // 根據取得的回覆中所帶的 UserId 取得回覆者資料
       this.localComments = await Promise.all(
         this.localComments.map(async (comment) => {
           try {
@@ -147,7 +148,10 @@ export default {
   width: 100%;
   border-bottom: 1px solid #e6ecf0;
   padding: 18px 15px;
-  /* border: 1px solid #000; */
+}
+
+.commentItem:hover {
+  background-color: hsl(205deg 92% 95%);
 }
 
 .avatar {

@@ -2,6 +2,7 @@ import { apiHelper } from './../utils/helpers'
 
 export default {
   getAllFollowedTweets() {
+    // get all tweets
     return apiHelper.get('tweets')
   },
   createNewTweet(payload) {
@@ -14,17 +15,24 @@ export default {
     // get one users' all tweets
     return apiHelper.get(`/users/${userId}/tweets`)
   },
-  getUserFollowersTweet({ tweetId }) {
-    return apiHelper.get(`/users/${tweetId}/followers`)
+  getUserFollowersTweet({ userId }) {
+    // get one users' all followers
+    return apiHelper.get(`/users/${userId}/followers`)
   },
   getTweet(tweetId) {
+    // get one tweet
     return apiHelper.get(`/tweets/${tweetId}`)
   },
   getTweetReplies(tweetId) {
+    // get one tweet's all replies
     return apiHelper.get(`/tweets/${tweetId}/replies`)
   },
   getAllTweetsByUserId(userId) {
+    // get one user's all tweets
     return apiHelper.get(`/users/${userId}/tweets`)
+  },
+  getAllRepliedTweets(userId) {
+    return apiHelper.get(`/users/${userId}/replied_tweets`)
   },
   createReply(tweetId, payload) {
     return apiHelper.post(`/tweets/${tweetId}/replies`, payload)

@@ -1,6 +1,6 @@
 <template>
-  <div id="UserProfile">
-    <!-- // UserSidebar -->
+  <div id="userProfile">
+    <!--  UserSidebar -->
     <UserSidebar />
     <div class="mainSection">
       <div class="title">
@@ -15,50 +15,28 @@
       <div class="admin-users-card">
         <!--  UserProfileCard -->
         <UserProfileCard :userData="user" />
-
         <!--  UserProfileNavtabs -->
-        <UserProfileNavtabs />
-
+        <UserProfileNavtabs :userData="user" />
         <!--  UserProfileTweetsList -->
-        <!-- <UserProfileTweetsList
-          :tweets="tweets"
-          @afterToggleLike="afterToggleLike"
-          @afterCreateReply="afterCreateReply"
-        /> -->
-        <UserProfileTweetsList :tweets="tweets" />
+        <UserProfileTweetsList :userData="user" />
       </div>
     </div>
 
-    <!-- // RecommendedFollowers -->
+    <!-- RecommendedFollowers -->
     <RecommendedFollowers />
   </div>
 </template>
 
 <script>
-const dummyUser = {
-  id: 64,
-  name: "John Doe",
-  avatar:
-    "https://s3-alpha-sig.figma.com/img/7075/8e0a/7c0f47389595381eca543235de212578?Expires=1620000000&Signature=NPGKM~T5uRhNRXlPmNslZfE2oPmtp4FxaIduK3IgFsLVr5OgpjlXe2Az28ZYxdHxOalBETrOrUb2rx1t86cthAmQVnL-b92nBKRTpag3EHMchy3hspFH1YhSg-dnmpSZqXxEer2lZqjWP1g5Yn2lv2rX16GpPq1v1W2~ZXVe6kQEm8Yg8K3E6Gh6lktIX65OViGN3UGBpjM9gvU8ZD4g7tx6eV6PbDKgm0aWEZMl~DS359hGwg6dGCZ2z2p-oel3~Q4WdRcFb-SNCessB~RAvpeZiX-qmgj1OM44L1AKH9n7lZi-YMVAOXiFgpEjL9VUGVLSOaLgcg7jR8s5GudcoA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-  account: "heyjohn",
-  cover:
-    "https://s3-alpha-sig.figma.com/img/f005/46e8/d7c5c19fec744637850a77bf189952e0?Expires=1620000000&Signature=DdVw8tGyQc33zX1gk6bBEdLzKa8CcRYbjNiBz~qC2ZUrm4vxDFPpJiqSYltCWbLky8D~QCRq9~Bq4WIdRHjvsVCO9qRiGJlX1Rc1N1kFSCNxt0PJwVTRc0wifikFL7OAyTvN3CeuL8CeZeEgsXuoSJTH93Pf-aEn0ksh7SK61V5fNyBbtAIvVe~9w34-2aV-3GzKH~5VZgWo2AEfU7sTrTFUz-SMheQuTQU8HEZgPZ0wjxdw44Y~FNCgDp46h9jk4RkayQPELDCtMn2EeZM1t18o5J0ADefEIJWwaLoBn3tlcts0txtR7lTUXj-MdMtRtwwrcmA0muu2fTYNDTkL3Q__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-  introduction:
-    "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.",
-  tweetCount: 10,
-  followerCount: 3,
-  followingCount: 1,
-  likeCount: 3,
-};
-
 import UserSidebar from "./../components/UserSidebar";
+// import UserProfileCard from "./../components/UserProfileCard";
 import UserProfileCard from "./../components/UserProfileCard";
 import UserProfileNavtabs from "./../components/UserProfileNavtabs";
 import UserProfileTweetsList from "./../components/UserProfileTweetsList";
 import RecommendedFollowers from "./../components/RecommendedFollowers";
 import { Toast } from "../utils/helpers";
-import tweetsAPI from "../apis/tweets";
 import { mapState } from "vuex";
+import usersAPI from "../apis/users";
 
 export default {
   name: "UserProfile",
@@ -69,44 +47,78 @@ export default {
     UserProfileTweetsList,
     RecommendedFollowers,
   },
+  // if entering from none userProfiles
+  async beforeRouteEnter(to, from, next) {
+    try {
+      next((vm) => {
+        // vue instance not created yet, use next to invoke this
+        console.log("fetchUser @ beforeRouteEnter");
+        const { id } = to.params;
+        vm.fetchUser(id);
+        vm.fetchingData = true;
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  // if entering from userProfiles
+  async beforeRouteUpdate(to, from, next) {
+    console.log("fetchUser @ beforeRouteUpdate");
+    try {
+      if (this.fetchingData) next();
+      const { id } = to.params;
+      await this.fetchUser(id);
+      next();
+    } catch (error) {
+      console.log(error);
+    }
+  },
   data() {
     return {
       user: {},
       tweets: [],
+      fetchingData: false,
     };
   },
-  created() {
-    this.fetchUsers();
-    this.fetchUserTweets();
-  },
   methods: {
-    fetchUsers() {
-      this.user = dummyUser;
-    },
-    async fetchUserTweets() {
+    async fetchUser(userId) {
+      console.log("fetchUser in UserProfile");
+      console.log("fetchUser:" + userId);
       try {
-        const userId = this.user.id;
-        const { data } = await tweetsAPI.getUserTweet(userId);
-        this.tweets = data;
-
-        this.tweets = this.tweets.map((tweet) => {
-          return {
-            ...tweet,
-            UserId: this.currentUser.id,
-            user: {
-              account: this.currentUser.account,
-              avatar: this.currentUser.avatar,
-              name: this.currentUser.name,
-            },
-          };
-        });
+        const { data } = await usersAPI.getUser(userId);
+        this.user = data;
       } catch (error) {
         console.log(error);
         Toast.fire({
           icon: "error",
-          title: "無法取得推文，請稍後再試！",
+          title: "無法取得使用者資訊，請稍後再試！",
         });
       }
+    },
+    afterToggleLike(toggleTweet) {
+      // rerender
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.id === toggleTweet.id) {
+          return {
+            ...tweet,
+            isLiked: toggleTweet.isLiked,
+          };
+        } else {
+          return tweet;
+        }
+      });
+    },
+    afterCreateReply(tweetId) {
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.id === tweetId) {
+          return {
+            ...tweet,
+            replyCount: tweet.replyCount + 1,
+          };
+        } else {
+          return tweet;
+        }
+      });
     },
   },
   computed: {
@@ -116,7 +128,7 @@ export default {
 </script>
 
 <style scoped>
-#UserProfile {
+#userProfile {
   display: flex;
   min-height: 100vh;
   justify-content: center;
@@ -162,7 +174,8 @@ export default {
   position: sticky;
   top: 0;
   background-color: #fff;
-  z-index: 99;
+  z-index: 1;
+  /* z-index: 999; */
 }
 
 .title .btn {
@@ -195,5 +208,11 @@ export default {
   font-size: 13px;
   color: #657789;
   margin: 0;
+}
+
+.admin-users-card {
+  position: relative;
+  /* work with z-index */
+  z-index: 0;
 }
 </style>

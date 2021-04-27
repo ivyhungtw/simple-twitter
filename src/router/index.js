@@ -73,19 +73,19 @@ const routes = [
     component: () => import('../views/ReplyDetail.vue')
   },
   {
-    path: '/userprofile',
-    name: 'user-profile',
-    component: () => import('../views/UserProfile.vue')
-  },
-  {
-    path: '/userprofile/replies',
+    path: '/userprofile/:id/replies',
     name: 'user-profile-replies',
     component: () => import('../views/UserProfileReply.vue')
   },
   {
-    path: '/userprofile/likes',
+    path: '/userprofile/:id/likes',
     name: 'user-profile-Likes',
     component: () => import('../views/UserProfileLike.vue')
+  },
+  {
+    path: '/userprofile/:id',
+    name: 'user-profile',
+    component: () => import('../views/UserProfile.vue')
   },
   {
     path: '/userprofile/followers',
