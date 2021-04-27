@@ -42,8 +42,8 @@ export default {
   created() {
     this.fetchTweets();
     // eventbus for afterCreateReply
-    this.$bus.$on("afterCreateReply", (tweetId) => {
-      this.afterCreateReply(tweetId);
+    this.$bus.$on("afterCreateReply", (payload) => {
+      this.afterCreateReply(payload);
     });
     this.$bus.$on("afterCreateTweet", (newTweet) => {
       this.afterCreateTweet(newTweet);
@@ -100,17 +100,19 @@ export default {
         }
       });
     },
-    afterCreateReply(tweetId) {
+    afterCreateReply(payload) {
+      const tweetId = payload.tweetId;
+      console.log("tweetId: " + tweetId);
       this.tweets = this.tweets.map((tweet) => {
-        if (tweet.id === tweetId) {
-          console.log("tweets changed!");
-
+        if (tweet.id !== tweetId) {
+          return {
+            ...tweet,
+          };
+        } else {
           return {
             ...tweet,
             replyCount: tweet.replyCount + 1,
           };
-        } else {
-          return tweet;
         }
       });
     },

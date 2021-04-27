@@ -133,7 +133,6 @@ export default {
       this.replyContent = "";
     },
     async createReply(tweetId) {
-
       const result = this.replyContentCheck(this.replyContent);
       if (!result) {
         return;
@@ -170,6 +169,7 @@ export default {
         };
 
         // inform Main.vue
+        console.log(payloadForList);
         this.$bus.$emit("afterCreateReply", payloadForList);
 
         // clear replyContent

@@ -24,7 +24,7 @@ export const exactDateFilter = {
 export const emptyImageFilter = {
   filters: {
     emptyImageFilter(src) {
-      return src || 'https://via.placeholder.com/500x500/DFDFDF?text=No+Image'
+      return src || 'https://via.placeholder.com/1000x1000/999/fff?text=No+Image'
     }
   }
 }

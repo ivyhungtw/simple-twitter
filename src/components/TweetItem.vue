@@ -100,9 +100,9 @@ export default {
   },
   created() {
     this.localTweet = this.tweet;
-    // eventbus for afterCreateReply
-    this.$bus.$on("afterCreateReply", () => {
-      this.afterCreateReply();
+    // eventbus for afterCreateReply from
+    this.$bus.$on("afterCreateReply", (payload) => {
+      this.afterCreateReply(payload);
     });
   },
   methods: {
@@ -145,6 +145,7 @@ export default {
       }
     },
     afterCreateReply() {
+      console.log();
       this.tweet.replyCount++;
     },
     async deleteTweet(tweetId) {
@@ -177,7 +178,6 @@ export default {
   watch: {
     tweet: {
       handler: function () {
-        console.log("newVal!!!!!");
         this.localTweet = this.tweet;
       },
       deep: true,

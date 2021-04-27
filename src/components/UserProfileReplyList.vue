@@ -42,10 +42,8 @@ export default {
       console.log("fetchUser:" + userId);
       try {
         const { data } = await tweetsAPI.getAllRepliedTweets(userId);
-        this.tweets = data;
-        console.log(this.tweets);
-
-        this.tweets = this.tweets.map((each) => {
+        // this.tweets = data;
+        this.tweets = data.map((each) => {
           const { id: replyId } = each; // v-for key
           const { TweetId: id } = each;
           const {
@@ -86,7 +84,6 @@ export default {
       this.tweets = await Promise.all(
         this.tweets.map(async (tweet) => {
           try {
-            console.log("get user");
             const { data } = await usersAPI.getUser(tweet.UserId);
             const { avatar, name, account } = data;
             return {
@@ -143,6 +140,10 @@ export default {
   /* overflow-y: scroll; */
   height: 100%;
   width: 100%;
+}
+
+.tweetList .tweet {
+  border: 1px solid #000;
 }
 /* for Chrome, Safari and Opera */
 .tweetList::-webkit-scrollbar {
