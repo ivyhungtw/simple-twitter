@@ -2,34 +2,38 @@
   <div class="tweet">
     <div class="avatar">
       <router-link to="/userprofile">
-        <img :src="tweet.user.avatar | emptyImageFilter" alt="" />
+        <img v-if="localTweet.user" :src="localTweet.user.avatar" alt="" />
+        <img v-else :src="'' | emptyImageFilter" alt="" />
       </router-link>
     </div>
     <div class="tweetInfo">
       <div class="userInfo">
         <router-link
-          :to="{ name: 'user-profile', params: { id: tweet.UserId } }"
+          :to="{ name: 'user-profile', params: { id: localTweet.UserId } }"
         >
-          <p class="userName mr-1">{{ tweet.user.name }}</p>
+          <p class="userName mr-1">
+            {{ localTweet.user ? localTweet.user.name : "UserName" }}
+          </p>
         </router-link>
-        <p class="userAccount">@{{ tweet.user.account }}</p>
+        <p class="userAccount">
+          @{{ localTweet.user ? localTweet.user.account : "UserAccount" }}
+        </p>
         <span class="mx-1">&#xb7;</span>
-        <p class="tweetUpdateAt">{{ tweet.createdAt | fromNow }}</p>
+        <p class="tweetUpdateAt">{{ localTweet.createdAt | fromNow }}</p>
         <!-- isMine -->
         <button
           class="btn deleteTweet"
-          v-if="currentUser.id === tweet.UserId"
-          @click.stop.prevent="deleteTweet(tweet.id)"
+          v-if="currentUser.id === localTweet.UserId"
+          @click.stop.prevent="deleteTweet(localTweet.id)"
         >
-          <!-- {{ currentUser.id }} | {{ tweet.UserId }} -->
           <i class="fas fa-times"></i>
         </button>
         <!-- isMine -->
       </div>
       <div class="tweetContent">
         <!-- <router-link to="/replydetail"> -->
-        <router-link :to="`/replydetail/${tweet.id}`">
-          <p>{{ tweet.description }}</p>
+        <router-link :to="`/replydetail/${localTweet.id}`">
+          <p>{{ localTweet.description }}</p>
         </router-link>
       </div>
       <div class="tweetPanel">
@@ -38,33 +42,33 @@
             src="../assets/commentCount.svg"
             alt=""
             data-toggle="modal"
-            :data-target="`#tweetReplyModal-${tweet.id}`"
+            :data-target="`#tweetReplyModal-${localTweet.id}`"
           />
           <p>
-            {{ tweet.replyCount }}
+            {{ localTweet.replyCount }}
           </p>
         </div>
         <div class="likes">
           <img
-            v-if="!tweet.isLiked"
-            :class="{ liked: tweet.isLiked }"
+            v-if="!localTweet.isLiked"
+            :class="{ liked: localTweet.isLiked }"
             src="../assets/likeCount.svg"
             alt=""
-            @click="toggleLike(tweet)"
+            @click="toggleLike(localTweet)"
           />
           <img
             v-else
             src="../assets/likedLikeCount.svg"
             alt=""
-            @click="toggleLike(tweet)"
+            @click="toggleLike(localTweet)"
           />
           <p>
-            {{ tweet.likeCount }}
+            {{ localTweet.likeCount }}
           </p>
         </div>
       </div>
     </div>
-    <TweetReplyModal :tweet="tweet"></TweetReplyModal>
+    <TweetReplyModal :tweet="localTweet"></TweetReplyModal>
   </div>
 </template>
 
@@ -90,10 +94,12 @@ export default {
   },
   data() {
     return {
+      localTweet: {},
       isMine: false,
     };
   },
   created() {
+    this.localTweet = this.tweet;
     // eventbus for afterCreateReply
     this.$bus.$on("afterCreateReply", () => {
       this.afterCreateReply();
@@ -167,6 +173,15 @@ export default {
   },
   computed: {
     ...mapState(["currentUser"]),
+  },
+  watch: {
+    tweet: {
+      handler: function () {
+        console.log("newVal!!!!!");
+        this.localTweet = this.tweet;
+      },
+      deep: true,
+    },
   },
 };
 </script>

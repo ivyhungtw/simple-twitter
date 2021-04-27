@@ -1,9 +1,10 @@
 <template>
   <div class="container">
-    <ul class="tweetList" v-if="loaded">
+    <ul class="tweetList">
       <TweetItem
         v-for="tweet in tweets"
-        :key="tweet.id"
+        :key="tweet.replyId"
+        :userData="user"
         :tweet="tweet"
       ></TweetItem>
     </ul>
@@ -11,7 +12,7 @@
 </template>
 
 <script>
-import TweetItem from "../components/TweetItem";
+import TweetItem from "./TweetItem";
 import { mapState } from "vuex";
 import { Toast } from "../utils/helpers";
 import tweetsAPI from "../apis/tweets";
@@ -29,8 +30,7 @@ export default {
   data() {
     return {
       user: {},
-      tweets: {},
-      loaded: false,
+      tweets: [],
     };
   },
   methods: {
@@ -41,13 +41,39 @@ export default {
       console.log("fetchUserTweets in List");
       console.log("fetchUser:" + userId);
       try {
-        const { data } = await tweetsAPI.getTweetReplies(userId);
-        console.log(data);
+        const { data } = await tweetsAPI.getAllRepliedTweets(userId);
         this.tweets = data;
-        if (data.status !== "success") {
-          throw new Error();
-        }
+        console.log(this.tweets);
+
+        this.tweets = this.tweets.map((each) => {
+          const { id: replyId } = each; // v-for key
+          const { TweetId: id } = each;
+          const {
+            createdAt,
+            description,
+            isLiked,
+            likeCount,
+            replyCount,
+          } = each.Tweet;
+          const { avatar, name, account, id: UserId } = each.Tweet.User;
+          return {
+            replyId, // v-for key
+            UserId,
+            createdAt,
+            description,
+            id, // tweetId
+            isLiked,
+            likeCount,
+            replyCount,
+            user: {
+              avatar,
+              name,
+              account,
+            },
+          };
+        });
       } catch (error) {
+        console.log("in fetchUser");
         console.log(error);
         Toast.fire({
           icon: "error",
@@ -65,11 +91,14 @@ export default {
             const { avatar, name, account } = data;
             return {
               ...tweet,
-              avatar,
-              name,
-              account,
+              user: {
+                avatar,
+                name,
+                account,
+              },
             };
           } catch (error) {
+            console.log("in fetchAllReplyUsers");
             console.log(error);
             Toast.fire({
               icon: "error",
@@ -78,7 +107,6 @@ export default {
           }
         })
       );
-      this.loaded = true;
     },
   },
   computed: {
