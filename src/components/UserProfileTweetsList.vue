@@ -24,9 +24,13 @@ export default {
       type: Array,
       required: true,
     },
+    userData: {
+      type: Object,
+      required: true,
+    },
   },
   created() {
-    this.fetchCurrentUser();
+    // this.fetchCurrentUser();
   },
   data() {
     return {
@@ -38,8 +42,8 @@ export default {
     fetchUserTweets(newVal) {
       this.localTweets = newVal;
     },
-    fetchCurrentUser() {
-      this.user = this.currentUser;
+    fetchCurrentUser(newVal) {
+      this.user = newVal;
     },
   },
   computed: {
@@ -49,6 +53,12 @@ export default {
     tweets: {
       handler: function (newVal) {
         this.fetchUserTweets(newVal);
+      },
+      deep: true,
+    },
+    userData: {
+      handler: function (newVal) {
+        this.fetchCurrentUser(newVal);
       },
       deep: true,
     },

@@ -7,7 +7,9 @@
     </div>
     <div class="tweetInfo">
       <div class="userInfo">
-        <router-link to="/userprofile">
+        <router-link
+          :to="{ name: 'user-profile', params: { id: tweet.UserId } }"
+        >
           <p class="userName mr-1">{{ tweet.user.name }}</p>
         </router-link>
         <p class="userAccount">@{{ tweet.user.account }}</p>
@@ -19,6 +21,7 @@
           v-if="currentUser.id === tweet.UserId"
           @click.stop.prevent="deleteTweet(tweet.id)"
         >
+          <!-- {{ currentUser.id }} | {{ tweet.UserId }} -->
           <i class="fas fa-times"></i>
         </button>
         <!-- isMine -->
@@ -59,9 +62,9 @@
             {{ tweet.likeCount }}
           </p>
         </div>
-        <TweetReplyModal :tweet="tweet"></TweetReplyModal>
       </div>
     </div>
+    <TweetReplyModal :tweet="tweet"></TweetReplyModal>
   </div>
 </template>
 
@@ -291,5 +294,15 @@ export default {
 .tweetPanel p {
   margin: 0px;
   color: #657786;
+}
+
+/*  */
+.modal-backdrop {
+  display: none;
+  z-index: 1040 !important;
+}
+
+.modal-content {
+  z-index: 1100 !important;
 }
 </style>

@@ -1,98 +1,66 @@
 <template>
   <div class="container">
+    <div class="coverImage">
+      <img
+        :src="userData.cover | emptyImageFilter"
+        class="card-img-top"
+        alt=""
+      />
+    </div>
+    <div class="avatar">
+      <img
+        :src="userData.avatar | emptyImageFilter"
+        class="card-img-top"
+        alt=""
+      />
+    </div>
     <div class="card">
-      <div class="background-img">
-        <img :src="user.cover | emptyImageFilter" class="card-img-top" alt="" />
+      <div class="card-body">
+        <h5 class="card-title">{{ userData.name }}</h5>
+        <p class="card-account">@{{ userData.account }}</p>
+        <p class="card-content">
+          {{
+            userData.introduction
+              ? userData.introduction
+              : "Placeholder: It's empty here, write something down!"
+          }}
+        </p>
+        <div class="follow-condition">
+          <div class="following-count">
+            <router-link to="/userprofile/following"
+              ><span>{{ userData.followingCount }} 個</span>跟隨中</router-link
+            >
+          </div>
+          <div class="follows-count">
+            <router-link to="/userprofile/followers"
+              ><span>{{ userData.followerCount }} 位</span>跟隨者</router-link
+            >
+          </div>
+        </div>
       </div>
-      <div class="avatar">
-        <img
-          :src="user.avatar | emptyImageFilter"
-          class="card-img-top"
-          alt=""
-        />
-      </div>
-      <!-- Button trigger modal -->
       <button
-        @click="editUserModal(user)"
-        class="btn btn-primary btn-edit-user"
+        v-if="currentUser.id === userData.id"
+        @click="editUserModal(userData)"
+        class="btn btn-edit-user"
         data-toggle="modal"
         data-target="#edit-user-modal"
       >
         編輯個人資料
       </button>
-
-      <!-- Modal -->
-      <!-- <UserEditModal> </UserEditModal> -->
-
-      <!-- card-body -->
-      <div class="card-body">
-        <h5 class="card-title">{{ user.name }}</h5>
-        <p class="card-account">@{{ user.account }}</p>
-        <p class="card-content">
-          {{
-            user.introduction ? user.introduction : "我還沒開始寫我的個人介紹。"
-          }}
-        </p>
-        <div class="follow-condition row">
-          <div class="following-count">
-            <router-link to="/userprofile/following"
-              ><span>{{ user.followingCount }} 個</span>跟隨中</router-link
-            >
-          </div>
-          <div class="follows-count">
-            <router-link to="/userprofile/followers"
-              ><span>{{ user.followerCount }} 位</span>跟隨者</router-link
-            >
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { emptyImageFilter } from "../utils/mixins";
-// import UserEditModal from "../components/Modal/UserEditModal";
 import { mapState } from "vuex";
-
+import { emptyImageFilter } from "../utils/mixins";
 export default {
   name: "UserProfileCard",
   mixins: [emptyImageFilter],
-  // components: { UserEditModal },
   props: {
     userData: {
       type: Object,
       required: true,
-    },
-  },
-  data() {
-    return {
-      user: this.User,
-    };
-  },
-  created() {
-    this.user = this.userData;
-  },
-  methods: {
-    editUserModal(user) {
-      this.user = user;
-    },
-    handleFileChange(e) {
-      const { files } = e.target;
-      if (files.length === 0) {
-        // 使用者沒有選擇上傳的檔案
-        this.user.cover = "";
-      } else {
-        const imageURL = window.URL.createObjectURL(files[0]);
-        this.user.image = imageURL;
-      }
-    },
-    handleSubmit(e) {
-      const form = e.target;
-      const formData = new FormData(form);
-      for (let [name, value] of formData.entries()) {
-        console.log(name + ": " + value);
-      }
     },
   },
   computed: {
@@ -103,92 +71,117 @@ export default {
 
 <style scoped>
 .container {
-  width: 100%;
-  height: 390px;
-  margin: 0;
   padding: 0;
+  position: relative;
 }
 
-.container .card {
-  width: 100%;
-  width: 100%;
-  margin-bottom: 10px;
-  padding: 0;
-  background-color: white;
-  border: none;
-}
-
-.background-img {
-  width: 100%;
-}
-
-.background-img img {
+.coverImage {
   width: 100%;
   height: 200px;
-  background-size: cover;
+  overflow: hidden;
+}
+
+.avatar {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  top: 200px;
+  left: 84px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background-color: #000;
+  z-index: 999;
+  overflow: hidden;
   object-fit: cover;
 }
 
-.avatar img {
+.avatar:after {
+  content: "";
   position: absolute;
-  left: 14px;
-  top: 124px;
+  top: 50%;
+  left: 50%;
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background-size: cover;
-  object-fit: cover;
-  border: 5px solid white;
+  transform: translate(-50%, -50%);
+  border: 4px solid #ffffff;
+}
+
+.card {
+  margin-top: 70px;
+  position: relative;
+  padding: 0 15px 20px;
+  border: none;
+}
+
+.card-title {
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.card-account {
+  font-size: 15px;
+  font-weight: 500;
+  color: #657786;
 }
 
 .btn-edit-user {
-  position: relative;
-  top: 10px;
-  left: 460px;
-  width: 122px;
+  position: absolute;
+  top: -60px;
+  z-index: 999;
+  right: 15px;
   height: 40px;
-  font-weight: 900;
+  width: 122px;
   color: #ff6600;
-  background-color: white;
+  border-color: #ff6600;
   border-radius: 100px;
-  border: 1px solid #ff6600;
 }
 
-.card-body {
-  margin-top: 10px;
+.btn-edit-user:hover {
+  color: #fff;
+  background-color: #ff6600;
 }
 
-.card-body h5,
-.card-body p {
-  margin-bottom: 0;
+.card h5,
+.card p {
+  margin: 0;
 }
 
-.card-body h5,
+div.card-body {
+  padding: 0;
+}
+
+.card-account {
+  padding-bottom: 10px;
+}
+
+.follow-condition {
+  padding-top: 10px;
+  display: flex;
+}
+
 .follow-condition span {
-  font-weight: 900;
-}
-
-.card-body p {
-  color: #657786;
-}
-.card-body .card-content {
-  color: black;
-  margin: 5px 0;
-}
-
-.row {
-  margin-left: 0;
+  font-weight: 700;
+  color: #222;
 }
 
 .follow-condition a {
-  color: gray;
+  color: #657786;
+  font-weight: 700;
 }
 
 .follow-condition a:hover {
   text-decoration: none;
 }
 
+.follow-condition > div {
+  display: block;
+  height: 20px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
 .following-count {
-  margin-right: 15px;
+  margin-right: 20px;
 }
 </style>

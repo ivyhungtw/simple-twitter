@@ -97,7 +97,7 @@ export default {
 
 <style scoped>
 /* Modal */
-form {
+/* form {
   margin: 0;
   padding: 0;
 }
@@ -272,5 +272,5 @@ input {
 .form-name p,
 .form-introduction p {
   text-align: end;
-}
+} */
 </style>

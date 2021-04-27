@@ -1,5 +1,5 @@
 <template>
-  <div id="UserProfile">
+  <div id="userProfile">
     <!--  UserSidebar -->
     <UserSidebar />
     <div class="mainSection">
@@ -8,20 +8,17 @@
           <img src="../assets/lastPage.svg" alt="" />
         </button>
         <div class="nameTag">
-          <p>{{ currentUser.name }}</p>
+          <p>{{ user.name }}</p>
           <p>{{ tweets.length }} 則推文</p>
         </div>
       </div>
       <div class="admin-users-card">
         <!--  UserProfileCard -->
-        <!-- <UserProfileCard :userData="user" /> -->
-        <UserProfileCard :userData="currentUser" />
-
+        <UserProfileCard :userData="user" />
         <!--  UserProfileNavtabs -->
-        <UserProfileNavtabs />
-
+        <UserProfileNavtabs :userData="user" />
         <!--  UserProfileTweetsList -->
-        <UserProfileTweetsList :tweets="tweets" />
+        <UserProfileTweetsList :tweets="tweets" :userData="user" />
       </div>
     </div>
 
@@ -32,6 +29,7 @@
 
 <script>
 import UserSidebar from "./../components/UserSidebar";
+// import UserProfileCard from "./../components/UserProfileCard";
 import UserProfileCard from "./../components/UserProfileCard";
 import UserProfileNavtabs from "./../components/UserProfileNavtabs";
 import UserProfileTweetsList from "./../components/UserProfileTweetsList";
@@ -50,26 +48,51 @@ export default {
     UserProfileTweetsList,
     RecommendedFollowers,
   },
-  // 如果是自己的頁面：用 currentUser 做
-  // 如果是別人的頁面：用 beforeRouteUpdate 做
-  beforeRouteUpdate(to, from, next) {
-    const { id: userId } = to.params;
-    this.fetchUser(userId);
-    this.fetchUserTweets();
-    next();
+  // if entering from none userProfiles
+  async beforeRouteEnter(to, from, next) {
+    try {
+      next((vm) => {
+        // vue instance not created yet, use next to invoke this
+        console.log("fetch data in beforeRouteEnter");
+        const { id } = to.params;
+        vm.fetchUser(id).then(() => {
+          vm.fetchUserTweets(id);
+        });
+        // Promise.all([vm.fetchUser(id), vm.fetchUserTweets(id)]);
+        // await vm.fetchUser(id);
+        // await vm.fetchUserTweets(id);
+        vm.fetchingData = true;
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  // if entering from userProfiles
+  async beforeRouteUpdate(to, from, next) {
+    try {
+      console.log("fetch data in beforeRouteUpdate");
+      if (this.fetchingData) next();
+
+      const { id } = to.params;
+      await this.fetchUser(id);
+      await this.fetchUserTweets(id);
+      next();
+    } catch (error) {
+      console.log(error);
+    }
   },
   data() {
     return {
       user: {},
       tweets: [],
+      fetchingData: false,
     };
   },
   methods: {
     async fetchUser(userId) {
-      console.log("fetchUser");
+      console.log("fetchUser:" + userId);
       try {
         const { data } = await usersAPI.getUser(userId);
-        console.log(data);
         this.user = data;
       } catch (error) {
         Toast.fire({
@@ -78,20 +101,21 @@ export default {
         });
       }
     },
-    async fetchUserTweets() {
+    async fetchUserTweets(userId) {
+      console.log("fetchUserTweets: " + userId);
+
       try {
-        const userId = this.user.id;
         const { data } = await tweetsAPI.getUserTweet(userId);
         this.tweets = data;
 
         this.tweets = this.tweets.map((tweet) => {
           return {
             ...tweet,
-            UserId: this.currentUser.id,
+            UserId: this.user.id,
             user: {
-              account: this.currentUser.account,
-              avatar: this.currentUser.avatar,
-              name: this.currentUser.name,
+              account: this.user.account,
+              avatar: this.user.avatar,
+              name: this.user.name,
             },
           };
         });
@@ -103,6 +127,31 @@ export default {
         });
       }
     },
+    afterToggleLike(toggleTweet) {
+      // rerender
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.id === toggleTweet.id) {
+          return {
+            ...tweet,
+            isLiked: toggleTweet.isLiked,
+          };
+        } else {
+          return tweet;
+        }
+      });
+    },
+    afterCreateReply(tweetId) {
+      this.tweets = this.tweets.map((tweet) => {
+        if (tweet.id === tweetId) {
+          return {
+            ...tweet,
+            replyCount: tweet.replyCount + 1,
+          };
+        } else {
+          return tweet;
+        }
+      });
+    },
   },
   computed: {
     ...mapState(["currentUser"]),
@@ -111,7 +160,7 @@ export default {
 </script>
 
 <style scoped>
-#UserProfile {
+#userProfile {
   display: flex;
   min-height: 100vh;
   justify-content: center;
@@ -157,7 +206,8 @@ export default {
   position: sticky;
   top: 0;
   background-color: #fff;
-  z-index: 99;
+  z-index: 1;
+  /* z-index: 999; */
 }
 
 .title .btn {
@@ -190,5 +240,11 @@ export default {
   font-size: 13px;
   color: #657789;
   margin: 0;
+}
+
+.admin-users-card {
+  position: relative;
+  /* work with z-index */
+  z-index: 0;
 }
 </style>
