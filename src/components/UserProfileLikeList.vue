@@ -48,8 +48,8 @@ export default {
       this.user = newVal;
     },
     async fetchUserLikedTweets(userId) {
-      console.log("fetchUserLikedTweets in List");
-      console.log("fetchUser:" + userId);
+      // console.log("fetchUserLikedTweets in List");
+      // console.log("fetchUser:" + userId);
       try {
         this.isLoading = true;
         const { data } = await tweetsAPI.getAllLikedTweets(userId);

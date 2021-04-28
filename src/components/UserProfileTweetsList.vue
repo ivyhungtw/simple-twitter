@@ -48,8 +48,8 @@ export default {
       this.user = newVal;
     },
     async fetchUserTweets(userId) {
-      console.log("fetchUserTweets in List");
-      console.log("fetchUser:" + userId);
+      // console.log("fetchUserTweets in List");
+      // console.log("fetchUser:" + userId);
       try {
         this.isLoading = true;
         const { data } = await tweetsAPI.getUserTweet(userId);

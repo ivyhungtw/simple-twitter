@@ -14,12 +14,12 @@
 import TweetItem from "../TweetItem";
 export default {
   name: "FollowingUsersTweets",
-  prop: {
-    tweets: {
-      type: Array,
-      required: true,
-    },
-  },
+  // prop: {
+  //   tweets: {
+  //     type: Array,
+  //     required: true,
+  //   },
+  // },
   components: {
     TweetItem,
   },
