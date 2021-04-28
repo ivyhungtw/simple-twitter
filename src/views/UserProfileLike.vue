@@ -139,8 +139,7 @@ export default {
 
 .mainSection {
   flex: 1;
-  min-width: 598px;
-  max-width: 598px;
+  width: 100%;
   height: 100vh;
   border-right: 1px solid #e6ecf0;
   overflow-y: scroll;

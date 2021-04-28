@@ -64,6 +64,10 @@ export default {
   mixins: [emptyImageFilter],
   created() {
     this.fetchRecommendedFollowers();
+    // bus.emit from UserProfileCard
+    this.$bus.$on("toggleFollowFromProfileCard", (userId) => {
+      this.renderAfterFollowToggle(userId);
+    });
   },
   data() {
     return {
@@ -158,11 +162,21 @@ export default {
       });
     },
     renderAfterFollowToggle(user) {
+      let userId = "";
+      if (typeof user === "number") {
+        // getting 'userId' from UserProfileCard
+        userId = user;
+      } else {
+        // getting 'user' from RecommendedFollowers
+        userId = user.id;
+      }
+      console.log("typeof user: " + typeof user);
+
       this.recommendedFollowers = this.recommendedFollowers.map((each) => {
-        if (each.id === user.id) {
+        if (each.id === userId) {
           return {
             ...each,
-            isFollowed: !user.isFollowed,
+            isFollowed: !each.isFollowed,
           };
         } else {
           return each;

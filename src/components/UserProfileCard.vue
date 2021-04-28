@@ -186,6 +186,7 @@ export default {
         this.localUserData.followerCount++;
         this.localUserData.isFollowed = true;
         // inform RecommendedFollowers to toggle
+        this.$bus.$emit("toggleFollowFromProfileCard", userId);
         return;
       }
 
@@ -220,6 +221,7 @@ export default {
         this.localUserData.followerCount--;
         this.localUserData.isFollowed = false;
         // inform RecommendedFollowers to toggle
+        this.$bus.$emit("toggleFollowFromProfileCard", userId);
         return;
       }
 

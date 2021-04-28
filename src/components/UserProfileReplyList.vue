@@ -38,8 +38,8 @@ export default {
       this.user = newVal;
     },
     async fetchALlRepliedTweets(userId) {
-      console.log("fetchUserTweets in List");
-      console.log("fetchUser:" + userId);
+      // console.log("fetchUserTweets in List");
+      // console.log("fetchUser:" + userId);
       try {
         const { data } = await tweetsAPI.getAllRepliedTweets(userId);
         // this.tweets = data;
@@ -70,6 +70,7 @@ export default {
             },
           };
         });
+        // 不處理重複回覆的貼文呈現
       } catch (error) {
         console.log("in fetchUser");
         console.log(error);
@@ -142,9 +143,6 @@ export default {
   width: 100%;
 }
 
-.tweetList .tweet {
-  border: 1px solid #000;
-}
 /* for Chrome, Safari and Opera */
 .tweetList::-webkit-scrollbar {
   display: none;
