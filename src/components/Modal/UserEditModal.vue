@@ -43,6 +43,14 @@ export default {
 </script>
 
 <style scoped>
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+.modal-dialog {
+  margin: 2px auto;
+  z-index: 1100 !important;
+}
+
 /* Modal */
 /* form {
   margin: 0;

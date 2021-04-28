@@ -56,6 +56,7 @@
         class="btn btn-edit-user"
         data-toggle="modal"
         data-target="#edit-user-modal"
+        @click="showModal"
       >
         編輯個人資料
       </button>
@@ -65,17 +66,14 @@
         <div>
           <button class="btn message">
             <img src="../assets/btn_message.svg" alt="" />
-            <!-- <i class="far fa-envelope tempIcon"></i> -->
           </button>
         </div>
         <div>
           <button v-if="localUserData.isSubscribed" class="btn subscribed">
             <img src="../assets/btn_noti.svg" alt="" />
-            <!-- <i class="far fa-bell tempIcon"></i> -->
           </button>
           <button v-else class="btn subscribe">
             <img src="../assets/btn_noti.svg" alt="" />
-            <!-- <i class="far fa-bell tempIcon"></i> -->
           </button>
         </div>
         <div>
@@ -98,7 +96,6 @@
         </div>
       </div>
       <!-- btnPanel -->
-
       <!-- UserEditModal -->
       <UserEditModal></UserEditModal>
     </div>
@@ -111,6 +108,8 @@ import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 import usersAPI from "../apis/users";
 import UserEditModal from "./Modal/UserEditModal";
+// import locally
+import $ from "jquery";
 
 export default {
   name: "UserProfileCard",
@@ -268,6 +267,13 @@ export default {
         this.localUserData.followingCount--;
         return;
       }
+    },
+    // import JQuery from 'jquery'
+    showModal() {
+      //   $("#edit-user-modal").appendTo("body");
+      $("#edit-user-modal").modal("show");
+
+      /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
     },
   },
   computed: {

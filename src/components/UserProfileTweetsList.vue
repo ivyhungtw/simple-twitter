@@ -36,9 +36,30 @@ export default {
       required: true,
     },
   },
+  create() {
+    this.$bus.$on("afterCreateTweet", (newTweet) => {
+      console.log("afterCreateTweet in tweetlist");
+      this.afterCreateTweet(newTweet);
+    });
+  },
   data() {
     return {
       user: {},
+      tweet: {
+        UserId: undefined,
+        created: "",
+        description: "",
+        id: undefined, // tweetId
+        likeCount: 0,
+        replyCount: 0,
+        updatedAt: "",
+        user: {
+          account: "",
+          name: "",
+          avatar: "",
+        },
+        isLiked: false, // 要後端補
+      },
       tweets: {},
       isLoading: true,
     };
@@ -73,6 +94,13 @@ export default {
           title: "無法取得推文，請稍後再試！",
         });
       }
+    },
+    afterCreateTweet(newTweet) {
+      console.log("newTweet got!!!!");
+      this.tweets.unshift({
+        ...this.tweet,
+        ...newTweet,
+      });
     },
   },
   computed: {

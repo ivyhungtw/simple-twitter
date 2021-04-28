@@ -88,10 +88,6 @@ export default {
       required: true,
     },
   },
-  created() {
-    // eventbus for afterCreateReply
-    // this.$bus.$on("afterCreateReply", this.afterCreateReply());
-  },
   data() {
     return {
       dataForModal: {},

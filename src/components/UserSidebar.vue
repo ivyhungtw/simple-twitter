@@ -79,9 +79,16 @@
         </button>
       </div>
       <div class="navItem newTweet">
-        <button class="btn" data-toggle="modal" data-target="#tweetModal">
+        <!-- <button
+          class="btn"
+          data-toggle="modal"
+          data-target="#tweetModal"
+          @click="showModal"
+        > -->
+        <button class="btn" @click="showModal">
           <p>推文</p>
         </button>
+        <CreateTweetModal :user="currentUser"></CreateTweetModal>
       </div>
       <div class="navItem logout">
         <div class="icon">
@@ -97,12 +104,13 @@
 
 <script>
 import { mapState } from "vuex";
+import CreateTweetModal from "./Modal/CreateTweetModal";
+// import locally
+import $ from "jquery";
+
 export default {
   name: "UserSidebar",
-  created() {
-    // const location = this.$route.path.split("/")[1];
-    // this.setCurrentLocation(location);
-  },
+  components: { CreateTweetModal },
   data() {
     return {
       main: false,
@@ -110,28 +118,26 @@ export default {
       accountEdit: false,
     };
   },
+  created() {
+    this.$bus.$on("closeModal", (modalId) => {
+      this.closeModal(modalId);
+    });
+  },
   methods: {
     logout() {
       // delete token => log out
       this.$store.commit("revokeAuthentication");
       this.$router.push("/signin");
     },
-    // setCurrentLocation(location) {
-    //   console.log("location: " + location);
-    //   if (location === "main" || location === "replydetail") {
-    //     this.main = true; // at main
-    //     this.profile = false;
-    //     this.accountEdit = false;
-    //   } else if (location === "userprofile") {
-    //     this.main = false;
-    //     this.profile = true; // at user-profile
-    //     this.accountEdit = false;
-    //   } else {
-    //     this.main = false;
-    //     this.profile = false;
-    //     this.accountEdit = true; // at accountEdit
-    //   }
-    // },
+    showModal() {
+      console.log("open from sidebar");
+      $("#tweetModal").modal("show");
+      $("#tweetModal").appendTo("body");
+    },
+    closeModal(modalId) {
+      console.log("closed");
+      $(modalId).modal("hide");
+    },
   },
   computed: {
     ...mapState(["currentUser"]),

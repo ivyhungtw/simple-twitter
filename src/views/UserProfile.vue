@@ -108,18 +108,18 @@ export default {
         }
       });
     },
-    afterCreateReply(tweetId) {
-      this.tweets = this.tweets.map((tweet) => {
-        if (tweet.id === tweetId) {
-          return {
-            ...tweet,
-            replyCount: tweet.replyCount + 1,
-          };
-        } else {
-          return tweet;
-        }
-      });
-    },
+    // afterCreateReply(tweetId) {
+    //   this.tweets = this.tweets.map((tweet) => {
+    //     if (tweet.id === tweetId) {
+    //       return {
+    //         ...tweet,
+    //         replyCount: tweet.replyCount + 1,
+    //       };
+    //     } else {
+    //       return tweet;
+    //     }
+    //   });
+    // },
   },
   computed: {
     ...mapState(["currentUser"]),
