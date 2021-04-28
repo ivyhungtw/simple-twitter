@@ -79,12 +79,6 @@
         </button>
       </div>
       <div class="navItem newTweet">
-        <!-- <button
-          class="btn"
-          data-toggle="modal"
-          data-target="#tweetModal"
-          @click="showModal"
-        > -->
         <button class="btn" @click="showModal">
           <p>推文</p>
         </button>
@@ -132,11 +126,11 @@ export default {
     showModal() {
       console.log("open from sidebar");
       $("#tweetModal").modal("show");
-      $("#tweetModal").appendTo("body");
     },
     closeModal(modalId) {
       console.log("closed");
       $(modalId).modal("hide");
+      $(".modal-backdrop").hide();
     },
   },
   computed: {

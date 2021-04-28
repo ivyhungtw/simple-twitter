@@ -36,7 +36,7 @@ export default {
       required: true,
     },
   },
-  create() {
+  created() {
     this.$bus.$on("afterCreateTweet", (newTweet) => {
       console.log("afterCreateTweet in tweetlist");
       this.afterCreateTweet(newTweet);
