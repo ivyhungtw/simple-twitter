@@ -9,16 +9,20 @@
         <li class="user" v-for="user of recommendedFollowers" :key="user.id">
           <div class="userContent">
             <div class="avatar">
-              <img :src="user.avatar | emptyImageFilter" alt="" />
+              <router-link :to="`/userProfile/${user.id}`">
+                <img :src="user.avatar | emptyImageFilter" alt="" />
+              </router-link>
             </div>
             <div class="info">
               <div class="name">
-                <router-link to="/userProfile/user.id">
+                <router-link :to="`/userProfile/${user.id}`">
                   <h2>{{ user.name }}</h2>
                 </router-link>
               </div>
               <div class="account">
-                <h2>@{{ user.account }}</h2>
+                <router-link :to="`/userProfile/${user.id}`">
+                  <h2>@{{ user.account }}</h2>
+                </router-link>
               </div>
             </div>
             <div class="toggleFollow">
@@ -97,6 +101,9 @@ export default {
         // rerender
         this.renderAfterFollowToggle(user);
 
+        // inform userProfileCard to change number
+        this.$bus.$emit("afterFollowUser", user.id);
+
         Toast.fire({
           icon: "success",
           title: "追蹤成功！",
@@ -124,6 +131,9 @@ export default {
 
         // rerender
         this.renderAfterFollowToggle(user);
+
+        // inform userProfileCard to change number
+        this.$bus.$emit("afterUnfollowUser", user.id);
 
         // inform user
         Toast.fire({
