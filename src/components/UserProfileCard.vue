@@ -270,10 +270,8 @@ export default {
     },
     // import JQuery from 'jquery'
     showModal() {
-      //   $("#edit-user-modal").appendTo("body");
+      // Modal IdL $("#edit-user-modal")
       $("#edit-user-modal").modal("show");
-
-      /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
     },
   },
   computed: {
