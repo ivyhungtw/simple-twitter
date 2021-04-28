@@ -31,10 +31,9 @@
 import UserSidebar from "./../components/UserSidebar";
 import UserProfileCard from "./../components/UserProfileCard";
 import UserProfileNavtabs from "./../components/UserProfileNavtabs";
-// import UserProfileLikeList from "./../components/UerProfileLikeList";
+import UserProfileLikeList from "./../components/UerProfileLikeList";
 import RecommendedFollowers from "./../components/RecommendedFollowers";
 import { Toast } from "../utils/helpers";
-// import tweetsAPI from "../apis/tweets";
 import usersAPI from "../apis/users";
 
 export default {
@@ -43,7 +42,7 @@ export default {
     UserSidebar,
     UserProfileCard,
     UserProfileNavtabs,
-    // UserProfileLikeList,
+    UserProfileLikeList,
     RecommendedFollowers,
   },
   // if entering from none userProfiles
