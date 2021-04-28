@@ -16,12 +16,17 @@
         >
           <div class="commentInfo">
             <div class="avatar">
-              <img :src="comment.avatar | emptyImageFilter" alt="" />
+              <router-link :to="`/userprofile/${comment.UserId}`">
+                <img :src="comment.avatar | emptyImageFilter" alt="" />
+              </router-link>
             </div>
             <div class="commentContent">
               <div class="userTitle">
-                <p>{{ comment.name }}</p>
+                <router-link :to="`/userprofile/${comment.UserId}`">
+                  <p>{{ comment.name }}</p>
+                </router-link>
                 <p>@{{ comment.account }}</p>
+
                 <span class="mx-1">&#xb7;</span>
                 <p>{{ comment.createdAt | fromNow }}</p>
               </div>

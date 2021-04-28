@@ -9,7 +9,7 @@
         </button>
         <div class="nameTag">
           <p>{{ user.name }}</p>
-          <p>{{ tweets.length }} 則推文</p>
+          <p>{{ user.tweetCount }} 則推文</p>
         </div>
       </div>
       <div class="admin-users-card">
@@ -50,7 +50,7 @@ export default {
     try {
       next((vm) => {
         // vue instance not created yet, use next to invoke this
-        console.log("fetchUser @ beforeRouteEnter");
+        // console.log("fetchUser @ beforeRouteEnter");
         const { id } = to.params;
         vm.fetchUser(id);
         vm.fetchingData = true;
@@ -61,7 +61,7 @@ export default {
   },
   // if entering from userProfiles
   async beforeRouteUpdate(to, from, next) {
-    console.log("fetchUser @ beforeRouteUpdate");
+    // console.log("fetchUser @ beforeRouteUpdate");
     try {
       if (this.fetchingData) next();
       const { id } = to.params;
@@ -80,8 +80,8 @@ export default {
   },
   methods: {
     async fetchUser(userId) {
-      console.log("fetchUser in UserProfile");
-      console.log("fetchUser:" + userId);
+      // console.log("fetchUser in UserProfile");
+      // console.log("fetchUser:" + userId);
       try {
         const { data } = await usersAPI.getUser(userId);
         this.user = data;
@@ -131,8 +131,7 @@ export default {
 
 .mainSection {
   flex: 1;
-  min-width: 598px;
-  max-width: 598px;
+  width: 100%;
   height: 100vh;
   border-right: 1px solid #e6ecf0;
   overflow-y: scroll;

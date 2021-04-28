@@ -101,6 +101,8 @@ import { emptyImageFilter } from "../../utils/mixins";
 import { fromNowFilter } from "../../utils/mixins";
 import { mapState } from "vuex";
 import tweetsAPI from "../../apis/tweets";
+// jquery for closing modal
+// import $ from "jquery";
 
 export default {
   name: "TweetReplyModal",
@@ -156,10 +158,12 @@ export default {
 
         // close modal after successfully replied
         this.closeModal(tweetId);
+        // $("#modal").modal("hide");
 
         // use eventBus
         const payloadForList = {
           tweetId,
+          name: this.currentUser.name,
           UserId: this.currentUser.id,
           account: this.currentUser.account,
           avatar: this.currentUser.avatar,

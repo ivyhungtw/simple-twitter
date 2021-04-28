@@ -53,7 +53,7 @@ export default {
     return {
       tweets: [],
       tweet: {
-        userId: undefined,
+        UserId: undefined,
         created: "",
         description: "",
         id: undefined, // tweetId
@@ -83,7 +83,7 @@ export default {
     },
     afterCreateTweet(newTweet) {
       this.tweets.unshift({
-        ...this.tweet,
+        ...this.tweet, // set up correct properties for TweetItem
         ...newTweet,
       });
     },

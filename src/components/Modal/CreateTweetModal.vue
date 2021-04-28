@@ -67,6 +67,8 @@ import { Toast } from "../../utils/helpers";
 import { emptyImageFilter } from "../../utils/mixins";
 import tweetsAPI from "../../apis/tweets";
 import { mapState } from "vuex";
+// jquery for closing modal
+import $ from "jquery";
 
 export default {
   name: "CreateTweetModal",
@@ -83,6 +85,9 @@ export default {
       isProcessing: false,
     };
   },
+  created() {
+    console.log("modal created");
+  },
   methods: {
     async createNewTweet() {
       const contentCheck = this.contentCheck(this.tweetContent);
@@ -98,8 +103,6 @@ export default {
         };
         // call api to create new tweet: 回傳 tweet id?
         const { data } = await tweetsAPI.createNewTweet(payload);
-
-        // console.log(data);
 
         if (data.status !== "success") {
           throw new Error(data.message);
@@ -124,9 +127,14 @@ export default {
         });
 
         // close modal after successfully replied
-        this.closeModal("tweetModal");
+        console.log("close tweetModal");
+        // this.closeModal("tweetModal");
+        $("#tweetModal").modal("hide");
+        // const modalId = "#tweetModal";
+        // this.$bus.$emit("closeModal", modalId);
 
         // inform Main.vue to push new tweet
+        // inform UserProfile to push new tweet
         this.$bus.$emit("afterCreateTweet", newTweet);
 
         // clear tweetContent
@@ -164,7 +172,6 @@ export default {
       return true;
     },
     closeModal(modalId) {
-      // console.log(modalId);
       // close modal after successfully replied with pure js
       const modal = document.querySelector(`#${modalId}`);
       modal.classList.remove("show");

@@ -200,7 +200,7 @@ export default {
         const { data } = await authorizationAPI.signUp(formData);
 
         if (data.status !== "success") {
-          throw new Error(data.message);
+          throw new Error(data);
         }
 
         Toast.fire({
@@ -211,16 +211,12 @@ export default {
         // 轉址
         this.$router.push("signin");
       } catch (error) {
+        console.log(error);
+        let message = "無法註冊，請稍後再試！";
+        if (error.response.status === 409) {
+          message = "該 Email 已被註冊，請選擇其他 Email！";
+        }
         this.isProcessing = false;
-
-        let message = "無法註冊，請稍候再試！";
-
-        const duplicacte =
-          "Error: A user with test2@gmail.com already exists. Choose a different address or login directly.";
-
-        // when duplicacte email
-        if (error === duplicacte) message = "已經使用過相同信箱註冊！";
-
         Toast.fire({
           icon: "error",
           title: message,

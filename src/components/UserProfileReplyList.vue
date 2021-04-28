@@ -1,12 +1,19 @@
 <template>
   <div class="container">
     <ul class="tweetList">
-      <TweetItem
-        v-for="tweet in tweets"
-        :key="tweet.replyId"
-        :userData="user"
-        :tweet="tweet"
-      ></TweetItem>
+      <template v-if="isLoading">
+        <p class="loading">資料讀取中...</p>
+      </template>
+
+      <template v-else>
+        <p v-if="!tweets.length" class="noData">無資料</p>
+        <TweetItem
+          v-for="tweet in tweets"
+          :key="tweet.replyId"
+          :userData="user"
+          :tweet="tweet"
+        ></TweetItem>
+      </template>
     </ul>
   </div>
 </template>
@@ -31,6 +38,7 @@ export default {
     return {
       user: {},
       tweets: [],
+      isLoading: true,
     };
   },
   methods: {
@@ -38,9 +46,10 @@ export default {
       this.user = newVal;
     },
     async fetchALlRepliedTweets(userId) {
-      console.log("fetchUserTweets in List");
-      console.log("fetchUser:" + userId);
+      // console.log("fetchUserTweets in List");
+      // console.log("fetchUser:" + userId);
       try {
+        this.isLoading = true;
         const { data } = await tweetsAPI.getAllRepliedTweets(userId);
         // this.tweets = data;
         this.tweets = data.map((each) => {
@@ -70,6 +79,7 @@ export default {
             },
           };
         });
+        // 不處理重複回覆的貼文呈現
       } catch (error) {
         console.log("in fetchUser");
         console.log(error);
@@ -81,6 +91,7 @@ export default {
     },
     async fetchAllReplyUsers() {
       // 根據取得的回覆中所帶的 UserId 取得回覆者資料
+      this.isLoading = true;
       this.tweets = await Promise.all(
         this.tweets.map(async (tweet) => {
           try {
@@ -104,6 +115,7 @@ export default {
           }
         })
       );
+      this.isLoading = false;
     },
   },
   computed: {
@@ -142,9 +154,6 @@ export default {
   width: 100%;
 }
 
-.tweetList .tweet {
-  border: 1px solid #000;
-}
 /* for Chrome, Safari and Opera */
 .tweetList::-webkit-scrollbar {
   display: none;
@@ -152,5 +161,12 @@ export default {
 .tweetList {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+.loading,
+.noData {
+  text-align: center;
+  padding: 10px;
+  color: #657786;
 }
 </style>

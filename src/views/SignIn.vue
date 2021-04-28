@@ -41,7 +41,9 @@
             >註冊 Alphitter</router-link
           >
           <span> &#xb7; </span>
-          <router-link class="routerLink" to="">後台登入</router-link>
+          <router-link class="routerLink" to="/admin/signin"
+            >後台登入</router-link
+          >
         </div>
       </div>
     </form>
@@ -102,7 +104,13 @@ export default {
       let result = false;
 
       // if sign in with admin
-
+      if (account === "root") {
+        Toast.fire({
+          icon: "error",
+          title: "無法使用管理者帳號於前臺登入！",
+        });
+        return false;
+      }
       if (!account) {
         Toast.fire({
           icon: "info",

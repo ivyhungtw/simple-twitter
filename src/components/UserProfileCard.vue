@@ -2,51 +2,102 @@
   <div class="container">
     <div class="coverImage">
       <img
-        :src="userData.cover | emptyImageFilter"
+        :src="localUserData.cover | emptyImageFilter"
         class="card-img-top"
         alt=""
       />
     </div>
     <div class="avatar">
       <img
-        :src="userData.avatar | emptyImageFilter"
+        :src="localUserData.avatar | emptyImageFilter"
         class="card-img-top"
         alt=""
       />
     </div>
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{ userData.name }}</h5>
-        <p class="card-account">@{{ userData.account }}</p>
+        <h5 class="card-title">
+          {{ localUserData.name ? localUserData.name : "UserName" }}
+        </h5>
+        <p class="card-account">@{{ localUserData.account }}</p>
         <p class="card-content">
           {{
-            userData.introduction
-              ? userData.introduction
+            localUserData.introduction
+              ? localUserData.introduction
               : "Placeholder: It's empty here, write something down!"
           }}
         </p>
         <div class="follow-condition">
           <div class="following-count">
             <router-link to="/userprofile/following"
-              ><span>{{ userData.followingCount }} 個</span>跟隨中</router-link
+              ><span>{{ localUserData.followingCount }} 個</span
+              >跟隨中</router-link
             >
           </div>
           <div class="follows-count">
             <router-link to="/userprofile/followers"
-              ><span>{{ userData.followerCount }} 位</span>跟隨者</router-link
+              ><span>{{ localUserData.followerCount }} 位</span
+              >跟隨者</router-link
             >
           </div>
         </div>
       </div>
-      <button
-        v-if="currentUser.id === userData.id"
-        @click="editUserModal(userData)"
+      <!-- <button
+        v-if="currentUser.id === localUserData.id"
+        @click="editUserModal(localUserData)"
         class="btn btn-edit-user"
         data-toggle="modal"
         data-target="#edit-user-modal"
       >
         編輯個人資料
+      </button> -->
+      <button
+        v-if="currentUser.id === localUserData.id"
+        class="btn btn-edit-user"
+        data-toggle="modal"
+        data-target="#edit-user-modal"
+        @click="showModal"
+      >
+        編輯個人資料
       </button>
+
+      <!-- btnPanel -->
+      <div v-else class="btnPanel">
+        <div>
+          <button class="btn message">
+            <img src="../assets/btn_message.svg" alt="" />
+          </button>
+        </div>
+        <div>
+          <button v-if="localUserData.isSubscribed" class="btn subscribed">
+            <img src="../assets/btn_noti.svg" alt="" />
+          </button>
+          <button v-else class="btn subscribe">
+            <img src="../assets/btn_noti.svg" alt="" />
+          </button>
+        </div>
+        <div>
+          <button
+            v-if="localUserData.isFollowed"
+            class="btn isFollowing"
+            :disabled="isProcessing"
+            @click.stop.prevent="unfollowUser(localUserData)"
+          >
+            正在跟隨
+          </button>
+          <button
+            v-else
+            class="btn follow"
+            :disabled="isProcessing"
+            @click.stop.prevent="followUser(localUserData)"
+          >
+            跟隨
+          </button>
+        </div>
+      </div>
+      <!-- btnPanel -->
+      <!-- UserEditModal -->
+      <UserEditModal></UserEditModal>
     </div>
   </div>
 </template>
@@ -54,6 +105,12 @@
 <script>
 import { mapState } from "vuex";
 import { emptyImageFilter } from "../utils/mixins";
+import { Toast } from "../utils/helpers";
+import usersAPI from "../apis/users";
+import UserEditModal from "./Modal/UserEditModal";
+// import locally
+import $ from "jquery";
+
 export default {
   name: "UserProfileCard",
   mixins: [emptyImageFilter],
@@ -63,8 +120,172 @@ export default {
       required: true,
     },
   },
+  components: {
+    UserEditModal,
+  },
+  data() {
+    return {
+      localUserData: {},
+      isProcessing: false,
+    };
+  },
+  created() {
+    // from RecommendedFollowers
+    this.$bus.$on("afterFollowUser", (userId) => {
+      this.afterFollowUser(userId);
+    });
+    // from RecommendedFollowers
+    this.$bus.$on("afterUnfollowUser", (userId) => {
+      this.afterUnfollowUser(userId);
+    });
+  },
+  methods: {
+    async followUser(user) {
+      try {
+        // call api to toggle isFolloweda
+        this.isProcessing = true;
+        const payload = { id: user.id };
+        const { data } = await usersAPI.followUser(payload);
+        // console.log(data);
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        Toast.fire({
+          icon: "success",
+          title: "追蹤成功！",
+        });
+
+        // rerender: invoke this.afterFollowUser(userId, true)
+        this.afterFollowUser(user.id, true);
+
+        this.isProcessing = false;
+      } catch (error) {
+        this.isProcessing = false;
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法執行動作，請稍後再試！",
+        });
+      }
+    },
+    async unfollowUser(user) {
+      try {
+        this.isProcessing = true;
+        const { data } = await usersAPI.unfollowUser(user.id);
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        // rerender: invoke this.afterFollowUser(userId, true)
+        this.afterUnfollowUser(user.id, true);
+
+        // inform user
+        Toast.fire({
+          icon: "success",
+          title: "取消追蹤成功！",
+        });
+        this.isProcessing = false;
+      } catch (error) {
+        this.isProcessing = false;
+
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法追蹤，請稍後再試！",
+        });
+      }
+    },
+    afterFollowUser(userId, fromProfileCard = false) {
+      // 在目標追蹤者的頁面上，按 ProfileCard 上的追蹤按鈕追蹤
+      if (this.userData.id === userId && fromProfileCard) {
+        // 追蹤者的 followers 數量 ++
+        console.log("Event A");
+        this.localUserData.followerCount++;
+        this.localUserData.isFollowed = true;
+        // inform RecommendedFollowers to toggle
+        this.$bus.$emit("toggleFollowFromProfileCard", userId);
+        return;
+      }
+
+      // 在目標追蹤者的頁面上，按推薦追蹤者欄來追蹤
+      if (
+        this.userData.id === userId &&
+        this.userData.id !== this.currentUser.id
+      ) {
+        // 追蹤者的 followers 數量 ++
+        console.log("Event B");
+        this.localUserData.followerCount++;
+        this.localUserData.isFollowed = true;
+        return;
+      }
+
+      // 在個人頁面上，按推薦追蹤追蹤其他使用者
+      if (
+        this.userData.id !== userId &&
+        this.userData.id === this.currentUser.id
+      ) {
+        // 個人 following 數量 ++
+        console.log("Event C");
+        this.localUserData.followingCount++;
+        return;
+      }
+    },
+    afterUnfollowUser(userId, fromProfileCard = false) {
+      // 在目標追蹤者的頁面上，按 ProfileCard 上的追蹤按鈕取消追蹤
+      if (this.userData.id === userId && fromProfileCard) {
+        // 追蹤者的 followers 數量 ++
+        console.log("Event A");
+        this.localUserData.followerCount--;
+        this.localUserData.isFollowed = false;
+        // inform RecommendedFollowers to toggle
+        this.$bus.$emit("toggleFollowFromProfileCard", userId);
+        return;
+      }
+
+      // 在目標追蹤者的頁面上，按推薦追蹤者欄取消追蹤
+      if (
+        this.userData.id === userId &&
+        this.userData.id !== this.currentUser.id
+      ) {
+        // 追蹤者的 followers 數量 ++
+        console.log("Event B");
+        this.localUserData.followerCount--;
+        this.localUserData.isFollowed = false;
+        return;
+      }
+
+      // 在個人頁面上，按推薦追蹤取消追蹤其他使用者
+      if (
+        this.userData.id !== userId &&
+        this.userData.id === this.currentUser.id
+      ) {
+        // 個人 following 數量 ++
+        console.log("Event C");
+        this.localUserData.followingCount--;
+        return;
+      }
+    },
+    // import JQuery from 'jquery'
+    showModal() {
+      //   $("#edit-user-modal").appendTo("body");
+      $("#edit-user-modal").modal("show");
+
+      /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
+    },
+  },
   computed: {
     ...mapState(["currentUser"]),
+  },
+  watch: {
+    userData: {
+      handler: function () {
+        this.localUserData = this.userData;
+      },
+      deep: true,
+    },
   },
 };
 </script>
@@ -142,11 +363,59 @@ export default {
   border-radius: 100px;
 }
 
-.btn-edit-user:hover {
+.btn-edit-user:hover:hover {
   color: #fff;
   background-color: #ff6600;
 }
+/* ////////////////////// */
+.btnPanel {
+  position: absolute;
+  top: -60px;
+  right: 15px;
+  display: flex;
+}
 
+button {
+  /* border: 1px solid #ff6600; */
+  border-radius: 100px;
+  color: #ff6600;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+button.btn {
+  margin: 0;
+  padding: 0;
+}
+
+.btn.subscribe {
+  margin: 0 10px;
+}
+
+.subscribed {
+  margin: 0 10px;
+  background-color: #ff6600;
+  color: #fff;
+}
+
+.btn.follow,
+.btn.isFollowing {
+  height: 40px;
+  padding: 0 12px;
+}
+
+.follow {
+  color: #ff6600;
+  background-color: #fff;
+  border: 1px solid #ff6600;
+}
+
+.isFollowing {
+  background-color: #ff6600;
+  color: #fff;
+}
+
+/* ////////////////////// */
 .card h5,
 .card p {
   margin: 0;

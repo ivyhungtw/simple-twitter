@@ -1,7 +1,9 @@
 <template>
   <div class="tweet">
     <div class="avatar">
-      <router-link to="/userprofile">
+      <router-link
+        :to="{ name: 'user-profile', params: { id: localTweet.UserId } }"
+      >
         <img v-if="localTweet.user" :src="localTweet.user.avatar" alt="" />
         <img v-else :src="'' | emptyImageFilter" alt="" />
       </router-link>
