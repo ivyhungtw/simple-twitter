@@ -31,7 +31,7 @@
 import UserSidebar from "./../components/UserSidebar";
 import UserProfileCard from "./../components/UserProfileCard";
 import UserProfileNavtabs from "./../components/UserProfileNavtabs";
-import UserProfileLikeList from "./../components/UerProfileLikeList";
+import UserProfileLikeList from "../components/UserProfileLikeList";
 import RecommendedFollowers from "./../components/RecommendedFollowers";
 import { Toast } from "../utils/helpers";
 import usersAPI from "../apis/users";
@@ -73,7 +73,7 @@ export default {
   },
   data() {
     return {
-      user: [],
+      user: {},
       tweets: [],
       fetchingData: false,
     };

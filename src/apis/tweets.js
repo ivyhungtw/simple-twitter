@@ -34,6 +34,10 @@ export default {
   getAllRepliedTweets(userId) {
     return apiHelper.get(`/users/${userId}/replied_tweets`)
   },
+  getAllLikedTweets(userId) {
+    // get tweets liked by one user
+    return apiHelper.get(`/users/${userId}/likes`)
+  },
   createReply(tweetId, payload) {
     return apiHelper.post(`/tweets/${tweetId}/replies`, payload)
   },
