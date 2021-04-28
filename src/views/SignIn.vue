@@ -102,7 +102,13 @@ export default {
       let result = false;
 
       // if sign in with admin
-
+      if (account === "root") {
+        Toast.fire({
+          icon: "error",
+          title: "無法使用管理者帳號於前臺登入！",
+        });
+        return false;
+      }
       if (!account) {
         Toast.fire({
           icon: "info",
