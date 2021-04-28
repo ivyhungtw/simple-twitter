@@ -16,6 +16,7 @@
 
 <script>
 import UserSidebar from "../components/UserSidebar";
+
 export default {
   name: "privateMessage",
   components: { UserSidebar },
@@ -26,6 +27,7 @@ export default {
 .privateMessage {
   display: flex;
 }
+
 .mainSection {
   flex: 1;
   width: 100%;

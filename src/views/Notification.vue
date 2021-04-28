@@ -25,6 +25,7 @@
 <script>
 import UserSidebar from "../components/UserSidebar";
 import RecommededFollowers from "../components/RecommendedFollowers";
+
 export default {
   name: "notification",
   components: { UserSidebar, RecommededFollowers },
@@ -35,6 +36,7 @@ export default {
 .notification {
   display: flex;
 }
+
 .mainSection {
   flex: 1;
   width: 100%;
@@ -42,6 +44,7 @@ export default {
   border-right: 1px solid #e6ecf0;
   overflow-y: scroll;
 }
+
 /* scrollbar */
 /* for Chrome, Safari and Opera */
 .mainSection {
@@ -50,17 +53,21 @@ export default {
   /* scrollbar-width: 8px; */
   /* Firefox */
 }
+
 .mainSection::-webkit-scrollbar {
   width: 8px;
 }
+
 .mainSection::-webkit-scrollbar-thumb {
   background-color: #9197a3;
   border-radius: 15px;
 }
+
 .mainSection::-webkit-scrollbar-track {
   background-color: #ddd;
 }
 /* scrollbar */
+
 .title {
   height: 55px;
   border-bottom: 1px solid #e6ecf0;
@@ -71,30 +78,36 @@ export default {
   top: 0;
   background-color: #fff;
 }
+
 .title h1 {
   font-weight: 700;
   font-size: 19px;
   margin: 0;
 }
+
 .navtabs {
   display: flex;
   flex-direction: row;
 }
+
 .navtabs button {
   flex: 1;
   text-decoration: none;
   background-color: #fff;
   border: none;
 }
+
 .navtabs button:first-child {
   border-bottom: 2px solid rgb(29, 161, 242);
 }
+
 .navtabs button a {
   display: inline-block;
   width: 100%;
   padding: 12px 0;
   font-weight: 700;
 }
+
 .navtabs button:hover {
   background-color: hsl(205deg 92% 95%);
 }

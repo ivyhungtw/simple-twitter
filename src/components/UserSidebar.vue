@@ -107,6 +107,7 @@ import { mapState } from "vuex";
 import CreateTweetModal from "./Modal/CreateTweetModal";
 // import locally
 import $ from "jquery";
+
 export default {
   name: "UserSidebar",
   components: { CreateTweetModal },
@@ -169,18 +170,23 @@ export default {
   display: flex;
   align-items: center;
 }
+
 .navItem .btn .active p {
   color: #ff6600;
 }
+
 .icon {
   height: 26px;
 }
+
 .btn {
   padding: 0;
 }
+
 .btn a {
   text-decoration: none;
 }
+
 .btn p {
   height: 26px;
   margin: 0;
@@ -188,9 +194,11 @@ export default {
   font-size: 18px;
   color: #1c1c1c;
 }
+
 .newTweet p {
   font-weight: 500;
 }
+
 .icon img,
 .icon .tempIcon {
   margin: 17px 0;
@@ -198,6 +206,7 @@ export default {
   height: 20px;
   margin: 0 25px 0 10px;
 }
+
 .newTweet button {
   width: 210px;
   height: 45px;

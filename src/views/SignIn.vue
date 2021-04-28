@@ -53,6 +53,7 @@
 <script>
 import { Toast } from "../utils/helpers";
 import authorizationAPI from "../apis/authorization.js";
+
 export default {
   name: "SignIn",
   data() {
@@ -75,13 +76,17 @@ export default {
         this.isProcessing = true;
         // call api to sign in
         const { data } = await authorizationAPI.signIn(payload);
+
         if (data.status !== "success") {
           throw new Error(data.message);
         }
+
         // set token
         localStorage.setItem("token", data.token);
+
         // 透過 setCurrentUser 把使用者資料存到 Vuex 的 state 中
         this.$store.commit("setCurrentUser", data.user);
+
         // 轉址
         this.$router.push("/main");
       } catch (error) {

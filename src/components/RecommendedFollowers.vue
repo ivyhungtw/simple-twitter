@@ -9,16 +9,20 @@
         <li class="user" v-for="user of recommendedFollowers" :key="user.id">
           <div class="userContent">
             <div class="avatar">
-              <img :src="user.avatar | emptyImageFilter" alt="" />
+              <router-link :to="`/userProfile/${user.id}`">
+                <img :src="user.avatar | emptyImageFilter" alt="" />
+              </router-link>
             </div>
             <div class="info">
               <div class="name">
-                <router-link to="/userProfile/user.id">
+                <router-link :to="`/userProfile/${user.id}`">
                   <h2>{{ user.name }}</h2>
                 </router-link>
               </div>
               <div class="account">
-                <h2>@{{ user.account }}</h2>
+                <router-link :to="`/userProfile/${user.id}`">
+                  <h2>@{{ user.account }}</h2>
+                </router-link>
               </div>
             </div>
             <div class="toggleFollow">
@@ -60,6 +64,10 @@ export default {
   mixins: [emptyImageFilter],
   created() {
     this.fetchRecommendedFollowers();
+    // bus.emit from UserProfileCard
+    this.$bus.$on("toggleFollowFromProfileCard", (userId) => {
+      this.renderAfterFollowToggle(userId);
+    });
   },
   data() {
     return {
@@ -72,6 +80,7 @@ export default {
       try {
         // call api to get recommended Followers data
         const { data } = await usersAPI.getRecommendedFollowers();
+        // console.log(data);
         this.recommendedFollowers = data;
       } catch (error) {
         console.log(error);
@@ -88,15 +97,22 @@ export default {
         const payload = { id: user.id };
         const { data } = await usersAPI.followUser(payload);
         // console.log(data);
+
         if (data.status !== "success") {
           throw new Error(data.message);
         }
+
         // rerender
         this.renderAfterFollowToggle(user);
+
+        // inform userProfileCard to change number
+        this.$bus.$emit("afterFollowUser", user.id);
+
         Toast.fire({
           icon: "success",
           title: "追蹤成功！",
         });
+
         this.isProcessing = false;
       } catch (error) {
         this.isProcessing = false;
@@ -112,11 +128,17 @@ export default {
         this.isProcessing = true;
         const { data } = await usersAPI.unfollowUser(user.id);
         // console.log(data);
+
         if (data.status !== "success") {
           throw new Error(data.message);
         }
+
         // rerender
         this.renderAfterFollowToggle(user);
+
+        // inform userProfileCard to change number
+        this.$bus.$emit("afterUnfollowUser", user.id);
+
         // inform user
         Toast.fire({
           icon: "success",
@@ -125,6 +147,7 @@ export default {
         this.isProcessing = false;
       } catch (error) {
         this.isProcessing = false;
+
         console.log(error);
         Toast.fire({
           icon: "error",
@@ -139,11 +162,21 @@ export default {
       });
     },
     renderAfterFollowToggle(user) {
+      let userId = "";
+      if (typeof user === "number") {
+        // getting 'userId' from UserProfileCard
+        userId = user;
+      } else {
+        // getting 'user' from RecommendedFollowers
+        userId = user.id;
+      }
+      console.log("typeof user: " + typeof user);
+
       this.recommendedFollowers = this.recommendedFollowers.map((each) => {
-        if (each.id === user.id) {
+        if (each.id === userId) {
           return {
             ...each,
-            isFollowed: !user.isFollowed,
+            isFollowed: !each.isFollowed,
           };
         } else {
           return each;
@@ -163,26 +196,32 @@ export default {
   padding: 0;
   display: block;
 }
+
 .title {
   padding: 10px 15px;
 }
+
 .title h1 {
   font-size: 18px;
   font-weight: 700;
   margin: 0;
 }
+
 hr {
   margin: 0;
 }
+
 .usersList {
   margin: 0;
 }
+
 .userContent {
   display: flex;
   padding: 10px 15px;
   justify-content: space-between;
   align-items: center;
 }
+
 .userContent .avatar {
   height: 50px;
   width: 50px;
@@ -194,34 +233,42 @@ hr {
   height: 100%;
   border-radius: 50%;
 }
+
 .userContent .info {
   flex: 1;
   margin: 0 10px;
 }
+
 .userContent .info h2 {
   font-size: 15px;
   font-weight: 700;
 }
+
 .userContent .info .account h2 {
   color: #657786;
 }
+
 button {
   border: 1px solid #ff6600;
   border-radius: 100px;
   color: #ff6600;
 }
+
 .toggleFollow button {
   font-size: 15px;
   font-weight: 700;
 }
+
 .toggleFollow .isFollowing {
   width: 92px;
   background-color: #ff6600;
   color: #fff;
 }
+
 .showMore {
   padding: 12px 0 12px 15px;
 }
+
 .showMore .btn {
   padding: 0;
   border: none;

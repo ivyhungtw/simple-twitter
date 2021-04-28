@@ -110,6 +110,7 @@ import usersAPI from "../apis/users";
 import UserEditModal from "./Modal/UserEditModal";
 // import locally
 import $ from "jquery";
+
 export default {
   name: "UserProfileCard",
   mixins: [emptyImageFilter],
@@ -146,15 +147,19 @@ export default {
         const payload = { id: user.id };
         const { data } = await usersAPI.followUser(payload);
         // console.log(data);
+
         if (data.status !== "success") {
           throw new Error(data.message);
         }
+
         Toast.fire({
           icon: "success",
           title: "追蹤成功！",
         });
+
         // rerender: invoke this.afterFollowUser(userId, true)
         this.afterFollowUser(user.id, true);
+
         this.isProcessing = false;
       } catch (error) {
         this.isProcessing = false;
@@ -169,11 +174,14 @@ export default {
       try {
         this.isProcessing = true;
         const { data } = await usersAPI.unfollowUser(user.id);
+
         if (data.status !== "success") {
           throw new Error(data.message);
         }
+
         // rerender: invoke this.afterFollowUser(userId, true)
         this.afterUnfollowUser(user.id, true);
+
         // inform user
         Toast.fire({
           icon: "success",
@@ -182,6 +190,7 @@ export default {
         this.isProcessing = false;
       } catch (error) {
         this.isProcessing = false;
+
         console.log(error);
         Toast.fire({
           icon: "error",
@@ -200,7 +209,9 @@ export default {
         this.$bus.$emit("toggleFollowFromProfileCard", userId);
         return;
       }
+
       // 在目標追蹤者的頁面上，按推薦追蹤者欄來追蹤
+
       if (
         this.userData.id === userId &&
         this.userData.id !== this.currentUser.id
@@ -211,6 +222,7 @@ export default {
         this.localUserData.isFollowed = true;
         return;
       }
+
       // 在個人頁面上，按推薦追蹤追蹤其他使用者
       if (
         this.userData.id !== userId &&
@@ -219,29 +231,6 @@ export default {
         // 個人 following 數量 ++
         console.log("Event C");
         this.localUserData.followingCount++;
-        return;
-      }
-    },
-    afterUnfollowUser(userId, fromProfileCard = false) {
-      // 在目標追蹤者的頁面上，按 ProfileCard 上的追蹤按鈕取消追蹤
-      if (this.userData.id === userId && fromProfileCard) {
-        // 追蹤者的 followers 數量 ++
-        console.log("Event A");
-        this.localUserData.followerCount--;
-        this.localUserData.isFollowed = false;
-        // inform RecommendedFollowers to toggle
-        this.$bus.$emit("toggleFollowFromProfileCard", userId);
-        return;
-      }
-      // 在目標追蹤者的頁面上，按推薦追蹤者欄取消追蹤
-      if (
-        this.userData.id === userId &&
-        this.userData.id !== this.currentUser.id
-      ) {
-        // 追蹤者的 followers 數量 ++
-        console.log("Event B");
-        this.localUserData.followerCount--;
-        this.localUserData.isFollowed = false;
         return;
       }
       // 在個人頁面上，按推薦追蹤取消追蹤其他使用者
@@ -272,6 +261,59 @@ export default {
       },
       deep: true,
     },
+    afterUnfollowUser(userId, fromProfileCard = false) {
+      // 在目標追蹤者的頁面上，按 ProfileCard 上的追蹤按鈕取消追蹤
+      if (this.userData.id === userId && fromProfileCard) {
+        // 追蹤者的 followers 數量 ++
+        console.log("Event A");
+        this.localUserData.followerCount--;
+        this.localUserData.isFollowed = false;
+        // inform RecommendedFollowers to toggle
+        this.$bus.$emit("toggleFollowFromProfileCard", userId);
+        return;
+      }
+
+      // 在目標追蹤者的頁面上，按推薦追蹤者欄取消追蹤
+      if (
+        this.userData.id === userId &&
+        this.userData.id !== this.currentUser.id
+      ) {
+        // 追蹤者的 followers 數量 ++
+        console.log("Event B");
+        this.localUserData.followerCount--;
+        this.localUserData.isFollowed = false;
+        return;
+      }
+
+      // 在個人頁面上，按推薦追蹤取消追蹤其他使用者
+      if (
+        this.userData.id !== userId &&
+        this.userData.id === this.currentUser.id
+      ) {
+        // 個人 following 數量 ++
+        console.log("Event C");
+        this.localUserData.followingCount--;
+        return;
+      }
+    },
+    // import JQuery from 'jquery'
+    showModal() {
+      //   $("#edit-user-modal").appendTo("body");
+      $("#edit-user-modal").modal("show");
+
+      /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
+    },
+  },
+  computed: {
+    ...mapState(["currentUser"]),
+  },
+  watch: {
+    userData: {
+      handler: function () {
+        this.localUserData = this.userData;
+      },
+      deep: true,
+    },
   },
 };
 </script>
@@ -281,15 +323,18 @@ export default {
   padding: 0;
   position: relative;
 }
+
 .coverImage {
   width: 100%;
   height: 200px;
   overflow: hidden;
 }
+
 .coverImage img {
   width: 100%;
   height: 100%;
 }
+
 .avatar {
   position: absolute;
   width: 140px;
@@ -303,6 +348,7 @@ export default {
   overflow: hidden;
   object-fit: cover;
 }
+
 .avatar:after {
   content: "";
   position: absolute;
@@ -314,21 +360,25 @@ export default {
   transform: translate(-50%, -50%);
   border: 4px solid #ffffff;
 }
+
 .card {
   margin-top: 70px;
   position: relative;
   padding: 0 15px 20px;
   border: none;
 }
+
 .card-title {
   font-size: 19px;
   font-weight: 900;
 }
+
 .card-account {
   font-size: 15px;
   font-weight: 500;
   color: #657786;
 }
+
 .btn-edit-user {
   position: absolute;
   top: -60px;
@@ -340,6 +390,7 @@ export default {
   border-color: #ff6600;
   border-radius: 100px;
 }
+
 .btn-edit-user:hover:hover {
   color: #fff;
   background-color: #ff6600;
@@ -351,6 +402,7 @@ export default {
   right: 15px;
   display: flex;
 }
+
 button {
   /* border: 1px solid #ff6600; */
   border-radius: 100px;
@@ -358,64 +410,79 @@ button {
   font-weight: 700;
   font-size: 15px;
 }
+
 button.btn {
   margin: 0;
   padding: 0;
 }
+
 .btn.subscribe {
   margin: 0 10px;
 }
+
 .subscribed {
   margin: 0 10px;
   background-color: #ff6600;
   color: #fff;
 }
+
 .btn.follow,
 .btn.isFollowing {
   height: 40px;
   padding: 0 12px;
 }
+
 .follow {
   color: #ff6600;
   background-color: #fff;
   border: 1px solid #ff6600;
 }
+
 .isFollowing {
   background-color: #ff6600;
   color: #fff;
 }
+
 /* ////////////////////// */
 .card h5,
 .card p {
   margin: 0;
 }
+
 div.card-body {
   padding: 0;
 }
+
 .card-account {
   padding-bottom: 10px;
 }
+
 .follow-condition {
   padding-top: 10px;
   display: flex;
 }
+
 .follow-condition span {
   font-weight: 700;
   color: #222;
 }
+
 .follow-condition a {
   color: #657786;
   font-weight: 700;
 }
+
 .follow-condition a:hover {
   text-decoration: none;
 }
+
 .follow-condition > div {
   display: block;
   height: 20px;
   font-weight: 500;
   font-size: 14px;
 }
+
 .following-count {
   margin-right: 20px;
 }

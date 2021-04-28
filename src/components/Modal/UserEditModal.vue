@@ -35,6 +35,7 @@
 
 <script>
 // import { emptyImageFilter } from "../../utils/mixins";
+
 export default {
   // mixins: [emptyImageFilter],
   name: "UserEditModal",
@@ -49,11 +50,13 @@ export default {
   margin: 2px auto;
   z-index: 1100 !important;
 }
+
 /* Modal */
 /* form {
   margin: 0;
   padding: 0;
 }
+
 #edit-user-modal {
   position: absolute;
   top: -26px;
@@ -61,11 +64,13 @@ export default {
   width: 596px;
   height: 750px;
 }
+
 .modal-content {
   border-radius: 14px;
   width: 100%;
   height: 660px;
 }
+
 .modal-header {
   display: flex;
   justify-content: flex-start;
@@ -75,6 +80,7 @@ export default {
   margin: 0;
   padding: 0;
 }
+
 #modal-close {
   width: 26px;
   height: 30px;
@@ -85,12 +91,14 @@ export default {
   font-size: 25px;
   margin: 5px 30px 5px 10px;
 }
+
 #edit-user-title {
   margin: 0;
   padding: 0;
   font-weight: bolder;
   margin-right: 340px;
 }
+
 .modal-content .modal-header .storage {
   width: 55px;
   height: 28px;
@@ -100,16 +108,19 @@ export default {
   border-radius: 100px;
   border: none;
 }
+
 #edit-user-body {
   width: 100%;
   margin: 0;
   padding: 0;
 }
+
 #edit-user-cover-group {
   margin: 0;
   padding: 0;
   width: 100%;
 }
+
 #edit-user-cover-group img {
   width: 100%;
   height: 200px;
@@ -118,12 +129,14 @@ export default {
   margin: 0;
   padding: 0;
 }
+
 #edit-user-cover-icon {
   position: absolute;
   top: 90px;
   left: 250px;
   display: flex;
 }
+
 #camera-icon,
 #cross-icon {
   width: 35px;
@@ -136,9 +149,11 @@ export default {
   background-color: white;
   font-size: 20px;
 }
+
 #camera-icon {
   margin-right: 40px;
 }
+
 #edit-user-avatar-group img {
   position: absolute;
   left: 14px;
@@ -150,6 +165,7 @@ export default {
   object-fit: cover;
   border: 5px solid white;
 }
+
 #avatar-camera-icon {
   position: absolute;
   top: 180px;
@@ -162,6 +178,7 @@ export default {
   border-radius: 50%;
   font-size: 20px;
 }
+
 .form-name,
 .form-introduction {
   width: 570px;
@@ -171,11 +188,13 @@ export default {
   color: #657786;
   font-weight: 700;
 }
+
 .form-name label,
 .form-introduction label {
   padding-left: 10px;
   color: gray;
 }
+
 input {
   height: 24px;
   border: none;
@@ -185,12 +204,15 @@ input {
   background-color: #f5f8fa;
   border-bottom: 3px solid #657786;
 }
+
 .form-introduction {
   margin: 0 10px 30px 10px;
 }
+
 .form-introduction label {
   height: 20px;
 }
+
 .form-introduction textarea {
   height: 130px;
   border: none;
@@ -201,6 +223,7 @@ input {
   background-color: #f5f8fa;
   border-bottom: 3px solid #657786;
 }
+
 .form-name p,
 .form-introduction p {
   text-align: end;

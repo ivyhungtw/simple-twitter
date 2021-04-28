@@ -21,7 +21,8 @@
     </div>
 
     <!-- modal -->
-    <CreateTweetModal v-on="$listeners" :user="user"></CreateTweetModal>
+    <CreateTweetModal :user="user"></CreateTweetModal>
+
     <!-- modal -->
   </div>
 </template>
@@ -30,6 +31,7 @@
 import CreateTweetModal from "../Modal/CreateTweetModal";
 import { emptyImageFilter } from "../../utils/mixins";
 import { mapState } from "vuex";
+
 export default {
   name: "CreateTweet",
   mixins: [emptyImageFilter],
@@ -64,45 +66,54 @@ export default {
   padding: 10px 15px;
   /* border: 1px solid #000; */
 }
+
 .container {
   display: flex;
   align-items: center;
   padding: 0;
 }
+
 .avatar img {
   width: 50px;
   height: 50px;
   border-radius: 50%;
   background-color: #3c3c3c;
 }
+
 .textInput {
   flex: 1;
   margin-left: 10px;
 }
+
 .textInput textarea,
 .textInput input {
   border: none;
   resize: none;
   background-color: transparent;
 }
+
 .textInput p {
   font-weight: 500;
   font-size: 18px;
   color: #9197a3;
 }
+
 .textInput p:hover {
   cursor: pointer;
 }
+
 .textInput input::placeholder {
   font-weight: 500;
   font-size: 18px;
   color: #9197a3;
 }
+
 .tweetButton {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
 }
+
 .tweetButton .btn {
   width: 64px;
   height: 40px;

@@ -30,6 +30,7 @@ import CreateTweet from "../components/Main/CreateTweet";
 import FollowingUsersTweets from "../components/Main/FollowingUsersTweets";
 import { Toast } from "../utils/helpers";
 import tweetsAPI from "../apis/tweets";
+
 export default {
   name: "Main",
   components: {
@@ -41,8 +42,8 @@ export default {
   created() {
     this.fetchTweets();
     // eventbus for afterCreateReply
-    this.$bus.$on("afterCreateReply", (tweetId) => {
-      this.afterCreateReply(tweetId);
+    this.$bus.$on("afterCreateReply", (payload) => {
+      this.afterCreateReply(payload);
     });
     this.$bus.$on("afterCreateTweet", (newTweet) => {
       this.afterCreateTweet(newTweet);
@@ -52,7 +53,7 @@ export default {
     return {
       tweets: [],
       tweet: {
-        userId: undefined,
+        UserId: undefined,
         created: "",
         description: "",
         id: undefined, // tweetId
@@ -82,7 +83,7 @@ export default {
     },
     afterCreateTweet(newTweet) {
       this.tweets.unshift({
-        ...this.tweet,
+        ...this.tweet, // set up correct properties for TweetItem
         ...newTweet,
       });
     },
@@ -99,16 +100,19 @@ export default {
         }
       });
     },
-    afterCreateReply(tweetId) {
+    afterCreateReply(payload) {
+      const tweetId = payload.tweetId;
+      console.log("tweetId: " + tweetId);
       this.tweets = this.tweets.map((tweet) => {
-        if (tweet.id === tweetId) {
-          console.log("tweets changed!");
+        if (tweet.id !== tweetId) {
+          return {
+            ...tweet,
+          };
+        } else {
           return {
             ...tweet,
             replyCount: tweet.replyCount + 1,
           };
-        } else {
-          return tweet;
         }
       });
     },
@@ -120,6 +124,7 @@ export default {
 .main {
   display: flex;
 }
+
 .mainSection {
   flex: 1;
   width: 100%;
@@ -128,6 +133,7 @@ export default {
   overflow-y: scroll;
   position: relative;
 }
+
 /* for Chrome, Safari and Opera */
 .mainSection {
   -ms-overflow-style: scrollbar;
@@ -138,13 +144,16 @@ export default {
 .mainSection::-webkit-scrollbar {
   width: 8px;
 }
+
 .mainSection::-webkit-scrollbar-thumb {
   background-color: #9197a3;
   border-radius: 15px;
 }
+
 .mainSection::-webkit-scrollbar-track {
   background-color: #ddd;
 }
+
 .title {
   height: 55px;
   border-bottom: 1px solid #e6ecf0;
@@ -155,6 +164,7 @@ export default {
   top: 0;
   background-color: #fff;
 }
+
 .title h1 {
   font-weight: 700;
   font-size: 19px;

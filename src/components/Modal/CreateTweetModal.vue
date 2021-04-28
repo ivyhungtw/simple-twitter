@@ -46,16 +46,6 @@
 
         <div class="modal-footer">
           <div class="tweetButton">
-            <!-- <button
-              type="button"
-              class="btn"
-              data-dismiss="modal"
-              aria-label="Close"
-              @click="createNewTweet"
-              aria-hidden="true"
-            >
-              推文
-            </button> -->
             <button
               type="button"
               class="btn"
@@ -77,6 +67,9 @@ import { Toast } from "../../utils/helpers";
 import { emptyImageFilter } from "../../utils/mixins";
 import tweetsAPI from "../../apis/tweets";
 import { mapState } from "vuex";
+// jquery for closing modal
+import $ from "jquery";
+
 export default {
   name: "CreateTweetModal",
   props: {
@@ -91,6 +84,9 @@ export default {
       tweetContent: "",
       isProcessing: false,
     };
+  },
+  created() {
+    console.log("modal created");
   },
   methods: {
     async createNewTweet() {
@@ -107,11 +103,13 @@ export default {
         };
         // call api to create new tweet: 回傳 tweet id?
         const { data } = await tweetsAPI.createNewTweet(payload);
-        // console.log(data);
+
         if (data.status !== "success") {
           throw new Error(data.message);
         }
+
         const { id, UserId, createdAt, description, updatedAt } = data.tweet[0];
+
         const { account, name, avatar } = this.currentUser;
         const newTweet = {
           user: { account, name, avatar },
@@ -121,17 +119,27 @@ export default {
           description,
           updatedAt,
         };
+
         // inform user
         Toast.fire({
           icon: "success",
           title: "推文成功！",
         });
+
         // close modal after successfully replied
-        this.closeModal("tweetModal");
+        console.log("close tweetModal");
+        // this.closeModal("tweetModal");
+        $("#tweetModal").modal("hide");
+        // const modalId = "#tweetModal";
+        // this.$bus.$emit("closeModal", modalId);
+
         // inform Main.vue to push new tweet
-        this.$emit("afterCreateTweet", newTweet);
+        // inform UserProfile to push new tweet
+        this.$bus.$emit("afterCreateTweet", newTweet);
+
         // clear tweetContent
         this.tweetContent = "";
+
         // enable button
         this.isProcessing = false;
       } catch (error) {
@@ -164,14 +172,15 @@ export default {
       return true;
     },
     closeModal(modalId) {
-      // console.log(modalId);
       // close modal after successfully replied with pure js
       const modal = document.querySelector(`#${modalId}`);
       modal.classList.remove("show");
       modal.setAttribute("aria-hidden", "true");
       modal.setAttribute("style", "display: none");
+
       // get modal backdrop
       const modalBackdrops = document.getElementsByClassName("modal-backdrop");
+
       // remove opened modal backdrop
       document.body.removeChild(modalBackdrops[0]);
     },
@@ -188,6 +197,7 @@ export default {
   align-items: center;
   padding: 0;
 }
+
 .avatar img,
 .imagePlaceholder {
   width: 50px;
@@ -195,52 +205,64 @@ export default {
   border-radius: 50%;
   background-color: #3c3c3c;
 }
+
 /* modal */
 .modal-content {
   height: 300px;
   border-radius: 14px;
   width: 600px;
 }
+
 .modal-header {
   border-bottom: 1px solid #e6ecf0;
 }
+
 .modal-body {
   height: 245px;
 }
+
 .modal-body input {
   width: 100%;
 }
+
 .modal-content .container {
   align-items: start;
 }
+
 .textInput {
   flex: 1;
   margin-left: 10px;
 }
+
 .textInput textarea,
 .textInput input {
   border: none;
   resize: none;
   background-color: transparent;
 }
+
 .textInput p {
   font-weight: 500;
   font-size: 18px;
   color: #9197a3;
 }
+
 .textInput p:hover {
   cursor: pointer;
 }
+
 .textInput input::placeholder {
   font-weight: 500;
   font-size: 18px;
   color: #9197a3;
 }
+
 .tweetButton {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
 }
+
 .tweetButton .btn {
   min-width: 64px;
   height: 40px;
@@ -250,8 +272,10 @@ export default {
   font-weight: 500;
   font-size: 18px;
 }
+
 .modal-footer {
   border: none;
 }
+
 /* modal */
 </style>
