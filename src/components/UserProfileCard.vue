@@ -51,18 +51,23 @@
       >
         編輯個人資料
       </button>
+
+      <!-- btnPanel -->
       <div v-else class="btnPanel">
         <div>
           <button class="btn message">
-            <i class="far fa-envelope tempIcon"></i>
+            <img src="../assets/btn_message.svg" alt="" />
+            <!-- <i class="far fa-envelope tempIcon"></i> -->
           </button>
         </div>
         <div>
           <button v-if="localUserData.isSubscribed" class="btn subscribed">
-            <i class="far fa-bell tempIcon"></i>
+            <img src="../assets/btn_noti.svg" alt="" />
+            <!-- <i class="far fa-bell tempIcon"></i> -->
           </button>
           <button v-else class="btn subscribe">
-            <i class="far fa-bell tempIcon"></i>
+            <img src="../assets/btn_noti.svg" alt="" />
+            <!-- <i class="far fa-bell tempIcon"></i> -->
           </button>
         </div>
         <div>
@@ -72,7 +77,7 @@
             :disabled="isProcessing"
             @click.stop.prevent="unfollowUser(localUserData)"
           >
-            正在追蹤
+            正在跟隨
           </button>
           <button
             v-else
@@ -80,10 +85,11 @@
             :disabled="isProcessing"
             @click.stop.prevent="followUser(localUserData)"
           >
-            追蹤
+            跟隨
           </button>
         </div>
       </div>
+      <!-- btnPanel -->
     </div>
   </div>
 </template>
@@ -349,14 +355,19 @@ export default {
 }
 
 button {
-  border: 1px solid #ff6600;
+  /* border: 1px solid #ff6600; */
   border-radius: 100px;
   color: #ff6600;
   font-weight: 700;
   font-size: 15px;
 }
 
-.subscribe {
+button.btn {
+  margin: 0;
+  padding: 0;
+}
+
+.btn.subscribe {
   margin: 0 10px;
 }
 
@@ -366,8 +377,19 @@ button {
   color: #fff;
 }
 
+.btn.follow,
+.btn.isFollowing {
+  height: 40px;
+  padding: 0 12px;
+}
+
+.follow {
+  color: #ff6600;
+  background-color: #fff;
+  border: 1px solid #ff6600;
+}
+
 .isFollowing {
-  width: 92px;
   background-color: #ff6600;
   color: #fff;
 }

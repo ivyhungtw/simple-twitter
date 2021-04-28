@@ -3,7 +3,7 @@
     <div
       class="modal fade"
       id="edit-user-modal"
-      tabindex="-1"
+      tabindex="1"
       role="dialog"
       aria-labelledby="exampleModalLongTitle"
       aria-hidden="true"
