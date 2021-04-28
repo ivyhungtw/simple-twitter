@@ -42,9 +42,17 @@
           </div>
         </div>
       </div>
-      <button
+      <!-- <button
         v-if="currentUser.id === localUserData.id"
         @click="editUserModal(localUserData)"
+        class="btn btn-edit-user"
+        data-toggle="modal"
+        data-target="#edit-user-modal"
+      >
+        編輯個人資料
+      </button> -->
+      <button
+        v-if="currentUser.id === localUserData.id"
         class="btn btn-edit-user"
         data-toggle="modal"
         data-target="#edit-user-modal"
@@ -90,6 +98,9 @@
         </div>
       </div>
       <!-- btnPanel -->
+
+      <!-- UserEditModal -->
+      <UserEditModal></UserEditModal>
     </div>
   </div>
 </template>
@@ -99,6 +110,7 @@ import { mapState } from "vuex";
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 import usersAPI from "../apis/users";
+import UserEditModal from "./Modal/UserEditModal";
 
 export default {
   name: "UserProfileCard",
@@ -108,6 +120,9 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  components: {
+    UserEditModal,
   },
   data() {
     return {

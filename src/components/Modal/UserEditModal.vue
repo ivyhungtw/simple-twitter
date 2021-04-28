@@ -1,96 +1,43 @@
 <template>
-  <form @submit.stop.prevent="handleSubmit">
-    <div
-      class="modal fade"
-      id="edit-user-modal"
-      tabindex="1"
-      role="dialog"
-      aria-labelledby="exampleModalLongTitle"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button
-              type="button"
-              class="close"
-              id="modal-close"
-              data-dismiss="modal"
-            >
-              x
-            </button>
-
-            <h5 class="modal-title" id="edit-user-title">編輯個人資料</h5>
-            <button type="submit" class="storage">儲存</button>
-          </div>
-          <div class="modal-body" id="edit-user-body">
-            <div class="row">
-              <div id="edit-user-cover-group">
-                <img
-                  :src="user.cover | emptyImageFilter"
-                  id="edit-user-cover"
-                />
-
-                <div id="edit-user-cover-icon">
-                  <button id="camera-icon">
-                    <i class="fas fa-fw fa-camera" style="color: white"></i>
-                  </button>
-                  <button id="cross-icon">
-                    <i class="fas fa-fw fa-times" style="color: white"></i>
-                  </button>
-                </div>
-              </div>
-              <div id="edit-user-avatar-group">
-                <img
-                  :src="user.avatar | emptyImageFilter"
-                  id="edit-user-avatar"
-                />
-                <button id="avatar-camera-icon">
-                  <i class="fas fa-fw fa-camera"></i>
-                </button>
-              </div>
-              <div class="form-name form-label-group mb-2">
-                <label for="name">名稱</label>
-                <input
-                  id="name"
-                  v-model="user.name"
-                  name="name"
-                  type="text"
-                  class="form-control"
-                  autocomplete="username"
-                  required
-                  autofocus
-                />
-                <p>{{ user.name.length }}/50</p>
-              </div>
-
-              <div class="form-introduction form-label-group mb-2">
-                <label for="introduction">自我介紹</label>
-                <textarea
-                  id="introduction"
-                  v-model="user.introduction"
-                  name="introduction"
-                  type="text"
-                  class="form-control"
-                  autocomplete="userintroduction"
-                  required
-                  autofocus
-                />
-                <p>{{ user.introduction.length }}/160</p>
-              </div>
-            </div>
-          </div>
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="edit-user-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">...</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Close
+          </button>
+          <button type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div>
     </div>
-  </form>
+  </div>
 </template>
 
 <script>
-import { emptyImageFilter } from "../../utils/mixins";
+// import { emptyImageFilter } from "../../utils/mixins";
 
 export default {
-  mixins: [emptyImageFilter],
+  // mixins: [emptyImageFilter],
   name: "UserEditModal",
 };
 </script>

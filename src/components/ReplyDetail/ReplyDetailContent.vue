@@ -2,17 +2,22 @@
   <div class="container">
     <div class="userInfo">
       <div class="avatar">
-        <img
-          v-if="dataForContent.user"
-          :src="dataForContent.user.avatar"
-          alt=""
-        />
-        <img v-else src="'' | emptyImageFilter" alt="" />
+        <router-link :to="`/userprofile/${dataForContent.user.id}`">
+          <img
+            v-if="dataForContent.user"
+            :src="dataForContent.user.avatar"
+            alt=""
+          />
+          <img v-else src="'' | emptyImageFilter" alt="" />
+        </router-link>
       </div>
       <div class="userTitle">
-        <p>
-          {{ dataForContent.user ? dataForContent.user.name : "資料讀取中" }}
-        </p>
+        <router-link :to="`/userprofile/${dataForContent.user.id}`">
+          <p class="text-dark">
+            {{ dataForContent.user ? dataForContent.user.name : "資料讀取中" }}
+          </p>
+        </router-link>
+
         <p>
           @{{
             dataForContent.user ? dataForContent.user.account : "資料讀取中"
