@@ -53,18 +53,14 @@ export default {
       try {
         this.isLoading = true;
         const { data } = await tweetsAPI.getAllLikedTweets(userId);
-        // this.tweets = data;
 
         this.tweets = data.map((tweet) => {
+          const { Tweet } = tweet;
+          const { User } = tweet.Tweet;
           return {
-            ...tweet,
-            ...tweet.Tweet,
-            UserId: this.user.id,
-            user: {
-              account: this.user.account,
-              avatar: this.user.avatar,
-              name: this.user.name,
-            },
+            ...Tweet,
+            user: User,
+            UserId: Tweet.User.id,
           };
         });
         this.isLoading = false;

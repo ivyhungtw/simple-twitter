@@ -53,7 +53,6 @@ export default {
       try {
         this.isLoading = true;
         const { data } = await tweetsAPI.getUserTweet(userId);
-        // this.tweets = data;
 
         this.tweets = data.map((tweet) => {
           return {
