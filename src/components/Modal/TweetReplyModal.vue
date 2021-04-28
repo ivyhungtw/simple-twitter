@@ -160,6 +160,7 @@ export default {
         // use eventBus
         const payloadForList = {
           tweetId,
+          name: this.currentUser.name,
           UserId: this.currentUser.id,
           account: this.currentUser.account,
           avatar: this.currentUser.avatar,
