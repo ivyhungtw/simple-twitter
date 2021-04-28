@@ -8,12 +8,13 @@
         <h1>首頁</h1>
       </div>
       <!-- CreateTweet -->
-      <CreateTweet @afterCreateTweet="afterCreateTweet"></CreateTweet>
+      <!-- <CreateTweet @afterCreateTweet="afterCreateTweet"></CreateTweet> -->
+      <CreateTweet></CreateTweet>
+
       <!-- FollowingUsersTweets -->
       <FollowingUsersTweets
         :tweets="tweets"
         @afterToggleLike="afterToggleLike"
-        @afterCreateReply="afterCreateReply"
       ></FollowingUsersTweets>
     </div>
 
@@ -39,6 +40,13 @@ export default {
   },
   created() {
     this.fetchTweets();
+    // eventbus for afterCreateReply
+    this.$bus.$on("afterCreateReply", (tweetId) => {
+      this.afterCreateReply(tweetId);
+    });
+    this.$bus.$on("afterCreateTweet", (newTweet) => {
+      this.afterCreateTweet(newTweet);
+    });
   },
   data() {
     return {
@@ -94,6 +102,7 @@ export default {
     afterCreateReply(tweetId) {
       this.tweets = this.tweets.map((tweet) => {
         if (tweet.id === tweetId) {
+          console.log("tweets changed!");
           return {
             ...tweet,
             replyCount: tweet.replyCount + 1,
@@ -120,12 +129,21 @@ export default {
   position: relative;
 }
 /* for Chrome, Safari and Opera */
-.mainSection::-webkit-scrollbar {
-  display: none;
-}
 .mainSection {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: scrollbar;
+  /* IE and Edge */
+  /* scrollbar-width: 8px; */
+  /* Firefox */
+}
+.mainSection::-webkit-scrollbar {
+  width: 8px;
+}
+.mainSection::-webkit-scrollbar-thumb {
+  background-color: #9197a3;
+  border-radius: 15px;
+}
+.mainSection::-webkit-scrollbar-track {
+  background-color: #ddd;
 }
 .title {
   height: 55px;

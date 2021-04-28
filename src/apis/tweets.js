@@ -10,13 +10,8 @@ export default {
   deleteTweet({ tweetId }) {
     return apiHelper.delete(`/admin/tweets/${tweetId}`)
   },
-  getUserTweet({ tweetId }) {
-    console.log(tweetId)
-    return apiHelper.get(`/users/${tweetId}/tweets`)
-  },
-  getUserFollowersTweet({ tweetId }) {
-    console.log(tweetId)
-    return apiHelper.get(`/users/${tweetId}/followers`)
+  getUserTweet(userId) {
+    return apiHelper.get(`/users/${userId}/tweets`)
   },
   createReply(tweetId, payload) {
     return apiHelper.post(`/tweets/${tweetId}/replies`, payload)

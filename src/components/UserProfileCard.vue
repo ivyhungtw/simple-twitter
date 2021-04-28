@@ -1,203 +1,276 @@
 <template>
   <div class="container">
+    <div class="coverImage">
+      <img
+        :src="localUserData.cover | emptyImageFilter"
+        class="card-img-top"
+        alt=""
+      />
+    </div>
+    <div class="avatar">
+      <img
+        :src="localUserData.avatar | emptyImageFilter"
+        class="card-img-top"
+        alt=""
+      />
+    </div>
     <div class="card">
-      <div class="background-img">
-        <img :src="user.cover" class="card-img-top" alt="" />
-      </div>
-      <div class="avatar">
-        <img :src="user.avatar" class="card-img-top" alt="" />
-      </div>
-      <!-- Button trigger modal -->
-      <button
-        @click="editUserModal(user)"
-        class="btn btn-primary btn-edit-user"
-        data-toggle="modal"
-        data-target="#edit-user-modal"
-      >
-        編輯個人資料
-      </button>
-
-      <!-- Modal -->
-      <form @submit.stop.prevent="handleSubmit">
-        <div
-          class="modal fade"
-          id="edit-user-modal"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLongTitle"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button
-                  type="button"
-                  class="close"
-                  id="modal-close"
-                  data-dismiss="modal"
-                >
-                  x
-                </button>
-
-                <h5 class="modal-title" id="edit-user-title">編輯個人資料</h5>
-                <button type="submit" class="storage">儲存</button>
-              </div>
-              <div class="modal-body" id="edit-user-body">
-                <div class="row">
-                  <div id="edit-user-cover-group">
-                    <img :src="user.cover" id="edit-user-cover" />
-
-                    <div id="edit-user-cover-icon">
-                      <button id="camera-icon">
-                        <i class="fas fa-fw fa-camera" style="color: white"></i>
-                      </button>
-                      <button id="cross-icon">
-                        <i class="fas fa-fw fa-times" style="color: white"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <div id="edit-user-avatar-group">
-                    <img :src="user.avatar" id="edit-user-avatar" />
-                    <button id="avatar-camera-icon">
-                      <i class="fas fa-fw fa-camera"></i>
-                    </button>
-                  </div>
-                  <div class="form-name form-label-group mb-2">
-                    <label for="name">名稱</label>
-                    <input
-                      id="name"
-                      v-model="user.name"
-                      name="name"
-                      type="text"
-                      class="form-control"
-                      autocomplete="username"
-                      required
-                      autofocus
-                    />
-                    <p>{{ user.name.length }}/50</p>
-                  </div>
-
-                  <div class="form-introduction form-label-group mb-2">
-                    <label for="introduction">自我介紹</label>
-                    <textarea
-                      id="introduction"
-                      v-model="user.introduction"
-                      name="introduction"
-                      type="text"
-                      class="form-control"
-                      autocomplete="userintroduction"
-                      required
-                      autofocus
-                    />
-                    <p>{{ user.introduction.length }}/160</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
       <div class="card-body">
-        <h5 class="card-title">{{ user.name }}</h5>
-        <p class="card-account">@{{ user.account }}</p>
+        <h5 class="card-title">
+          {{ localUserData.name ? localUserData.name : "UserName" }}
+        </h5>
+        <p class="card-account">@{{ localUserData.account }}</p>
         <p class="card-content">
-          {{ user.introduction }}
+          {{
+            localUserData.introduction
+              ? localUserData.introduction
+              : "Placeholder: It's empty here, write something down!"
+          }}
         </p>
-        <div class="follow-condition row">
+        <div class="follow-condition">
           <div class="following-count">
             <router-link to="/userprofile/following"
-              ><span>{{ user.followingCount }}個</span>跟隨中</router-link
+              ><span>{{ localUserData.followingCount }} 個</span
+              >跟隨中</router-link
             >
           </div>
           <div class="follows-count">
             <router-link to="/userprofile/followers"
-              ><span>{{ user.followerCount }}位</span>跟隨者</router-link
+              ><span>{{ localUserData.followerCount }} 位</span
+              >跟隨者</router-link
             >
           </div>
         </div>
       </div>
+      <!-- <button
+        v-if="currentUser.id === localUserData.id"
+        @click="editUserModal(localUserData)"
+        class="btn btn-edit-user"
+        data-toggle="modal"
+        data-target="#edit-user-modal"
+      >
+        編輯個人資料
+      </button> -->
+      <button
+        v-if="currentUser.id === localUserData.id"
+        class="btn btn-edit-user"
+        data-toggle="modal"
+        data-target="#edit-user-modal"
+        @click="showModal"
+      >
+        編輯個人資料
+      </button>
+
+      <!-- btnPanel -->
+      <div v-else class="btnPanel">
+        <div>
+          <button class="btn message">
+            <img src="../assets/btn_message.svg" alt="" />
+          </button>
+        </div>
+        <div>
+          <button v-if="localUserData.isSubscribed" class="btn subscribed">
+            <img src="../assets/btn_noti.svg" alt="" />
+          </button>
+          <button v-else class="btn subscribe">
+            <img src="../assets/btn_noti.svg" alt="" />
+          </button>
+        </div>
+        <div>
+          <button
+            v-if="localUserData.isFollowed"
+            class="btn isFollowing"
+            :disabled="isProcessing"
+            @click.stop.prevent="unfollowUser(localUserData)"
+          >
+            正在跟隨
+          </button>
+          <button
+            v-else
+            class="btn follow"
+            :disabled="isProcessing"
+            @click.stop.prevent="followUser(localUserData)"
+          >
+            跟隨
+          </button>
+        </div>
+      </div>
+      <!-- btnPanel -->
+      <!-- UserEditModal -->
+      <UserEditModal></UserEditModal>
     </div>
   </div>
 </template>
 
 <script>
-// import { Toast } from './../utils/helpers'
+import { mapState } from "vuex";
 import { emptyImageFilter } from "../utils/mixins";
-// import { mapState } from "vuex";
-
+import { Toast } from "../utils/helpers";
+import usersAPI from "../apis/users";
+import UserEditModal from "./Modal/UserEditModal";
+// import locally
+import $ from "jquery";
 export default {
   name: "UserProfileCard",
   mixins: [emptyImageFilter],
   props: {
-    User: {
+    userData: {
       type: Object,
       required: true,
     },
-    // initialUser: {
-    //   type: Object,
-    //   default: () => {
-    //     return {
-    //       name: '',
-    //       cover: '',
-    //       avatar: '',
-    //       introduction: '',
-    //     }
-    //   }
-    // },
+  },
+  components: {
+    UserEditModal,
   },
   data() {
     return {
-      user: this.User,
-      // user: {
-      //   ...this.initialUser
-      // },
-      // isLoading: true
+      localUserData: {},
+      isProcessing: false,
     };
   },
-  // watch: {
-  //   initialUser (newValue) {
-  //     this.user = {
-  //       ...this.user,
-  //       ...newValue
-  //     }
-  //   }
-  // },
-  //  created () {
-  //   const { id } = this.$route.params
-  //   this.fetchUser(id)
-  // },
+  created() {
+    // from RecommendedFollowers
+    this.$bus.$on("afterFollowUser", (userId) => {
+      this.afterFollowUser(userId);
+    });
+    // from RecommendedFollowers
+    this.$bus.$on("afterUnfollowUser", (userId) => {
+      this.afterUnfollowUser(userId);
+    });
+  },
   methods: {
-    editUserModal(user) {
-      this.user = user;
-    },
-    handleFileChange(e) {
-      const { files } = e.target;
-      if (files.length === 0) {
-        // 使用者沒有選擇上傳的檔案
-        this.user.cover = "";
-      } else {
-        const imageURL = window.URL.createObjectURL(files[0]);
-        this.user.image = imageURL;
+    async followUser(user) {
+      try {
+        // call api to toggle isFolloweda
+        this.isProcessing = true;
+        const payload = { id: user.id };
+        const { data } = await usersAPI.followUser(payload);
+        // console.log(data);
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        Toast.fire({
+          icon: "success",
+          title: "追蹤成功！",
+        });
+        // rerender: invoke this.afterFollowUser(userId, true)
+        this.afterFollowUser(user.id, true);
+        this.isProcessing = false;
+      } catch (error) {
+        this.isProcessing = false;
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法執行動作，請稍後再試！",
+        });
       }
     },
-    //     fetchUser (userId) {
-    //   console.log('fetchUser id:', userId)
-    //   const { user } = dummyData
-    //   this.user = {
-    //     ...this.user,
-    //     id: user.id,
-    //     name: user.name,
-    //     cover: user.cover,
-    //     avatar: user.avatar,
-    //     introduction: user.introduction,
-    //   }
-    // },
-    handleSubmit(e) {
-      const form = e.target;
-      const formData = new FormData(form);
-      for (let [name, value] of formData.entries()) {
-        console.log(name + ": " + value);
+    async unfollowUser(user) {
+      try {
+        this.isProcessing = true;
+        const { data } = await usersAPI.unfollowUser(user.id);
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        // rerender: invoke this.afterFollowUser(userId, true)
+        this.afterUnfollowUser(user.id, true);
+        // inform user
+        Toast.fire({
+          icon: "success",
+          title: "取消追蹤成功！",
+        });
+        this.isProcessing = false;
+      } catch (error) {
+        this.isProcessing = false;
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法追蹤，請稍後再試！",
+        });
       }
+    },
+    afterFollowUser(userId, fromProfileCard = false) {
+      // 在目標追蹤者的頁面上，按 ProfileCard 上的追蹤按鈕追蹤
+      if (this.userData.id === userId && fromProfileCard) {
+        // 追蹤者的 followers 數量 ++
+        console.log("Event A");
+        this.localUserData.followerCount++;
+        this.localUserData.isFollowed = true;
+        // inform RecommendedFollowers to toggle
+        this.$bus.$emit("toggleFollowFromProfileCard", userId);
+        return;
+      }
+      // 在目標追蹤者的頁面上，按推薦追蹤者欄來追蹤
+      if (
+        this.userData.id === userId &&
+        this.userData.id !== this.currentUser.id
+      ) {
+        // 追蹤者的 followers 數量 ++
+        console.log("Event B");
+        this.localUserData.followerCount++;
+        this.localUserData.isFollowed = true;
+        return;
+      }
+      // 在個人頁面上，按推薦追蹤追蹤其他使用者
+      if (
+        this.userData.id !== userId &&
+        this.userData.id === this.currentUser.id
+      ) {
+        // 個人 following 數量 ++
+        console.log("Event C");
+        this.localUserData.followingCount++;
+        return;
+      }
+    },
+    afterUnfollowUser(userId, fromProfileCard = false) {
+      // 在目標追蹤者的頁面上，按 ProfileCard 上的追蹤按鈕取消追蹤
+      if (this.userData.id === userId && fromProfileCard) {
+        // 追蹤者的 followers 數量 ++
+        console.log("Event A");
+        this.localUserData.followerCount--;
+        this.localUserData.isFollowed = false;
+        // inform RecommendedFollowers to toggle
+        this.$bus.$emit("toggleFollowFromProfileCard", userId);
+        return;
+      }
+      // 在目標追蹤者的頁面上，按推薦追蹤者欄取消追蹤
+      if (
+        this.userData.id === userId &&
+        this.userData.id !== this.currentUser.id
+      ) {
+        // 追蹤者的 followers 數量 ++
+        console.log("Event B");
+        this.localUserData.followerCount--;
+        this.localUserData.isFollowed = false;
+        return;
+      }
+      // 在個人頁面上，按推薦追蹤取消追蹤其他使用者
+      if (
+        this.userData.id !== userId &&
+        this.userData.id === this.currentUser.id
+      ) {
+        // 個人 following 數量 ++
+        console.log("Event C");
+        this.localUserData.followingCount--;
+        return;
+      }
+    },
+    // import JQuery from 'jquery'
+    showModal() {
+      //   $("#edit-user-modal").appendTo("body");
+      $("#edit-user-modal").modal("show");
+      /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
+    },
+  },
+  computed: {
+    ...mapState(["currentUser"]),
+  },
+  watch: {
+    userData: {
+      handler: function () {
+        this.localUserData = this.userData;
+      },
+      deep: true,
     },
   },
 };
@@ -205,262 +278,145 @@ export default {
 
 <style scoped>
 .container {
-  width: 596px;
-  height: 390px;
-  margin: 0;
   padding: 0;
+  position: relative;
 }
-.container .card {
-  width: 596px;
-  min-width: 596px;
-  margin-bottom: 10px;
-  padding: 0;
-  background-color: white;
-  border: none;
-}
-
-.background-img img {
+.coverImage {
   width: 100%;
   height: 200px;
-  background-size: cover;
+  overflow: hidden;
+}
+.coverImage img {
+  width: 100%;
+  height: 100%;
+}
+.avatar {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  top: 200px;
+  left: 84px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background-color: #000;
+  z-index: 999;
+  overflow: hidden;
   object-fit: cover;
 }
-
-.avatar img {
+.avatar:after {
+  content: "";
   position: absolute;
-  left: 14px;
-  top: 124px;
+  top: 50%;
+  left: 50%;
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background-size: cover;
-  object-fit: cover;
-  border: 5px solid white;
+  transform: translate(-50%, -50%);
+  border: 4px solid #ffffff;
 }
-
-.btn-edit-user {
+.card {
+  margin-top: 70px;
   position: relative;
-  top: 10px;
-  left: 460px;
-  width: 122px;
-  height: 40px;
-  font-weight: 900;
-  color: #ff6600;
-  background-color: white;
-  border-radius: 100px;
-  border: 1px solid #ff6600;
-}
-
-.card-body {
-  margin-top: 10px;
-}
-
-.card-body h5,
-.card-body p {
-  margin-bottom: 0;
-}
-
-.card-body h5,
-.follow-condition span {
-  font-weight: 900;
-}
-
-.card-body p {
-  color: #657786;
-}
-.card-body .card-content {
-  color: black;
-  margin: 5px 0;
-}
-
-.row {
-  margin-left: 0;
-}
-
-.follow-condition a {
-  color: gray;
-  font-size: 3px;
-}
-
-.following-count {
-  margin-right: 15px;
-}
-
-/* Modal */
-form {
-  margin: 0;
-  padding: 0;
-}
-
-#edit-user-modal {
-  position: absolute;
-  top: -26px;
-  left: 40px;
-  width: 596px;
-  height: 750px;
-}
-
-.modal-content {
-  border-radius: 14px;
-  width: 100%;
-  height: 660px;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  width: 100%;
-  height: 50px;
-  margin: 0;
-  padding: 0;
-}
-
-#modal-close {
-  width: 26px;
-  height: 30px;
-  line-height: 20px;
-  margin: 0;
-  padding: 0 0 5px 0;
-  color: #ff6600;
-  font-size: 25px;
-  margin: 5px 30px 5px 10px;
-}
-
-#edit-user-title {
-  margin: 0;
-  padding: 0;
-  font-weight: bolder;
-  margin-right: 340px;
-}
-
-.modal-content .modal-header .storage {
-  width: 55px;
-  height: 28px;
-  font-weight: 900;
-  color: white;
-  background-color: #ff6600;
-  border-radius: 100px;
+  padding: 0 15px 20px;
   border: none;
 }
-
-#edit-user-body {
-  width: 100%;
-  margin: 0;
-  padding: 0;
+.card-title {
+  font-size: 19px;
+  font-weight: 900;
 }
-
-#edit-user-cover-group {
-  margin: 0;
-  padding: 0;
-  width: 100%;
+.card-account {
+  font-size: 15px;
+  font-weight: 500;
+  color: #657786;
 }
-
-#edit-user-cover-group img {
-  width: 100%;
-  height: 200px;
-  background-size: cover;
-  object-fit: cover;
-  margin: 0;
-  padding: 0;
-}
-
-#edit-user-cover-icon {
+.btn-edit-user {
   position: absolute;
-  top: 90px;
-  left: 250px;
+  top: -60px;
+  z-index: 999;
+  right: 15px;
+  height: 40px;
+  width: 122px;
+  color: #ff6600;
+  border-color: #ff6600;
+  border-radius: 100px;
+}
+.btn-edit-user:hover:hover {
+  color: #fff;
+  background-color: #ff6600;
+}
+/* ////////////////////// */
+.btnPanel {
+  position: absolute;
+  top: -60px;
+  right: 15px;
   display: flex;
 }
-
-#camera-icon,
-#cross-icon {
-  width: 35px;
-  height: 35px;
-  text-align: center;
-  color: white;
+button {
+  /* border: 1px solid #ff6600; */
+  border-radius: 100px;
+  color: #ff6600;
+  font-weight: 700;
+  font-size: 15px;
+}
+button.btn {
   margin: 0;
   padding: 0;
-  border-radius: 50%;
-  background-color: white;
-  font-size: 20px;
 }
-
-#camera-icon {
-  margin-right: 40px;
+.btn.subscribe {
+  margin: 0 10px;
 }
-
-#edit-user-avatar-group img {
-  position: absolute;
-  left: 14px;
-  top: 140px;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background-size: cover;
-  object-fit: cover;
-  border: 5px solid white;
+.subscribed {
+  margin: 0 10px;
+  background-color: #ff6600;
+  color: #fff;
 }
-
-#avatar-camera-icon {
-  position: absolute;
-  top: 180px;
-  left: 60px;
-  width: 35px;
-  height: 35px;
-  text-align: center;
+.btn.follow,
+.btn.isFollowing {
+  height: 40px;
+  padding: 0 12px;
+}
+.follow {
+  color: #ff6600;
+  background-color: #fff;
+  border: 1px solid #ff6600;
+}
+.isFollowing {
+  background-color: #ff6600;
+  color: #fff;
+}
+/* ////////////////////// */
+.card h5,
+.card p {
   margin: 0;
-  padding: 0;
-  border-radius: 50%;
-  font-size: 20px;
 }
-
-.form-name,
-.form-introduction {
-  width: 570px;
-  height: 100px;
-  margin: 70px 10px 0 10px;
+div.card-body {
   padding: 0;
+}
+.card-account {
+  padding-bottom: 10px;
+}
+.follow-condition {
+  padding-top: 10px;
+  display: flex;
+}
+.follow-condition span {
+  font-weight: 700;
+  color: #222;
+}
+.follow-condition a {
   color: #657786;
   font-weight: 700;
 }
-
-.form-name label,
-.form-introduction label {
-  padding-left: 10px;
-  color: gray;
+.follow-condition a:hover {
+  text-decoration: none;
 }
-
-input {
-  height: 24px;
-  border: none;
-  padding-bottom: 8px;
-  border-radius: 0;
-  font-weight: 900;
-  background-color: #f5f8fa;
-  border-bottom: 3px solid #657786;
-}
-
-.form-introduction {
-  margin: 0 10px 30px 10px;
-}
-
-.form-introduction label {
+.follow-condition > div {
+  display: block;
   height: 20px;
+  font-weight: 500;
+  font-size: 14px;
 }
-
-.form-introduction textarea {
-  height: 130px;
-  border: none;
-  border-radius: 0;
-  font-weight: 900;
-  resize: none;
-  padding: 0 10px;
-  background-color: #f5f8fa;
-  border-bottom: 3px solid #657786;
-}
-
-.form-name p,
-.form-introduction p {
-  text-align: end;
+.following-count {
+  margin-right: 20px;
 }
 </style>

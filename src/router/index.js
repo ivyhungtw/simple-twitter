@@ -6,13 +6,26 @@ import NotFound from '../views/NotFound.vue'
 import AdminSignIn from '../views/AdminSignIn.vue'
 import store from './../store'
 
+// store
+// import store from '../store'
+
 Vue.use(VueRouter)
+
+const authorizeIsAdmin = (to, from, next) => {
+  const currentUser = store.state.currentUser
+  if (currentUser && currentUser.role !== "admin") {
+    next('/404')
+    return
+  }
+
+  next()
+}
 
 const routes = [
   {
     path: '/',
     name: 'root',
-    redirect: '/signup'
+    redirect: '/signin'
   },
   {
     path: '/signup',
@@ -27,57 +40,84 @@ const routes = [
   {
     path: '/admin',
     name: 'admin-root',
-    redirect: '/admin/signin'
+    redirect: '/admin/signin',
   },
   {
     path: '/admin/signin',
     name: 'admin-sign-in',
-    component: AdminSignIn
+    component: AdminSignIn,
   },
   {
     path: '/main',
-    name: 'Main',
+    name: 'main',
     component: Main
   },
   {
+    path: '/notification/mentions',
+    name: 'notification-mentions',
+    component: () => import('../views/NotificationMentions.vue')
+  },
+  {
+    path: '/notification',
+    name: 'notification',
+    component: () => import('../views/Notification.vue')
+  },
+  {
+    path: '/publicMessage',
+    name: 'publicMessage',
+    component: () => import('../views/PublicMessage.vue')
+  },
+  {
+    path: '/privateMessage',
+    name: 'privateMessage',
+    component: () => import('../views/PrivateMessage.vue')
+  },
+  {
     path: '/accountEdit',
-    name: 'AccountEdit',
+    name: 'account-edit',
     component: () => import('../views/AccountEdit.vue')
   },
   {
-    path: '/userprofile',
-    name: 'user-profile',
-    component: () => import('../views/UserProfile.vue')
+    path: '/replydetail/:id',
+    name: 'reply-detail',
+    component: () => import('../views/ReplyDetail.vue')
   },
   {
-    path: '/userprofile/replies',
+    path: '/userprofile/:id/replies',
     name: 'user-profile-replies',
     component: () => import('../views/UserProfileReply.vue')
   },
   {
-    path: '/userprofile/likes',
+    path: '/userprofile/:id/likes',
     name: 'user-profile-Likes',
     component: () => import('../views/UserProfileLike.vue')
   },
   {
-    path: '/userprofile/followers',
+    path: '/userprofile/:id/followers',
     name: 'user-profile-followers',
     component: () => import('../views/UserFollowers.vue')
   },
   {
-    path: '/userprofile/following',
+    path: '/userprofile/:id/following',
     name: 'user-profile-following',
     component: () => import('../views/UserFollowing.vue')
   },
   {
+    path: '/userprofile/:id',
+    name: 'user-profile',
+    component: () => import('../views/UserProfile.vue')
+  },
+  {
     path: '/admin/tweets',
     name: 'admin-tweets',
-    component: () => import('../views/AdminTweets.vue')
+    component: () => import('../views/AdminTweets.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/users',
     name: 'admin-users',
-    component: () => import('../views/AdminUsers.vue')
+    component: () => import('../views/AdminUsers.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '*',
@@ -93,9 +133,30 @@ const router = new VueRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  // do something
-  store.dispatch('fetchCurrentUser')
-  console.log(to)
+  // get token from localStorage
+  const tokenInLocalStorage = localStorage.getItem('token')
+  const tokenInStore = store.state.token
+
+  let isAuthenticated = store.state.isAuthenticated
+
+  if (tokenInLocalStorage && tokenInLocalStorage !== tokenInStore) {
+    // check currentUser with server
+    console.log('SERVER-CHECK: tokenInLocalStorage !== tokenInStore')
+    isAuthenticated = await store.dispatch('fetchCurrentUser')
+  }
+
+  const pathsWithoutAuthentication = ['sign-in', 'sign-up', 'admin-sign-in']
+
+  // check with server when !isAuthenticated && trying to open pathsWithoutAuthentication
+  if (!isAuthenticated && !pathsWithoutAuthentication.includes(to.name)) {
+    next('/signin')
+    // return
+  }
+
+  // if token's valid, push to main
+  if (isAuthenticated && pathsWithoutAuthentication.includes(to.name)) {
+    next('/main')
+  }
   next()
 })
 
