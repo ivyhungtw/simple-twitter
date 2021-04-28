@@ -7,7 +7,6 @@ export default {
   getCurrentUser() {
     return apiHelper.get('/users/current_user')
   },
-
   getTotalUser() {
     return apiHelper.get('/admin/users')
   },

@@ -42,15 +42,6 @@
           </div>
         </div>
       </div>
-      <!-- <button
-        v-if="currentUser.id === localUserData.id"
-        @click="editUserModal(localUserData)"
-        class="btn btn-edit-user"
-        data-toggle="modal"
-        data-target="#edit-user-modal"
-      >
-        編輯個人資料
-      </button> -->
       <button
         v-if="currentUser.id === localUserData.id"
         class="btn btn-edit-user"
@@ -97,7 +88,10 @@
       </div>
       <!-- btnPanel -->
       <!-- UserEditModal -->
-      <UserEditModal></UserEditModal>
+      <UserEditModal
+        @afterSaveSetting="afterSaveSetting"
+        :userData="localUserData"
+      ></UserEditModal>
     </div>
   </div>
 </template>
@@ -272,6 +266,17 @@ export default {
     showModal() {
       // Modal IdL $("#edit-user-modal")
       $("#edit-user-modal").modal("show");
+      $("#edit-user-modal").appendTo("body");
+    },
+    afterSaveSetting(form) {
+      const { avatar, name, introduction, cover } = form;
+      this.localUserData = {
+        ...this.userData,
+        avatar,
+        name,
+        introduction,
+        cover,
+      };
     },
   },
   computed: {
@@ -313,7 +318,6 @@ export default {
   left: 84px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background-color: #000;
   z-index: 999;
   overflow: hidden;
   object-fit: cover;
