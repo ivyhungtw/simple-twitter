@@ -85,7 +85,7 @@ export default {
   height: auto;
 }
 .avatar {
-  width: 50px;
+  min-width: 50px;
   height: 50px;
   margin-right: 10px;
 }

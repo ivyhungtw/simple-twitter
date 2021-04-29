@@ -169,7 +169,7 @@ export default {
   font-weight: 900;
 }
 .avatar {
-  width: 50px;
+  min-width: 50px;
   height: 50px;
   margin-right: 10px;
   margin-top: 15px;
@@ -203,5 +203,4 @@ button {
 .follower-info p {
   margin: 0;
 }
-
 </style>
