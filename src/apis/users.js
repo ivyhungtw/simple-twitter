@@ -19,10 +19,10 @@ export default {
   getRecommendedFollowers() {
     return apiHelper.get('/users')
   },
-  getUserFollowers({ userId }) {
+  getUserFollowers(userId) {
     return apiHelper.get(`/users/${userId}/followers`)
   },
-  getUserFollowings({ userId }) {
+  getUserFollowings(userId) {
     return apiHelper.get(`/users/${userId}/followings`)
   },
   followUser(payload) {
@@ -32,4 +32,3 @@ export default {
     return apiHelper.delete(`/followships/${userId}`)
   }
 }
-

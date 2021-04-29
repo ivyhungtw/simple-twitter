@@ -20,14 +20,10 @@
         </div>
         <div class="follow-condition row">
           <div class="following-count">
-            <a href=""
-              ><span>{{ user.followingCount }}個</span>跟隨中</a
-            >
+            <span>{{ user.followingCount }}個</span>跟隨中
           </div>
           <div class="follows-count">
-            <a href=""
-              ><span>{{ user.followerCount }}位</span>跟隨者</a
-            >
+            <span>{{ user.followerCount }}位</span>跟隨者
           </div>
         </div>
       </div>

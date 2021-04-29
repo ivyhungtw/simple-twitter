@@ -43,6 +43,10 @@ export default {
     async handleDeleteButtonClick(tweetId) {
       try {
         this.$emit("after-delete-tweet", tweetId);
+        Toast.fire({
+          icon: "success",
+          title: "刪除成功！",
+        });
       } catch (error) {
         Toast.fire({
           icon: "error",

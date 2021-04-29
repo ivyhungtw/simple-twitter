@@ -44,7 +44,6 @@
         <p>{{ follower.introduction }}</p>
       </div>
     </div>
-    <div class="notice" v-if="followers.length < 1">此用戶目前無跟隨者</div>
   </div>
 </template>
 
@@ -205,7 +204,4 @@ button {
   margin: 0;
 }
 
-.notice {
-  margin: 10px;
-}
 </style>
