@@ -28,6 +28,19 @@ export default {
       required: true,
     },
   },
+  // data() {
+  //   return {
+  //     user: {},
+  //   };
+  // },
+  // watch: {
+  //   userData(newValue) {
+  //     this.user = {
+  //       ...this.user,
+  //       ...newValue,
+  //     };
+  //   },
+  // },
 };
 </script>
 
