@@ -79,10 +79,14 @@ export default {
   methods: {
     async fetchAllReplies(tweetId) {
       try {
+        console.log("fetchAllReplies");
         // 根據 tweetId => /tweets/:tweetId/replies 取得所有回覆
         const { data } = await tweetsAPI.getTweetReplies(tweetId);
         this.localComments = data;
+        console.log(this.localComments);
       } catch (error) {
+        console.log("fetchAllReplies");
+        this.isLoading = false;
         console.log(error);
         Toast.fire({
           icon: "error",
@@ -104,7 +108,10 @@ export default {
               account,
             };
           } catch (error) {
+            console.log("fetchAllReplyUsers");
             console.log(error);
+            this.isLoading = false;
+
             Toast.fire({
               icon: "error",
               title: "無法取得完整回覆資料，請稍後再試！",
@@ -166,7 +173,7 @@ export default {
 }
 
 .avatar img {
-  min-width: 100%;
+  width: 100%;
   height: 100%;
   border-radius: 50%;
 }

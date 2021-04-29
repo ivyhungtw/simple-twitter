@@ -4,7 +4,7 @@ export default {
   putUser(userId, payload) {
     return apiHelper.put(`/users/${userId}`, payload)
   },
-  getUser({ userId }) {
+  getUser(userId) {
     return apiHelper.get(`/users/${userId}`)
   },
   getCurrentUser() {

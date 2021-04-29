@@ -86,7 +86,7 @@ export default {
   margin-right: 10px;
 }
 .avatar img {
-  min-width: 100%;
+  width: 100%;
   height: 100%;
   border-radius: 50%;
   background-size: cover;
