@@ -1,107 +1,128 @@
 <template>
   <div id="UserFollowers">
-    <!-- // UserSidebar -->
-    <UserSidebar />
-    <div class="UserFollowersPanel">
-      <div class="title">
-        <div class="pre-page">
-          <router-link to="/userprofile"
-            ><i class="fas fa-arrow-left"></i
-          ></router-link>
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <!-- // UserSidebar -->
+      <UserSidebar />
+      <div class="UserFollowersPanel">
+        <div class="title">
+          <div class="pre-page">
+            <button class="btn" @click="$router.back()">
+              <img src="../assets/lastPage.svg" alt="" />
+            </button>
+          </div>
+          <div class="title-info">
+            <div class="name">{{ user.name }}</div>
+            <div class="tweet-count">{{ user.tweetCount }}推文</div>
+          </div>
         </div>
-        <div class="title-info">
-          <div class="name">John Doe</div>
-          <div class="tweet-count">25推文</div>
+        <div class="admin-users-card">
+          <!-- // UserFollowNavtabs -->
+          <UserFollowNavtabs :userData="user" />
+          <!-- // UserFollowingList -->
+          <UserFollowingsList :followings="followings" />
         </div>
       </div>
-      <div class="admin-users-card">
-        <!-- // UserFollowNavtabs -->
-        <UserFollowNavtabs />
-        <!-- // UserFollowersList -->
-        <UserFollowersList
-          v-for="follower in followers"
-          :key="follower.id"
-          :follower="follower"
-        />
-      </div>
-    </div>
 
-    <!-- // RecommendedFollowers -->
-    <RecommendedFollowers />
+      <!-- // RecommendedFollowers -->
+      <RecommendedFollowers />
+    </template>
   </div>
 </template>
 
 <script>
 import UserSidebar from "./../components/UserSidebar";
 import UserFollowNavtabs from "./../components/UserFollowNavtabs";
-import UserFollowersList from "./../components/UserFollowersList";
+import UserFollowingsList from "./../components/UserFollowingsList";
 import RecommendedFollowers from "./../components/RecommendedFollowers";
-
-const dummyData = {
-  followers: [
-    {
-      id: 34,
-      name: "user1",
-      avatar:
-        "https://s3-alpha-sig.figma.com/img/7075/8e0a/7c0f47389595381eca543235de212578?Expires=1620000000&Signature=NPGKM~T5uRhNRXlPmNslZfE2oPmtp4FxaIduK3IgFsLVr5OgpjlXe2Az28ZYxdHxOalBETrOrUb2rx1t86cthAmQVnL-b92nBKRTpag3EHMchy3hspFH1YhSg-dnmpSZqXxEer2lZqjWP1g5Yn2lv2rX16GpPq1v1W2~ZXVe6kQEm8Yg8K3E6Gh6lktIX65OViGN3UGBpjM9gvU8ZD4g7tx6eV6PbDKgm0aWEZMl~DS359hGwg6dGCZ2z2p-oel3~Q4WdRcFb-SNCessB~RAvpeZiX-qmgj1OM44L1AKH9n7lZi-YMVAOXiFgpEjL9VUGVLSOaLgcg7jR8s5GudcoA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-      account: "user1",
-      tweetContent:
-        "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit.",
-      isFollowing: true,
-    },
-    {
-      id: 35,
-      name: "user2",
-      avatar: "https://i.imgur.com/q6bwDGO.png",
-      account: "user2",
-      tweetContent: "123456789",
-      isFollowing: true,
-    },
-    {
-      id: 36,
-      name: "user1",
-      avatar:
-        "https://s3-alpha-sig.figma.com/img/7075/8e0a/7c0f47389595381eca543235de212578?Expires=1620000000&Signature=NPGKM~T5uRhNRXlPmNslZfE2oPmtp4FxaIduK3IgFsLVr5OgpjlXe2Az28ZYxdHxOalBETrOrUb2rx1t86cthAmQVnL-b92nBKRTpag3EHMchy3hspFH1YhSg-dnmpSZqXxEer2lZqjWP1g5Yn2lv2rX16GpPq1v1W2~ZXVe6kQEm8Yg8K3E6Gh6lktIX65OViGN3UGBpjM9gvU8ZD4g7tx6eV6PbDKgm0aWEZMl~DS359hGwg6dGCZ2z2p-oel3~Q4WdRcFb-SNCessB~RAvpeZiX-qmgj1OM44L1AKH9n7lZi-YMVAOXiFgpEjL9VUGVLSOaLgcg7jR8s5GudcoA__&Key-Pair-Id=APKAINTVSUGEWH5XD5UA",
-      account: "user1",
-      tweetContent:
-        "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit.",
-      isFollowing: true,
-    },
-    {
-      id: 37,
-      name: "user2",
-      avatar: "https://i.imgur.com/q6bwDGO.png",
-      account: "user2",
-      tweetContent: "123456789",
-      isFollowing: true,
-    },
-  ],
-};
+import { Toast } from "../utils/helpers";
+import usersAPI from "../apis/users";
+import Spinner from "./../components/Spinner";
 
 export default {
-  name: "UserFollowers",
+  name: "UserFollowing",
   components: {
     UserSidebar,
     UserFollowNavtabs,
-    UserFollowersList,
+    UserFollowingsList,
     RecommendedFollowers,
+    Spinner,
+  },
+  // if entering from none userProfiles
+  async beforeRouteEnter(to, from, next) {
+    try {
+      next((vm) => {
+        // vue instance not created yet, use next to invoke this
+        // console.log("fetchUser @ beforeRouteEnter");
+        const { id } = to.params;
+        vm.fetchUser(id);
+        vm.fetchingData = true;
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  // if entering from userProfiles
+  async beforeRouteUpdate(to, from, next) {
+    // console.log("fetchUser @ beforeRouteUpdate");
+    try {
+      if (this.fetchingData) next();
+      const { id } = to.params;
+      this.fetchUser(id);
+      this.fetchFollowings(id);
+      next();
+    } catch (error) {
+      console.log(error);
+    }
   },
   data() {
     return {
-      followers: [],
+      followings: [],
+      user: {},
+      isLoading: true,
+      fetchingData: false,
     };
   },
+  // beforeRouteUpdate(to, from, next) {
+  //   const { id } = to.params;
+  // this.fetchFollowings(id);
+  //   next();
+  // },
   created() {
-    this.fetchFollowers();
+    const { id: userId } = this.$route.params;
+    this.fetchFollowings(userId);
+    this.fetchUser(userId);
   },
   methods: {
-    fetchFollowers() {
-      const { followers } = dummyData;
-      this.followers = followers;
+    async fetchUser(userId) {
+      try {
+        const { data } = await usersAPI.getUser({ userId });
+        this.user = data;
+        this.isLoading = false;
+      } catch (error) {
+        this.isLoading = false;
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得使用者資料，請稍後再試！",
+        });
+      }
     },
-    // afterDeleteTweet(tweetId) {
-    //   this.tweets = this.tweets.filter((tweet) => tweet.id !== tweetId);
-    // },
+    async fetchFollowings(userId) {
+      try {
+        const { data } = await usersAPI.getUserFollowings({ userId });
+        this.followings = data;
+        console.log("userfollowing:", data);
+        this.isLoading = false;
+      } catch (error) {
+        this.isLoading = false;
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得正在跟隨資料，請稍後再試！",
+        });
+      }
+    },
   },
 };
 </script>
@@ -109,6 +130,7 @@ export default {
 <style scoped>
 #UserFollowers {
   display: flex;
+  justify-content: center;
   min-height: 100vh;
   width: auto;
 }
@@ -116,6 +138,8 @@ export default {
 .UserFollowersPanel {
   flex: 1;
   min-width: 600px;
+  max-width: 600px;
+  border-right: 1px solid #e6ecf0;
 }
 
 .title {
@@ -127,6 +151,11 @@ export default {
 .pre-page {
   width: 30px;
   margin: 5px 25px 15px 15px;
+}
+
+.title-info {
+  margin-top: 3px;
+  margin-left: 15px;
 }
 
 .title-info .name {

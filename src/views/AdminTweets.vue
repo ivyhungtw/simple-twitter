@@ -1,19 +1,22 @@
 <template>
   <div id="AdminTweets">
-    <!-- AdminSidebar.vue -->
-    <AdminSidebar />
-    <!-- AdminTweetsList.vue -->
-    <div class="AdminTweetsPanel">
-      <div class="title">
-        <h1>推文清單</h1>
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <!-- AdminSidebar.vue -->
+      <AdminSidebar />
+      <!-- AdminTweetsList.vue -->
+      <div class="AdminTweetsPanel">
+        <div class="title">
+          <h1>推文清單</h1>
+        </div>
+        <AdminTweetsList
+          v-for="tweet in tweets"
+          :key="tweet.id"
+          :tweet="tweet"
+          @after-delete-tweet="afterDeleteTweet"
+        />
       </div>
-      <AdminTweetsList
-        v-for="tweet in tweets"
-        :key="tweet.id"
-        :tweet="tweet"
-        @after-delete-tweet="afterDeleteTweet"
-      />
-    </div>
+    </template>
   </div>
 </template>
 
@@ -22,16 +25,19 @@ import AdminSidebar from "./../components/AdminSidebar";
 import AdminTweetsList from "./../components/AdminTweetsList";
 import { Toast } from "../utils/helpers";
 import tweetsAPI from "../apis/tweets";
+import Spinner from "./../components/Spinner";
 
 export default {
   name: "AdminTweets",
   components: {
     AdminSidebar,
     AdminTweetsList,
+    Spinner,
   },
   data() {
     return {
       tweets: [],
+      isLoading: true,
     };
   },
   created() {
@@ -43,7 +49,9 @@ export default {
         const { data } = await tweetsAPI.getAllFollowedTweets();
         // const { tweets } = response.data;
         this.tweets = data;
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         console.log("error", error);
         Toast.fire({
           icon: "error",
@@ -60,7 +68,9 @@ export default {
         }
 
         this.tweets = this.tweets.filter((tweet) => tweet.id !== tweetId);
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         Toast.fire({
           icon: "error",
           title: "無法將餐廳移除最愛，請稍後再試",
@@ -69,13 +79,13 @@ export default {
       }
     },
   },
- 
 };
 </script>
 
 <style scoped>
 #AdminTweets {
   display: flex;
+  justify-content: center;
   min-height: 100vh;
   width: auto;
 }

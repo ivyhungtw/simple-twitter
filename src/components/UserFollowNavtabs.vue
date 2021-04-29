@@ -1,36 +1,40 @@
 <template>
-  <ul class="nav nav-tabs mb-4">
-    <li v-for="tab in tabs" :key="tab.id" class="nav-item">
-      <router-link :to="tab.path" class="nav-link">
-        {{ tab.title }}
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <router-link
+        :to="{ name: 'user-profile-followers', params: { id: userData.id } }"
+        class="nav-link"
+      >
+        跟隨者
+      </router-link>
+    </li>
+    <li class="nav-item">
+      <router-link
+        :to="{ name: 'user-profile-following', params: { id: userData.id } }"
+        class="nav-link"
+      >
+        正在跟隨
       </router-link>
     </li>
   </ul>
 </template>
 
 <script>
-import { v4 as uuidv4 } from "uuid";
 export default {
-  data() {
-    return {
-      tabs: [
-        {
-          id: uuidv4(),
-          title: "跟隨者",
-          path: "/userprofile/followers",
-        },
-        {
-          id: uuidv4(),
-          title: "正在跟隨",
-          path: "/userprofile/following",
-        },
-      ],
-    };
+  name: "UserFollowNavtabs",
+  props: {
+    userData: {
+      type: Object,
+      required: true,
+    },
   },
 };
 </script>
 
 <style scoped>
+.nav .nav-tabs {
+  margin-top: 20px;
+}
 .nav-tabs .nav-link {
   color: gray;
   width: 150px;
@@ -40,9 +44,12 @@ export default {
 .nav-tabs .nav-link:hover,
 .nav-tabs .nav-item.show .nav-link,
 .nav-tabs .nav-link.active {
-  border: 1px solid #fff;
-  border-bottom-color: orangered;
-  color: orangered;
+  border: none;
+  border-bottom: 1px solid #ff6600;
+  color: #ff6600;
   font-weight: 700;
+}
+.nav-tabs .nav-link:hover {
+  background-color: hsl(205deg 92% 95%);
 }
 </style>

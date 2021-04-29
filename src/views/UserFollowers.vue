@@ -1,33 +1,32 @@
 <template>
   <div id="UserFollowers">
-    <!-- // UserSidebar -->
-    <UserSidebar />
-    <div class="UserFollowersPanel">
-      <div class="title">
-        <div class="pre-page">
-          <router-link to="/userprofile"
-            ><i class="fas fa-arrow-left"></i
-          ></router-link>
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <!-- // UserSidebar -->
+      <UserSidebar />
+      <div class="UserFollowersPanel">
+        <div class="title">
+          <div class="pre-page">
+            <button class="btn" @click="$router.back()">
+              <img src="../assets/lastPage.svg" alt="" />
+            </button>
+          </div>
+          <div class="title-info">
+            <div class="name">{{ user.name }}</div>
+            <div class="tweet-count">{{ user.tweetCount }}推文</div>
+          </div>
         </div>
-        <div class="title-info">
-          <div class="name">John Doe</div>
-          <div class="tweet-count">25推文</div>
+        <div class="admin-users-card">
+          <!-- // UserFollowNavtabs -->
+          <UserFollowNavtabs :userData="user" />
+          <!-- // UserFollowersList -->
+          <UserFollowersList :followers="followers" />
         </div>
       </div>
-      <div class="admin-users-card">
-        <!-- // UserFollowNavtabs -->
-        <UserFollowNavtabs />
-        <!-- // UserFollowersList -->
-        <UserFollowersList
-          v-for="follower in followers"
-          :key="follower.id"
-          :follower="follower"
-        />
-      </div>
-    </div>
 
-    <!-- // RecommendedFollowers -->
-    <RecommendedFollowers />
+      <!-- // RecommendedFollowers -->
+      <RecommendedFollowers />
+    </template>
   </div>
 </template>
 
@@ -37,8 +36,8 @@ import UserFollowNavtabs from "./../components/UserFollowNavtabs";
 import UserFollowersList from "./../components/UserFollowersList";
 import RecommendedFollowers from "./../components/RecommendedFollowers";
 import { Toast } from "../utils/helpers";
-import tweetsAPI from "../apis/tweets";
-import { mapState } from "vuex";
+import usersAPI from "../apis/users";
+import Spinner from "./../components/Spinner";
 
 export default {
   name: "UserFollowers",
@@ -47,42 +46,74 @@ export default {
     UserFollowNavtabs,
     UserFollowersList,
     RecommendedFollowers,
+    Spinner,
+  },
+  // if entering from none userProfiles
+  async beforeRouteEnter(to, from, next) {
+    try {
+      next((vm) => {
+        // vue instance not created yet, use next to invoke this
+        // console.log("fetchUser @ beforeRouteEnter");
+        const { id } = to.params;
+        vm.fetchUser(id);
+        vm.fetchingData = true;
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  // if entering from userProfiles
+  async beforeRouteUpdate(to, from, next) {
+    // console.log("fetchUser @ beforeRouteUpdate");
+    try {
+      if (this.fetchingData) next();
+      const { id } = to.params;
+      this.fetchUser(id);
+      this.fetchFollowers(id);
+      next();
+    } catch (error) {
+      console.log(error);
+    }
   },
   data() {
     return {
       followers: [],
-        user: {
-        ...this.currentUser
-      },
+      user: {},
+      isLoading: true,
+      fetchingData: false,
     };
   },
-  computed: {
-    ...mapState(["currentUser", "isAuthenticated"]),
-  },
-  watch: {
-    currentUser(newValue) {
-      this.user = {
-        ...this.user,
-        ...newValue,
-      };
-    },
-  },
   created() {
-    this.fetchFollowers(this.currentUser.id);
+    const { id: userId } = this.$route.params;
+    this.fetchFollowers(userId);
+    this.fetchUser(userId);
   },
   methods: {
-    async fetchFollowers(tweetId) {
+    async fetchUser(userId) {
       try {
-        const { followers } = await tweetsAPI.getUserFollowersTweet({
-          tweetId,
-        });
-
-        this.followers = followers;
+        const { data } = await usersAPI.getUser({ userId });
+        this.user = data;
+        this.isLoading = false;
       } catch (error) {
-        console.log("error", error);
+        this.isLoading = false;
+        console.log(error);
         Toast.fire({
           icon: "error",
-          title: "無法取得跟隨者資料，請稍後再試",
+          title: "無法取得使用者資料，請稍後再試！",
+        });
+      }
+    },
+    async fetchFollowers(userId) {
+      try {
+        const { data } = await usersAPI.getUserFollowers({ userId });
+        this.followers = data;
+        this.isLoading = false;
+      } catch (error) {
+        this.isLoading = false;
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得跟隨者資料，請稍後再試！",
         });
       }
     },
@@ -93,6 +124,7 @@ export default {
 <style scoped>
 #UserFollowers {
   display: flex;
+  justify-content: center;
   min-height: 100vh;
   width: auto;
 }
@@ -100,6 +132,8 @@ export default {
 .UserFollowersPanel {
   flex: 1;
   min-width: 600px;
+  max-width: 600px;
+  border-right: 1px solid #e6ecf0;
 }
 
 .title {
@@ -111,6 +145,11 @@ export default {
 .pre-page {
   width: 30px;
   margin: 5px 25px 15px 15px;
+}
+
+.title-info {
+  margin-top: 3px;
+  margin-left: 15px;
 }
 
 .title-info .name {

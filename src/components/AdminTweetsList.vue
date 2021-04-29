@@ -69,6 +69,8 @@ export default {
   padding: 15px 15px 25px;
   border-bottom: 1px solid #e6ecf0;
   margin: 5px;
+  min-width: 1062px;
+  max-width: 1062px;
 }
 
 .tweet-info {

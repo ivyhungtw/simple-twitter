@@ -205,6 +205,7 @@ export default {
       }
 
       // 在目標追蹤者的頁面上，按推薦追蹤者欄來追蹤
+
       if (
         this.userData.id === userId &&
         this.userData.id !== this.currentUser.id
@@ -226,6 +227,33 @@ export default {
         this.localUserData.followingCount++;
         return;
       }
+      // 在個人頁面上，按推薦追蹤取消追蹤其他使用者
+      if (
+        this.userData.id !== userId &&
+        this.userData.id === this.currentUser.id
+      ) {
+        // 個人 following 數量 ++
+        console.log("Event C");
+        this.localUserData.followingCount--;
+        return;
+      }
+    },
+    // import JQuery from 'jquery'
+    showModal() {
+      //   $("#edit-user-modal").appendTo("body");
+      $("#edit-user-modal").modal("show");
+      /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
+    },
+  },
+  computed: {
+    ...mapState(["currentUser"]),
+  },
+  watch: {
+    userData: {
+      handler: function () {
+        this.localUserData = this.userData;
+      },
+      deep: true,
     },
     afterUnfollowUser(userId, fromProfileCard = false) {
       // 在目標追蹤者的頁面上，按 ProfileCard 上的追蹤按鈕取消追蹤

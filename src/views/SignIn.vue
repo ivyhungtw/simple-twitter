@@ -102,7 +102,6 @@ export default {
     },
     formDataCheck({ account, password }) {
       let result = false;
-
       // if sign in with admin
       if (account === "root") {
         Toast.fire({

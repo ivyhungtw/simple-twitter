@@ -22,8 +22,6 @@
 <script>
 import TweetItem from "./TweetItem";
 import { mapState } from "vuex";
-import { Toast } from "../utils/helpers";
-import tweetsAPI from "../apis/tweets";
 
 export default {
   name: "UserProfileTweetsList",

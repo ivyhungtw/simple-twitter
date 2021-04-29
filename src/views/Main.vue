@@ -141,7 +141,6 @@ export default {
   /* scrollbar-width: 8px; */
   /* Firefox */
 }
-
 .mainSection::-webkit-scrollbar {
   width: 8px;
 }
