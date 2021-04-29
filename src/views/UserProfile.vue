@@ -165,7 +165,6 @@ export default {
 .mainSection::-webkit-scrollbar-track {
   background-color: #ddd;
 }
-
 .title {
   height: 55px;
   border-bottom: 1px solid #e6ecf0;
@@ -202,6 +201,7 @@ export default {
   font-weight: 900;
   font-size: 19px;
   margin: 0;
+
 }
 .nameTag p:last-child {
   font-weight: 500;

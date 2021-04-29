@@ -11,6 +11,16 @@ import store from './../store'
 
 Vue.use(VueRouter)
 
+const authorizeIsAdmin = (to, from, next) => {
+  const currentUser = store.state.currentUser
+  if (currentUser && currentUser.role !== "admin") {
+    next('/404')
+    return
+  }
+
+  next()
+}
+
 const routes = [
   {
     path: '/',
@@ -30,12 +40,12 @@ const routes = [
   {
     path: '/admin',
     name: 'admin-root',
-    redirect: '/admin/signin'
+    redirect: '/admin/signin',
   },
   {
     path: '/admin/signin',
     name: 'admin-sign-in',
-    component: AdminSignIn
+    component: AdminSignIn,
   },
   {
     path: '/main',
@@ -83,29 +93,31 @@ const routes = [
     component: () => import('../views/UserProfileLike.vue')
   },
   {
+    path: '/userprofile/:id/followers',
+    name: 'user-profile-followers',
+    component: () => import('../views/UserFollowers.vue')
+  },
+  {
+    path: '/userprofile/:id/following',
+    name: 'user-profile-following',
+    component: () => import('../views/UserFollowing.vue')
+  },
+  {
     path: '/userprofile/:id',
     name: 'user-profile',
     component: () => import('../views/UserProfile.vue')
   },
   {
-    path: '/userprofile/followers',
-    name: 'user-profile-followers',
-    component: () => import('../views/UserFollowers.vue')
-  },
-  {
-    path: '/userprofile/following',
-    name: 'user-profile-following',
-    component: () => import('../views/UserFollowing.vue')
-  },
-  {
     path: '/admin/tweets',
     name: 'admin-tweets',
-    component: () => import('../views/AdminTweets.vue')
+    component: () => import('../views/AdminTweets.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/users',
     name: 'admin-users',
-    component: () => import('../views/AdminUsers.vue')
+    component: () => import('../views/AdminUsers.vue'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '*',

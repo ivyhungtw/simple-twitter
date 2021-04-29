@@ -1,16 +1,19 @@
 <template>
   <div id="AdminUsers">
-    <!-- AdminSidebar.vue -->
-    <AdminSidebar />
-    <!-- AdminUsersCard.vue -->
-    <div class="AdminUsersPanel">
-      <div class="title">
-        <h1>使用者列表</h1>
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <!-- AdminSidebar.vue -->
+      <AdminSidebar />
+      <!-- AdminUsersCard.vue -->
+      <div class="AdminUsersPanel">
+        <div class="title">
+          <h1>使用者列表</h1>
+        </div>
+        <div class="admin-users-card">
+          <AdminUsersCard v-for="user in users" :key="user.id" :user="user" />
+        </div>
       </div>
-      <div class="admin-users-card">
-        <AdminUsersCard v-for="user in users" :key="user.id" :user="user" />
-      </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -19,16 +22,19 @@ import AdminSidebar from "./../components/AdminSidebar";
 import AdminUsersCard from "./../components/AdminUsersCard";
 import { Toast } from "../utils/helpers";
 import usersAPI from "../apis/users";
+import Spinner from "./../components/Spinner";
 
 export default {
   name: "AdminUsers",
   components: {
     AdminSidebar,
     AdminUsersCard,
+    Spinner,
   },
   data() {
     return {
       users: [],
+      isLoading: true,
     };
   },
   created() {
@@ -40,7 +46,9 @@ export default {
         const { data } = await usersAPI.getTotalUser();
         // const { tweets } = response.data;
         this.users = data;
+         this.isLoading = false;
       } catch (error) {
+         this.isLoading = false;
         console.log("error", error);
         Toast.fire({
           icon: "error",
@@ -56,6 +64,7 @@ export default {
 <style scoped>
 #AdminUsers {
   display: flex;
+  justify-content: center;
   min-height: 100vh;
 }
 

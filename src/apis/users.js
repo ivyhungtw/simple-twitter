@@ -4,21 +4,26 @@ export default {
   putUser(userId, payload) {
     return apiHelper.put(`/users/${userId}`, payload)
   },
+  getUser({ userId }) {
+    return apiHelper.get(`/users/${userId}`)
+  },
   getCurrentUser() {
     return apiHelper.get('/users/current_user')
   },
-
   getTotalUser() {
     return apiHelper.get('/admin/users')
-  },
-  getUser(userId) {
-    return apiHelper.get(`/users/${userId}`)
   },
   setUser(payload) {
     return apiHelper.post('/users', payload)
   },
   getRecommendedFollowers() {
     return apiHelper.get('/users')
+  },
+  getUserFollowers({ userId }) {
+    return apiHelper.get(`/users/${userId}/followers`)
+  },
+  getUserFollowings({ userId }) {
+    return apiHelper.get(`/users/${userId}/followings`)
   },
   followUser(payload) {
     return apiHelper.post('/followships', payload)

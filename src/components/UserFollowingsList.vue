@@ -1,32 +1,27 @@
 <template>
   <div class="container">
     <div
-      class="follower-container"
-      v-for="follower of followers"
-      :key="follower.followerId"
+      class="following-container"
+      v-for="following of followings"
+      :key="following.followingId"
     >
       <div class="avatar">
-        <img :src="follower.avatar | emptyImageFilter" alt="" />
+        <img :src="following.avatar | emptyImageFilter" alt="" />
       </div>
       <div class="follower-info">
         <div class="isfollowed-info">
           <div class="follower-title">
-            <router-link
-              :to="{
-                name: 'user-profile',
-                params: { id: follower.followerId },
-              }"
-            >
-              <div class="name">{{ follower.name }}</div>
-            </router-link>
-            <div class="account">@{{ follower.account }}</div>
+            <router-link :to="{ name: 'user-profile', params: { id: following.followingId } }">
+                  <div class="name">{{ following.name }}</div>
+                </router-link>
+            <div class="account">@{{ following.account }}</div>
           </div>
 
           <div class="toggleFollow">
             <button
-              v-if="follower.isFollowing"
+              v-if="following.isFollowing"
               class="btn isFollowing"
-              @click.prevent.stop="deleteFollowing(follower)"
+              @click.prevent.stop="deleteFollowing(following)"
               :disabled="isProcessing"
             >
               正在跟隨
@@ -34,17 +29,17 @@
             <button
               v-else
               class="btn"
-              @click.prevent.stop="addFollowing(follower)"
+              @click.prevent.stop="addFollowing(following)"
               :disabled="isProcessing"
             >
               跟隨
             </button>
           </div>
         </div>
-        <p>{{ follower.introduction }}</p>
+        <p>{{ following.introduction }}</p>
       </div>
     </div>
-    <div class="notice" v-if="followers.length < 1">此用戶目前無跟隨者</div>
+    <div class="notice" v-if="followings.length < 1">此用戶目前無正在跟隨</div>
   </div>
 </template>
 
@@ -57,41 +52,39 @@ export default {
   name: "UserFollowersList",
   mixins: [emptyImageFilter],
   props: {
-    Followers: {
+    Followings: {
       type: Array,
       required: true,
     },
   },
   data() {
     return {
-      followers: [],
+      followings: [],
       isProcessing: false,
     };
   },
   watch: {
-    Followers(newVal) {
-      this.fetchfollowers(newVal);
+    Followings(newVal) {
+      this.fetchFollowings(newVal);
     },
-  },
-  created() {
-    this.fetchfollowers();
   },
   methods: {
-    fetchfollowers() {
-      this.followers = this.Followers;
+    fetchFollowings() {
+      this.followings = this.Followings;
     },
-    async addFollowing(follower) {
+    async addFollowing(following) {
       try {
         // call api to toggle isFolloweda
         this.isProcessing = true;
-        const payload = { id: follower.followerId };
+        const payload = { id: following.followingId };
         const { data } = await usersAPI.followUser(payload);
-
+        // console.log(data);
         if (data.status !== "success") {
           throw new Error(data.message);
         }
+        // rerender
+        this.renderAfterFollowToggle(following);
 
-        this.renderAfterFollowToggle(follower);
         Toast.fire({
           icon: "success",
           title: "追蹤成功！",
@@ -106,17 +99,18 @@ export default {
         });
       }
     },
-    async deleteFollowing(follower) {
+    async deleteFollowing(following) {
       try {
         this.isProcessing = true;
-        const { data } = await usersAPI.unfollowUser(follower.followerId);
-        // console.log(data);
+        const { data } = await usersAPI.unfollowUser(following.followingId);
+        // console.log("followingId:", following.followingId);
+        // console.log("data", data);
         if (data.status !== "success") {
           throw new Error(data.message);
         }
 
-        this.renderAfterFollowToggle(follower);
-        // inform user
+        this.renderAfterFollowToggle(following);
+
         Toast.fire({
           icon: "success",
           title: "取消追蹤成功！",
@@ -127,19 +121,19 @@ export default {
         console.log(error);
         Toast.fire({
           icon: "error",
-          title: "無法追蹤，請稍後再試！",
+          title: "無法取消追蹤，請稍後再試！",
         });
       }
     },
-    renderAfterFollowToggle(follower) {
-      this.followers = this.followers.map((_follower) => {
-        if (_follower.followerId === follower.followerId) {
+    renderAfterFollowToggle(following) {
+      this.followings = this.followings.map((_following) => {
+        if (_following.followingId === following.followingId) {
           return {
-            ..._follower,
-            isFollowing: !follower.isFollowing,
+            ..._following,
+            isFollowing: !following.isFollowing,
           };
         } else {
-          return _follower;
+          return _following;
         }
       });
     },
@@ -148,7 +142,7 @@ export default {
 </script>
 
 <style scoped>
-.follower-container {
+.following-container {
   display: flex;
   height: auto;
   width: 100%;
@@ -204,7 +198,6 @@ button {
 .follower-info p {
   margin: 0;
 }
-
 .notice {
   margin: 10px;
 }
