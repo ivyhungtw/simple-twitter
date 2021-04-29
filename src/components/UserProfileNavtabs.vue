@@ -1,36 +1,74 @@
 <template>
-  <ul class="nav nav-tabs mb-4">
-    <li v-for="tab in tabs" :key="tab.id" class="nav-item">
-      <router-link :to="tab.path" class="nav-link">
-        {{ tab.title }}
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <router-link
+        :to="{ name: 'user-profile', params: { id: userData.id } }"
+        class="nav-link"
+      >
+        推文
+      </router-link>
+    </li>
+    <li class="nav-item">
+      <router-link
+        :to="{ name: 'user-profile-replies', params: { id: userData.id } }"
+        class="nav-link"
+      >
+        推文與回覆
+      </router-link>
+    </li>
+    <li class="nav-item">
+      <router-link
+        :to="{ name: 'user-profile-Likes', params: { id: userData.id } }"
+        class="nav-link"
+      >
+        喜歡的內容
       </router-link>
     </li>
   </ul>
 </template>
 
 <script>
-import { v4 as uuidv4 } from "uuid";
+import { mapState } from "vuex";
 export default {
-  data() {
-    return {
-      tabs: [
-        {
-          id: uuidv4(),
-          title: "推文",
-          path: "/userprofile",
-        },
-        {
-          id: uuidv4(),
-          title: "推文與回覆",
-          path: "/userprofile/replies",
-        },
-        {
-          id: uuidv4(),
-          title: "喜歡的內容",
-          path: "/userprofile/likes",
-        },
-      ],
-    };
+  name: "UserProfileNavtabs",
+  props: {
+    userData: {
+      type: Object,
+      required: true,
+    },
+  },
+  // data() {
+  //   return {
+  //     routes: [
+  //       { id: 1, title: "推文", name: "user-profile", params: { id: "" } },
+  //       {
+  //         id: 2,
+  //         title: "推文與回覆",
+  //         name: "user-profile-replies",
+  //         params: { id: "" },
+  //       },
+  //       {
+  //         id: 3,
+  //         title: "喜歡的內容",
+  //         name: "user-profile-Likes",
+  //         params: { id: "" },
+  //       },
+  //     ],
+  //   };
+  // },
+  // watch: {
+  //   userData: {
+  //     deep: true,
+  //     handler: function (newVal) {
+  //       const { id } = newVal;
+  //       this.routes.forEach((each) => {
+  //         each.params.id = id;
+  //       });
+  //     },
+  //   },
+  // },
+  computed: {
+    ...mapState(["currentUser"]),
   },
 };
 </script>
@@ -38,7 +76,6 @@ export default {
 <style scoped>
 .nav .nav-tabs {
   margin-top: 20px;
-  border: 1px solid red;
 }
 .nav-tabs .nav-link {
   color: gray;
@@ -49,9 +86,12 @@ export default {
 .nav-tabs .nav-link:hover,
 .nav-tabs .nav-item.show .nav-link,
 .nav-tabs .nav-link.active {
-  border: 1px solid #fff;
-  border-bottom-color: orangered;
-  color: orangered;
+  border: none;
+  border-bottom: 1px solid #ff6600;
+  color: #ff6600;
   font-weight: 700;
+}
+.nav-tabs .nav-link:hover {
+  background-color: hsl(205deg 92% 95%);
 }
 </style>

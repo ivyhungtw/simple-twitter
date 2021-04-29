@@ -56,6 +56,7 @@ export default {
         // console.log("fetchUser @ beforeRouteEnter");
         const { id } = to.params;
         vm.fetchUser(id);
+        vm.fetchFollowers(id)
         vm.fetchingData = true;
       });
     } catch (error) {
@@ -68,7 +69,7 @@ export default {
     try {
       if (this.fetchingData) next();
       const { id } = to.params;
-      this.fetchUser(id);
+      await this.fetchUser(id);
       this.fetchFollowers(id);
       next();
     } catch (error) {
@@ -91,7 +92,7 @@ export default {
   methods: {
     async fetchUser(userId) {
       try {
-        const { data } = await usersAPI.getUser({ userId });
+        const { data } = await usersAPI.getUser( userId );
         this.user = data;
         this.isLoading = false;
       } catch (error) {
@@ -105,7 +106,7 @@ export default {
     },
     async fetchFollowers(userId) {
       try {
-        const { data } = await usersAPI.getUserFollowers({ userId });
+        const { data } = await usersAPI.getUserFollowers( userId );
         this.followers = data;
         this.isLoading = false;
       } catch (error) {

@@ -29,28 +29,19 @@
         </p>
         <div class="follow-condition">
           <div class="following-count">
-            <router-link to="/userprofile/following"
+            <router-link :to="`/userprofile/${localUserData.id}/following`"
               ><span>{{ localUserData.followingCount }} 個</span
               >跟隨中</router-link
             >
           </div>
           <div class="follows-count">
-            <router-link to="/userprofile/followers"
+            <router-link :to="`/userprofile/${localUserData.id}/followers`"
               ><span>{{ localUserData.followerCount }} 位</span
               >跟隨者</router-link
             >
           </div>
         </div>
       </div>
-      <!-- <button
-        v-if="currentUser.id === localUserData.id"
-        @click="editUserModal(localUserData)"
-        class="btn btn-edit-user"
-        data-toggle="modal"
-        data-target="#edit-user-modal"
-      >
-        編輯個人資料
-      </button> -->
       <button
         v-if="currentUser.id === localUserData.id"
         class="btn btn-edit-user"
@@ -97,7 +88,10 @@
       </div>
       <!-- btnPanel -->
       <!-- UserEditModal -->
-      <UserEditModal></UserEditModal>
+      <UserEditModal
+        @afterSaveSetting="afterSaveSetting"
+        :userData="localUserData"
+      ></UserEditModal>
     </div>
   </div>
 </template>
@@ -221,29 +215,6 @@ export default {
         this.localUserData.followingCount++;
         return;
       }
-    },
-    afterUnfollowUser(userId, fromProfileCard = false) {
-      // 在目標追蹤者的頁面上，按 ProfileCard 上的追蹤按鈕取消追蹤
-      if (this.userData.id === userId && fromProfileCard) {
-        // 追蹤者的 followers 數量 ++
-        console.log("Event A");
-        this.localUserData.followerCount--;
-        this.localUserData.isFollowed = false;
-        // inform RecommendedFollowers to toggle
-        this.$bus.$emit("toggleFollowFromProfileCard", userId);
-        return;
-      }
-      // 在目標追蹤者的頁面上，按推薦追蹤者欄取消追蹤
-      if (
-        this.userData.id === userId &&
-        this.userData.id !== this.currentUser.id
-      ) {
-        // 追蹤者的 followers 數量 ++
-        console.log("Event B");
-        this.localUserData.followerCount--;
-        this.localUserData.isFollowed = false;
-        return;
-      }
       // 在個人頁面上，按推薦追蹤取消追蹤其他使用者
       if (
         this.userData.id !== userId &&
@@ -257,9 +228,12 @@ export default {
     },
     // import JQuery from 'jquery'
     showModal() {
-      //   $("#edit-user-modal").appendTo("body");
+      $("#edit-user-modal").appendTo("body");
       $("#edit-user-modal").modal("show");
       /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
+    },
+    afterSaveSetting(form) {
+      this.localUserData = form;
     },
   },
   computed: {
@@ -298,10 +272,14 @@ export default {
   left: 84px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background-color: #000;
   z-index: 999;
   overflow: hidden;
   object-fit: cover;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  /* border: 1px solid #000; */
 }
 .avatar:after {
   content: "";

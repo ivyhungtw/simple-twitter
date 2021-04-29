@@ -56,6 +56,7 @@ export default {
         // console.log("fetchUser @ beforeRouteEnter");
         const { id } = to.params;
         vm.fetchUser(id);
+        vm.fetchFollowings(id);
         vm.fetchingData = true;
       });
     } catch (error) {
@@ -68,8 +69,8 @@ export default {
     try {
       if (this.fetchingData) next();
       const { id } = to.params;
-      this.fetchUser(id);
-      this.fetchFollowings(id);
+      await this.fetchUser(id);
+      this.fetchFollowings(id)
       next();
     } catch (error) {
       console.log(error);
@@ -86,12 +87,12 @@ export default {
   created() {
     const { id: userId } = this.$route.params;
     this.fetchFollowings(userId);
-    this.fetchUser(userId);
+    // this.fetchUser(userId);
   },
   methods: {
     async fetchUser(userId) {
       try {
-        const { data } = await usersAPI.getUser({ userId });
+        const { data } = await usersAPI.getUser(userId);
         this.user = data;
         this.isLoading = false;
       } catch (error) {
@@ -105,7 +106,7 @@ export default {
     },
     async fetchFollowings(userId) {
       try {
-        const { data } = await usersAPI.getUserFollowings({ userId });
+        const { data } = await usersAPI.getUserFollowings(userId);
         this.followings = data;
         console.log("userfollowing:", data);
         this.isLoading = false;

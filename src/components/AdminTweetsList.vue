@@ -43,6 +43,10 @@ export default {
     async handleDeleteButtonClick(tweetId) {
       try {
         this.$emit("after-delete-tweet", tweetId);
+        Toast.fire({
+          icon: "success",
+          title: "刪除成功！",
+        });
       } catch (error) {
         Toast.fire({
           icon: "error",
@@ -82,11 +86,13 @@ export default {
 }
 .avatar {
   min-width: 50px;
+  width: 50px;
   height: 50px;
   margin-right: 10px;
 }
 .avatar img {
   min-width: 100%;
+  width: 100%;
   height: 100%;
   border-radius: 50%;
   background-size: cover;

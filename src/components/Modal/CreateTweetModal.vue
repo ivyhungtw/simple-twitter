@@ -38,7 +38,7 @@
                 maxlength="140"
                 required
                 v-model="tweetContent"
-                placeholder="有什麼新鮮事？"
+                placeholder="有什麼新鮮事？ (字數限制 140 字元)"
               ></textarea>
             </div>
           </div>
@@ -46,16 +46,6 @@
 
         <div class="modal-footer">
           <div class="tweetButton">
-            <!-- <button
-              type="button"
-              class="btn"
-              data-dismiss="modal"
-              aria-label="Close"
-              @click="createNewTweet"
-              aria-hidden="true"
-            >
-              推文
-            </button> -->
             <button
               type="button"
               class="btn"
@@ -77,6 +67,8 @@ import { Toast } from "../../utils/helpers";
 import { emptyImageFilter } from "../../utils/mixins";
 import tweetsAPI from "../../apis/tweets";
 import { mapState } from "vuex";
+// jquery for closing modal
+import $ from "jquery";
 export default {
   name: "CreateTweetModal",
   props: {
@@ -91,6 +83,9 @@ export default {
       tweetContent: "",
       isProcessing: false,
     };
+  },
+  created() {
+    console.log("modal created");
   },
   methods: {
     async createNewTweet() {
@@ -107,7 +102,6 @@ export default {
         };
         // call api to create new tweet: 回傳 tweet id?
         const { data } = await tweetsAPI.createNewTweet(payload);
-        // console.log(data);
         if (data.status !== "success") {
           throw new Error(data.message);
         }
@@ -126,10 +120,17 @@ export default {
           icon: "success",
           title: "推文成功！",
         });
-        // close modal after successfully replied
-        this.closeModal("tweetModal");
+        // CloseModal!: close modal after successfully replied
+        console.log("close tweetModal");
+        // this.closeModal("tweetModal");
+        // CloseModal!: work fine
+        $("#tweetModal").modal("hide");
+        // CloseModal!: work fin too
+        const modalId = "#tweetModal";
+        this.$bus.$emit("closeModal", modalId);
         // inform Main.vue to push new tweet
-        this.$emit("afterCreateTweet", newTweet);
+        // inform UserProfile to push new tweet
+        this.$bus.$emit("afterCreateTweet", newTweet);
         // clear tweetContent
         this.tweetContent = "";
         // enable button
@@ -164,7 +165,6 @@ export default {
       return true;
     },
     closeModal(modalId) {
-      // console.log(modalId);
       // close modal after successfully replied with pure js
       const modal = document.querySelector(`#${modalId}`);
       modal.classList.remove("show");

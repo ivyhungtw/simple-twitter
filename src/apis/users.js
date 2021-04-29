@@ -4,7 +4,7 @@ export default {
   putUser(userId, payload) {
     return apiHelper.put(`/users/${userId}`, payload)
   },
-  getUser({ userId }) {
+  getUser(userId) {
     return apiHelper.get(`/users/${userId}`)
   },
   getCurrentUser() {
@@ -19,11 +19,10 @@ export default {
   getRecommendedFollowers() {
     return apiHelper.get('/users')
   },
-  getUserFollowers({ userId }) {
+  getUserFollowers(userId) {
     return apiHelper.get(`/users/${userId}/followers`)
   },
-  getUserFollowings({ userId }) {
-    console.log("userID:", userId)
+  getUserFollowings(userId) {
     return apiHelper.get(`/users/${userId}/followings`)
   },
   followUser(payload) {
@@ -33,4 +32,3 @@ export default {
     return apiHelper.delete(`/followships/${userId}`)
   }
 }
-

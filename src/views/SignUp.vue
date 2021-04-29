@@ -29,16 +29,13 @@ export default {
   flex-direction: column;
   align-items: center;
 }
-
 .title h1 {
   font-weight: 900;
   font-size: 23px;
 }
-
 .logo {
   margin: 60px 0 30px 0;
 }
-
 .logo img {
   width: 50px;
   height: 50px;
