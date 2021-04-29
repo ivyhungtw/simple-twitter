@@ -23,7 +23,7 @@
 import TweetItem from "./TweetItem";
 import { mapState } from "vuex";
 import { Toast } from "../utils/helpers";
-import tweetsAPI from "../apis/users";
+import tweetsAPI from "../apis/tweets";
 
 export default {
   name: "UserProfileTweetsList",
@@ -88,6 +88,7 @@ export default {
         });
         this.isLoading = false;
       } catch (error) {
+        console.log("fetchUserTweets");
         console.log(error);
         Toast.fire({
           icon: "error",

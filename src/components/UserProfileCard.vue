@@ -89,7 +89,7 @@
       <!-- btnPanel -->
       <!-- UserEditModal -->
       <UserEditModal
-        @afterSaveSetting="afterSaveSetting(form)"
+        @afterSaveSetting="afterSaveSetting"
         :userData="localUserData"
       ></UserEditModal>
     </div>
@@ -240,7 +240,7 @@ export default {
     },
     // import JQuery from 'jquery'
     showModal() {
-      //   $("#edit-user-modal").appendTo("body");
+      $("#edit-user-modal").appendTo("body");
       $("#edit-user-modal").modal("show");
       /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
     },
