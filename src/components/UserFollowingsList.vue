@@ -11,9 +11,14 @@
       <div class="follower-info">
         <div class="isfollowed-info">
           <div class="follower-title">
-            <router-link :to="{ name: 'user-profile', params: { id: following.followingId } }">
-                  <div class="name">{{ following.name }}</div>
-                </router-link>
+            <router-link
+              :to="{
+                name: 'user-profile',
+                params: { id: following.followingId },
+              }"
+            >
+              <div class="name">{{ following.name }}</div>
+            </router-link>
             <div class="account">@{{ following.account }}</div>
           </div>
 
@@ -163,14 +168,12 @@ export default {
   font-weight: 900;
 }
 .avatar {
-  min-width: 50px;
   width: 50px;
   height: 50px;
   margin-right: 10px;
   margin-top: 15px;
 }
 .avatar img {
-  min-width: 100%;
   width: 100%;
   height: 100%;
   border-radius: 50%;
