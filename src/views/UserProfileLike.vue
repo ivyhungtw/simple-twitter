@@ -30,8 +30,8 @@
 <script>
 import UserSidebar from "./../components/UserSidebar";
 import UserProfileCard from "./../components/UserProfileCard";
-import UserProfileNavtabs from "./../components/UserProfileNavtabs";
-import UserProfileLikeList from "../components/UserProfileLikeList";
+import UserProfileNavtabs from "./../components/UserProfileList/UserProfileNavtabs";
+import UserProfileLikeList from "../components/UserProfileList/UserProfileLikeList";
 import RecommendedFollowers from "./../components/RecommendedFollowers";
 import { Toast } from "../utils/helpers";
 import usersAPI from "../apis/users";

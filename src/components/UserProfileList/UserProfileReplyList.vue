@@ -19,11 +19,11 @@
 </template>
 
 <script>
-import TweetItem from "./TweetItem";
+import TweetItem from "../TweetItem";
 import { mapState } from "vuex";
-import { Toast } from "../utils/helpers";
-import tweetsAPI from "../apis/tweets";
-import usersAPI from "../apis/users";
+import { Toast } from "../../utils/helpers";
+import tweetsAPI from "../../apis/tweets";
+import usersAPI from "../../apis/users";
 
 export default {
   name: "UserProfileReplyList",
