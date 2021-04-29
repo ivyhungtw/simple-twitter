@@ -45,6 +45,7 @@
             alt=""
             data-toggle="modal"
             :data-target="`#tweetReplyModal-${localTweet.id}`"
+            @click="showModal(localTweet.id)"
           />
           <p>
             {{ localTweet.replyCount }}
@@ -81,6 +82,8 @@ import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 import tweetsAPI from "../apis/tweets";
 import { mapState } from "vuex";
+// import locally
+import $ from "jquery";
 
 export default {
   name: "TweetItem",
@@ -146,9 +149,10 @@ export default {
         });
       }
     },
-    afterCreateReply() {
-      console.log();
-      this.tweet.replyCount++;
+    afterCreateReply(payload) {
+      if (this.localTweet.id === payload.tweetId) {
+        this.tweet.replyCount++;
+      }
     },
     async deleteTweet(tweetId) {
       try {
@@ -172,6 +176,12 @@ export default {
           title: "API尚未建立，請下個月再試！",
         });
       }
+    },
+    showModal(tweetId) {
+      // #tweetReplyModal-${localTweet.id}
+      $(`#tweetReplyModal-${tweetId}`).modal("show");
+      $(`#tweetReplyModal-${tweetId}`).appendTo("body");
+      console.log("Open modal");
     },
   },
   computed: {

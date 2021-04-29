@@ -1,35 +1,50 @@
 <template>
   <form @submit.prevent.stop="handleSubmit($event)">
     <div class="row">
-      <label for="account">帳號</label>
+      <label for="account"
+        >帳號<span class="note ml-5">*帳號長度不得大於 50 字元</span></label
+      >
       <input
         id="account"
         name="account"
         type="text"
         v-model="form.account"
         required
+        maxlength="50"
       />
     </div>
 
     <div class="row">
-      <label for="name">名稱</label>
-      <input id="name" name="name" type="text" v-model="form.name" required />
+      <label for="name"
+        >名稱<span class="note ml-5">*名稱長度不得大於 50 字元</span></label
+      >
+      <input
+        id="name"
+        name="name"
+        type="text"
+        v-model="form.name"
+        maxlength="50"
+        required
+      />
     </div>
 
     <div class="row">
-      <label for="email">Email</label>
+      <label for="email"
+        >Email<span class="note ml-5">*信箱長度不得大於 50 字元</span></label
+      >
       <input
         id="email"
         name="email"
         type="email"
         v-model="form.email"
+        maxlength="50"
         required
       />
     </div>
 
     <div class="row">
       <label for="password"
-        >密碼<span class="note ml-5">*密碼長度需介於4和12之間</span></label
+        >密碼<span class="note ml-5">*密碼長度需介於 4 和 12 之間</span></label
       >
       <input
         id="password"
@@ -42,7 +57,9 @@
     </div>
     <div class="row">
       <label for="passwordCheck"
-        >密碼確認<span class="note ml-3">*密碼長度需介於4和12之間</span></label
+        >密碼確認<span class="note ml-3"
+          >*密碼長度需介於 4 和 12 之間</span
+        ></label
       >
       <input
         id="passwordCheck"

@@ -126,12 +126,16 @@ export default {
           title: "推文成功！",
         });
 
-        // close modal after successfully replied
+        // CloseModal!: close modal after successfully replied
         console.log("close tweetModal");
         // this.closeModal("tweetModal");
+
+        // CloseModal!: work fine
         $("#tweetModal").modal("hide");
-        // const modalId = "#tweetModal";
-        // this.$bus.$emit("closeModal", modalId);
+
+        // CloseModal!: work fin too
+        const modalId = "#tweetModal";
+        this.$bus.$emit("closeModal", modalId);
 
         // inform Main.vue to push new tweet
         // inform UserProfile to push new tweet

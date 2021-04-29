@@ -102,7 +102,7 @@ import { fromNowFilter } from "../../utils/mixins";
 import { mapState } from "vuex";
 import tweetsAPI from "../../apis/tweets";
 // jquery for closing modal
-// import $ from "jquery";
+import $ from "jquery";
 
 export default {
   name: "TweetReplyModal",
@@ -110,7 +110,6 @@ export default {
   props: {
     tweet: {
       type: Object,
-      // required: true,
       default: function () {
         return {
           user: {
@@ -124,8 +123,6 @@ export default {
   },
   data() {
     return {
-      // initTweet: {},
-
       replyContent: "",
       isProcessing: false,
     };
@@ -157,8 +154,9 @@ export default {
         });
 
         // close modal after successfully replied
-        this.closeModal(tweetId);
-        // $("#modal").modal("hide");
+        // this.closeModal(tweetId);
+        $(`#tweetReplyModal-${tweetId}`).modal("hide");
+        // tweetReplyModal-${tweet.id}
 
         // use eventBus
         const payloadForList = {

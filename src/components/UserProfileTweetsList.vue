@@ -22,6 +22,8 @@
 <script>
 import TweetItem from "./TweetItem";
 import { mapState } from "vuex";
+import { Toast } from "../utils/helpers";
+import tweetsAPI from "../apis/users";
 
 export default {
   name: "UserProfileTweetsList",
@@ -34,7 +36,7 @@ export default {
       required: true,
     },
   },
-  create() {
+  created() {
     this.$bus.$on("afterCreateTweet", (newTweet) => {
       console.log("afterCreateTweet in tweetlist");
       this.afterCreateTweet(newTweet);
