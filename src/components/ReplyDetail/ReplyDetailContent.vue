@@ -2,45 +2,37 @@
   <div class="container">
     <div class="userInfo">
       <div class="avatar">
-        <router-link :to="`/userprofile/${dataForContent.user.id}`">
-          <img
-            v-if="dataForContent.user"
-            :src="dataForContent.user.avatar"
-            alt=""
-          />
+        <router-link :to="`/userprofile/${localData.user.id}`">
+          <img v-if="localData.user" :src="localData.user.avatar" alt="" />
           <img v-else src="'' | emptyImageFilter" alt="" />
         </router-link>
       </div>
       <div class="userTitle">
-        <router-link :to="`/userprofile/${dataForContent.user.id}`">
+        <router-link :to="`/userprofile/${localData.user.id}`">
           <p class="text-dark">
-            {{ dataForContent.user ? dataForContent.user.name : "資料讀取中" }}
+            {{ localData.user ? localData.user.name : "資料讀取中" }}
           </p>
         </router-link>
 
-        <p>
-          @{{
-            dataForContent.user ? dataForContent.user.account : "資料讀取中"
-          }}
-        </p>
+        <p>@{{ localData.user ? localData.user.account : "資料讀取中" }}</p>
       </div>
     </div>
 
     <div class="textContent">
-      <p>{{ dataForContent.description }}</p>
+      <p>{{ localData.description }}</p>
     </div>
     <div class="updatedAt">
-      <p class="tweetUpdateAt">{{ dataForContent.updatedAt | exactDate }}</p>
+      <p class="tweetUpdateAt">{{ localData.updatedAt | exactDate }}</p>
     </div>
     <div class="feedbackCount">
-      <p>{{ dataForContent.commentsLength }} <span>回復 </span></p>
-      <p>{{ dataForContent.likesLength }} <span>喜歡次數</span></p>
+      <p>{{ localData.commentsLength }} <span>回復 </span></p>
+      <p>{{ localData.likesLength }} <span>喜歡次數</span></p>
     </div>
     <div class="tweetPanel">
       <div class="comments">
         <img
           data-toggle="modal"
-          :data-target="`#tweetReplyModal-${dataForContent.id}`"
+          :data-target="`#tweetReplyModal-${localData.id}`"
           src="../../assets/commentCount.svg"
           alt=""
         />
@@ -51,8 +43,8 @@
       ></TweetReplyModal>
       <div class="likes">
         <img
-          v-if="!dataForContent.isLiked"
-          :class="{ liked: dataForContent.isLiked }"
+          v-if="!localData.isLiked"
+          :class="{ liked: localData.isLiked }"
           src="../../assets/likeCount.svg"
           alt=""
           @click="toggleLike()"
@@ -91,6 +83,11 @@ export default {
   data() {
     return {
       dataForModal: {},
+      localData: {
+        user: {
+          id: null,
+        },
+      },
     };
   },
   methods: {
@@ -150,7 +147,8 @@ export default {
   },
   watch: {
     dataForContent: {
-      handler: function () {
+      handler: function (newVal) {
+        this.localData = newVal;
         this.setDataForModal();
       },
       deep: true,
