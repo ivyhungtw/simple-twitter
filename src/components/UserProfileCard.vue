@@ -89,7 +89,7 @@
       <!-- btnPanel -->
       <!-- UserEditModal -->
       <UserEditModal
-        @afterSaveSetting="afterSaveSetting"
+        @afterSaveSetting="afterSaveSetting(form)"
         :userData="localUserData"
       ></UserEditModal>
     </div>
@@ -243,6 +243,9 @@ export default {
       //   $("#edit-user-modal").appendTo("body");
       $("#edit-user-modal").modal("show");
       /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
+    },
+    afterSaveSetting(form) {
+      this.localUserData = form;
     },
   },
   computed: {
