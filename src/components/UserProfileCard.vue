@@ -255,68 +255,6 @@ export default {
       },
       deep: true,
     },
-    afterUnfollowUser(userId, fromProfileCard = false) {
-      // 在目標追蹤者的頁面上，按 ProfileCard 上的追蹤按鈕取消追蹤
-      if (this.userData.id === userId && fromProfileCard) {
-        // 追蹤者的 followers 數量 ++
-        console.log("Event A");
-        this.localUserData.followerCount--;
-        this.localUserData.isFollowed = false;
-        // inform RecommendedFollowers to toggle
-        this.$bus.$emit("toggleFollowFromProfileCard", userId);
-        return;
-      }
-
-      // 在目標追蹤者的頁面上，按推薦追蹤者欄取消追蹤
-      if (
-        this.userData.id === userId &&
-        this.userData.id !== this.currentUser.id
-      ) {
-        // 追蹤者的 followers 數量 ++
-        console.log("Event B");
-        this.localUserData.followerCount--;
-        this.localUserData.isFollowed = false;
-        return;
-      }
-
-      // 在個人頁面上，按推薦追蹤取消追蹤其他使用者
-      if (
-        this.userData.id !== userId &&
-        this.userData.id === this.currentUser.id
-      ) {
-        // 個人 following 數量 ++
-        console.log("Event C");
-        this.localUserData.followingCount--;
-        return;
-      }
-    },
-    // import JQuery from 'jquery'
-    showModal() {
-      // Modal IdL $("#edit-user-modal")
-      $("#edit-user-modal").modal("show");
-      $("#edit-user-modal").appendTo("body");
-    },
-    afterSaveSetting(form) {
-      const { avatar, name, introduction, cover } = form;
-      this.localUserData = {
-        ...this.userData,
-        avatar,
-        name,
-        introduction,
-        cover,
-      };
-    },
-  },
-  computed: {
-    ...mapState(["currentUser"]),
-  },
-  watch: {
-    userData: {
-      handler: function () {
-        this.localUserData = this.userData;
-      },
-      deep: true,
-    },
   },
 };
 </script>
