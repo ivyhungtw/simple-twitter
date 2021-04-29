@@ -83,11 +83,6 @@ export default {
       fetchingData: false,
     };
   },
-  // beforeRouteUpdate(to, from, next) {
-  //   const { id } = to.params;
-  // this.fetchFollowings(id);
-  //   next();
-  // },
   created() {
     const { id: userId } = this.$route.params;
     this.fetchFollowings(userId);
