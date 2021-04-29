@@ -38,7 +38,7 @@
                 maxlength="140"
                 required
                 v-model="tweetContent"
-                placeholder="有什麼新鮮事？"
+                placeholder="有什麼新鮮事？ (字數限制 140 字元)"
               ></textarea>
             </div>
           </div>

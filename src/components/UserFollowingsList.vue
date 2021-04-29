@@ -169,7 +169,7 @@ export default {
   font-weight: 900;
 }
 .avatar {
-  min-width: 50px;
+  width: 50px;
   height: 50px;
   margin-right: 10px;
   margin-top: 15px;

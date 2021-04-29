@@ -29,13 +29,13 @@
         </p>
         <div class="follow-condition">
           <div class="following-count">
-            <router-link to="/userprofile/following"
+            <router-link :to="`/userprofile/${localUserData.id}/following`"
               ><span>{{ localUserData.followingCount }} 個</span
               >跟隨中</router-link
             >
           </div>
           <div class="follows-count">
-            <router-link to="/userprofile/followers"
+            <router-link :to="`/userprofile/${localUserData.id}/followers`"
               ><span>{{ localUserData.followerCount }} 位</span
               >跟隨者</router-link
             >

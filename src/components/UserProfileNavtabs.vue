@@ -37,6 +37,36 @@ export default {
       required: true,
     },
   },
+  // data() {
+  //   return {
+  //     routes: [
+  //       { id: 1, title: "推文", name: "user-profile", params: { id: "" } },
+  //       {
+  //         id: 2,
+  //         title: "推文與回覆",
+  //         name: "user-profile-replies",
+  //         params: { id: "" },
+  //       },
+  //       {
+  //         id: 3,
+  //         title: "喜歡的內容",
+  //         name: "user-profile-Likes",
+  //         params: { id: "" },
+  //       },
+  //     ],
+  //   };
+  // },
+  // watch: {
+  //   userData: {
+  //     deep: true,
+  //     handler: function (newVal) {
+  //       const { id } = newVal;
+  //       this.routes.forEach((each) => {
+  //         each.params.id = id;
+  //       });
+  //     },
+  //   },
+  // },
   computed: {
     ...mapState(["currentUser"]),
   },

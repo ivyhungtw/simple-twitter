@@ -138,8 +138,6 @@ export default {
   flex: 1;
   width: 100%;
   height: 100vh;
-  /* min-width: 598px; */
-  /* max-width: 598px; */
   border-right: 1px solid #e6ecf0;
   overflow-y: scroll;
   position: relative;
@@ -201,7 +199,6 @@ export default {
   font-weight: 900;
   font-size: 19px;
   margin: 0;
-
 }
 .nameTag p:last-child {
   font-weight: 500;
