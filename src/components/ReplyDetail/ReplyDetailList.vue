@@ -173,6 +173,11 @@ export default {
   margin-right: 10px;
 }
 
+.avatar a {
+  width: 100%;
+  height: 100%;
+}
+
 .avatar img {
   width: 100%;
   height: 100%;
