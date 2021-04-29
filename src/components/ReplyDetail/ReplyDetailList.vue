@@ -121,7 +121,8 @@ export default {
       );
     },
     afterCreateReply(newReply) {
-      this.localComments.unshift(newReply);
+      // this.localComments.unshift(newReply);
+      this.localComments.push(newReply);
     },
   },
   watch: {
