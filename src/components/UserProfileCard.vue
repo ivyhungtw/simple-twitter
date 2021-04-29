@@ -290,7 +290,6 @@ export default {
   z-index: 999;
   overflow: hidden;
   object-fit: cover;
-  border: 1px solid #000;
 }
 
 .avatar img {
