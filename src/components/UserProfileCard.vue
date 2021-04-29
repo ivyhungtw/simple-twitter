@@ -29,13 +29,13 @@
         </p>
         <div class="follow-condition">
           <div class="following-count">
-            <router-link to="/userprofile/following"
+            <router-link :to="`/userprofile/${localUserData.id}/following`"
               ><span>{{ localUserData.followingCount }} 個</span
               >跟隨中</router-link
             >
           </div>
           <div class="follows-count">
-            <router-link to="/userprofile/followers"
+            <router-link :to="`/userprofile/${localUserData.id}/followers`"
               ><span>{{ localUserData.followerCount }} 位</span
               >跟隨者</router-link
             >
@@ -240,9 +240,12 @@ export default {
     },
     // import JQuery from 'jquery'
     showModal() {
-      //   $("#edit-user-modal").appendTo("body");
+      $("#edit-user-modal").appendTo("body");
       $("#edit-user-modal").modal("show");
       /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
+    },
+    afterSaveSetting(form) {
+      this.localUserData = form;
     },
   },
   computed: {
@@ -287,6 +290,12 @@ export default {
   z-index: 999;
   overflow: hidden;
   object-fit: cover;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  /* border: 1px solid #000; */
 }
 
 .avatar:after {

@@ -154,6 +154,7 @@ export default {
         console.log(data);
 
         // inform userProfileCard
+        console.log(this.form);
         this.$emit("afterSaveSetting", this.form);
 
         // clear form

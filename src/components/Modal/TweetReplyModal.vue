@@ -71,7 +71,7 @@
                   maxlength="140"
                   required
                   v-model="replyContent"
-                  placeholder="推你的回覆"
+                  placeholder="推你的回覆 (字數限制 140 字元)"
                 ></textarea>
               </div>
             </div>
