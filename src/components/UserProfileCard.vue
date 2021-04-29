@@ -243,10 +243,14 @@ export default {
       /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
     },
     afterSaveSetting(form) {
+      console.log("form: ");
+      console.log(form);
       this.localUserData = {
         ...this.localUserData,
         ...form,
       };
+      console.log("UserData: ");
+      console.log(this.localUserData);
     },
   },
   computed: {
@@ -289,14 +293,14 @@ export default {
   transform: translate(-50%, -50%);
   border-radius: 50%;
   z-index: 999;
-  overflow: hidden;
+  /* overflow: hidden; */
   object-fit: cover;
 }
 
 .avatar img {
   width: 100%;
   height: 100%;
-  /* border: 1px solid #000; */
+  border-radius: 50%;
 }
 
 .avatar:after {
@@ -304,8 +308,8 @@ export default {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 140px;
-  height: 140px;
+  width: 142px;
+  height: 142px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   border: 4px solid #ffffff;

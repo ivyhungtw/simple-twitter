@@ -31,8 +31,8 @@
 import UserSidebar from "./../components/UserSidebar";
 // import UserProfileCard from "./../components/UserProfileCard";
 import UserProfileCard from "./../components/UserProfileCard";
-import UserProfileNavtabs from "./../components/UserProfileNavtabs";
-import UserProfileTweetsList from "./../components/UserProfileTweetsList";
+import UserProfileNavtabs from "./../components/UserProfileList/UserProfileNavtabs";
+import UserProfileTweetsList from "./../components/UserProfileList/UserProfileTweetsList";
 import RecommendedFollowers from "./../components/RecommendedFollowers";
 import { Toast } from "../utils/helpers";
 import { mapState } from "vuex";

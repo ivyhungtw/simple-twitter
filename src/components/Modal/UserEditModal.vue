@@ -86,9 +86,7 @@
                   maxlength="50"
                   required
                 />
-                <p class="textLength">
-                  {{ form.name ? form.name.length : "0" }}/50
-                </p>
+                <p class="textLength">{{ form.name.length }}/50</p>
               </div>
               <div class="row">
                 <label for="name">自我介紹</label>
@@ -100,9 +98,7 @@
                   maxlength="160"
                   v-model="form.introduction"
                 ></textarea>
-                <p class="textLength">
-                  {{ form.introduction ? form.introduction.length : "0" }}/160
-                </p>
+                <p class="textLength">{{ form.introduction.length }}/160</p>
               </div>
             </div>
           </div>
@@ -130,7 +126,12 @@ export default {
   },
   data() {
     return {
-      form: {},
+      form: {
+        introduction: "",
+        name: "",
+        avatar: "",
+        cover: "",
+      },
       isProcessing: false,
     };
   },
