@@ -11,12 +11,21 @@
           <h1>上線使用者</h1>
         </div>
         <div class="container">
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. In
-            reprehenderit reiciendis dolore illo ipsa vitae excepturi cumque
-            incidunt eum voluptate obcaecati itaque quod architecto, officiis
-            ipsum repudiandae dignissimos. Assumenda, officia.
-          </p>
+          <ul class="userList">
+            <li class="userItem">
+              <div class="userContainer">
+                <div class="avatar">
+                  <img src="" alt="" />
+                </div>
+                <div class="userName">
+                  <p>UserName</p>
+                </div>
+                <div class="userAccount">
+                  <p>@userAccount</p>
+                </div>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -26,12 +35,11 @@
           <h1>公開聊天室</h1>
         </div>
         <div class="container">
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. In
-            reprehenderit reiciendis dolore illo ipsa vitae excepturi cumque
-            incidunt eum voluptate obcaecati itaque quod architecto, officiis
-            ipsum repudiandae dignissimos. Assumenda, officia.
-          </p>
+          <ul class="messageList">
+            <li class="messageItem">Hi!</li>
+            <li class="messageItem">Hello!</li>
+            <li class="messageItem">Aloha!</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -44,6 +52,20 @@ import UserSidebar from "../components/UserSidebar";
 export default {
   name: "publicMessage",
   components: { UserSidebar },
+  sockets: {
+    connect: function () {
+      console.log("socket connected");
+    },
+    customEmit: function (data) {
+      console.log(data);
+    },
+  },
+  methods: {
+    clickButton: function (data) {
+      // $socket is socket.io-client instance
+      this.$socket.emit("emit_method", data);
+    },
+  },
 };
 </script>
 
@@ -90,5 +112,51 @@ export default {
   font-weight: 700;
   font-size: 19px;
   margin: 0;
+}
+
+.usersOnline .container {
+  /* border: 1px solid #000; */
+  padding: 0;
+}
+
+.userList {
+  /* border: 1px solid #000; */
+}
+
+.userItem .userContainer {
+  height: 60px;
+  border-bottom: 1px solid #e6ecf0;
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.userContainer > div {
+  border: 1px solid red;
+}
+
+.userContainer .avatar {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #000;
+  border-radius: 50%;
+}
+
+/* message box */
+
+.messageBox .container {
+  /* border: 1px solid #000; */
+  padding: 0;
+}
+
+.messageItem {
+  height: 50px;
+  border: 1px solid #000;
+  font-size: 18px;
+  line-height: 50px;
+  text-align: center;
+  border-radius: 30px;
+  margin: 10px 5px;
 }
 </style>
