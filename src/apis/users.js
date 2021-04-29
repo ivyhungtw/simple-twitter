@@ -10,12 +10,8 @@ export default {
   getCurrentUser() {
     return apiHelper.get('/users/current_user')
   },
-
   getTotalUser() {
     return apiHelper.get('/admin/users')
-  },
-  getUser(userId) {
-    return apiHelper.get(`/users/${userId}`)
   },
   setUser(payload) {
     return apiHelper.post('/users', payload)
@@ -27,7 +23,6 @@ export default {
     return apiHelper.get(`/users/${userId}/followers`)
   },
   getUserFollowings({ userId }) {
-    console.log("userID:", userId)
     return apiHelper.get(`/users/${userId}/followings`)
   },
   followUser(payload) {
