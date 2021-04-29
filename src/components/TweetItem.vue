@@ -43,8 +43,6 @@
           <img
             src="../assets/commentCount.svg"
             alt=""
-            data-toggle="modal"
-            :data-target="`#tweetReplyModal-${localTweet.id}`"
             @click="showModal(localTweet.id)"
           />
           <p>

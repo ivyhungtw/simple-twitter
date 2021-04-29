@@ -136,12 +136,12 @@ export default {
   },
   methods: {
     async saveSetting(e) {
+      this.isProcessing = true;
       const result = this.formDataCheck(this.form);
       if (!result) {
         return;
       }
       try {
-        this.isProcessing = true;
         const userId = this.userData.id;
 
         const form = e.target;

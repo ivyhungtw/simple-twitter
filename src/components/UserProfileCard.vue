@@ -45,8 +45,6 @@
       <button
         v-if="currentUser.id === localUserData.id"
         class="btn btn-edit-user"
-        data-toggle="modal"
-        data-target="#edit-user-modal"
         @click="showModal"
       >
         編輯個人資料
@@ -245,7 +243,10 @@ export default {
       /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
     },
     afterSaveSetting(form) {
-      this.localUserData = form;
+      this.localUserData = {
+        ...this.localUserData,
+        ...form,
+      };
     },
   },
   computed: {

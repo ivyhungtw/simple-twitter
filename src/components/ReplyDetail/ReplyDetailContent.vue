@@ -150,7 +150,8 @@ export default {
   },
   watch: {
     dataForContent: {
-      handler: function () {
+      handler: function (newVal) {
+        this.localData = newVal;
         this.setDataForModal();
       },
       deep: true,
