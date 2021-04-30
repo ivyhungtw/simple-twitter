@@ -3,6 +3,6 @@ import { apiHelper } from './../utils/helpers'
 export default {
   getPublicRoom() {
     // getPublicRoom
-    return apiHelper.get('/rooms/public')
+    return apiHelper.get('/rooms/4')
   },
 }

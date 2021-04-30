@@ -50,13 +50,13 @@
         <div class="title">
           <h1>公開聊天室</h1>
         </div>
-        <div class="container">
-          <ul class="messageList">
+        <div ref="container" class="container">
+          <ul class="messageList" ref="height">
             <!--  -->
             <template v-for="item of messageList">
               <!-- actionItem -->
               <li v-if="item.type === 0" class="actionItem" :key="item.id">
-                <p>{{ item.name }} {{ item.action }}</p>
+                <p>{{ item.text }}</p>
               </li>
 
               <!-- messageItem: others -->
@@ -64,15 +64,15 @@
                 v-else
                 class="messageItem"
                 :key="item.id"
-                :class="{ currentUser: item.id === currentUser.id }"
+                :class="{ currentUser: item.UserId === currentUser.id }"
               >
                 <div class="mainContent">
                   <div class="avatar">
-                    <img :src="item.avatar | emptyImageFilter" alt="" />
+                    <img :src="item.userAvatar | emptyImageFilter" alt="" />
                   </div>
                   <div class="textContainer">
                     <div class="text">
-                      {{ item.text }}
+                      {{ item.message }}
                     </div>
                   </div>
                 </div>
@@ -106,7 +106,6 @@ import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 import { mapState } from "vuex";
-import { uuid } from "uuidv4";
 import sucketsAPI from "../apis/socket";
 
 export default {
@@ -116,47 +115,9 @@ export default {
   data() {
     return {
       message: "",
-      messageList: [
-        {
-          id: 0, // 新的事件使用 messageList.length + 1 來做
-          type: 0, // actionItem
-          userId: 45,
-          name: "張三",
-          action: "已上線",
-        },
-        {
-          id: 1,
-          type: 1, // actionItem
-          userId: 45,
-          name: "張三",
-          avatar: "",
-          createdAt: new Date(),
-          text: "我才沒有上限!!!!",
-        },
-        {
-          id: 1443,
-          type: 1, // actionItem
-          userId: 45,
-          name: "張三",
-          avatar: "",
-          createdAt: new Date(),
-          text: "我才沒有上限!!!!",
-        },
-        {
-          id: 3,
-          type: 0, // actionItem
-          userId: 45,
-          name: "張三",
-          action: "已離線",
-        },
-      ],
-      onlineUsersCount: 5,
-      onlineUsers: [
-        { id: 44, avatar: "", account: "ssff", name: "地瓜" },
-        { id: 34, avatar: "", account: "asdd", name: "番薯" },
-        { id: 24, avatar: "", account: "sgff", name: "蓮霧" },
-        { id: 74, avatar: "", account: "aasf", name: "紅豆" },
-      ],
+      messageList: [],
+      onlineUsersCount: 1,
+      onlineUsers: [],
     };
   },
   async created() {
@@ -167,9 +128,15 @@ export default {
       this.onlineUsers = onlineUsers;
       this.onlineUsersCount = onlineUsersCount;
 
-      const container = this.$el.querySelector(".messageList");
-      container.scrollTop = container.scrollHeight;
-      alert("!!!");
+      // join room
+      this.$socket.emit("join", {
+        username: this.currentUser.name,
+        roomId: 4,
+        userId: this.currentUser.id,
+      });
+
+      //scroll
+      this.scroll();
     } catch (error) {
       console.log(error);
       Toast.fire({
@@ -178,49 +145,26 @@ export default {
       });
     }
   },
-  mounted() {
-    // const container = this.$el.querySelector(".messageList");
-    // container.scrollTop = container.scrollHeight;
-    this.$socket.emit("join", {
-      username: this.currentUser.name,
-      roomId: 1,
-      userId: this.currentUser.id,
-    });
-  },
   sockets: {
     connection: function (data) {
       console.log("Data:" + data);
     },
-    // console when users chat
+    // when users chat
     "chat message": function (data) {
-      console.log("MESSAGE GOT---------");
-      console.log("[DATA]: " + data.text + "| createdAt: " + data.createdAt);
-
       this.messageList.push({
-        // id: data.id,
-        // type: 1, // actionItem
-        // avatar: data.userAvatar,
-        // text: data.message,
-        // createdAt: data.createdAt,
-        id: this.messageList.length + 1,
+        id: this.messageList + 1,
+        UserId: data.userId,
         type: 1, // actionItem
-        name: "UserName",
-        avatar: "",
-        text: data.text,
+        avatar: data.userAvatar,
+        message: data.text,
         createdAt: new Date(),
       });
     },
-    // console when user enters
-    "users count": function (data) {
-      console.log("USERS COUNT--------");
-      console.log("[DATA]: " + data);
-
+    message: function (data) {
       this.messageList.push({
-        id: uuid(),
+        id: this.messageList.length + 1,
         type: 0, // actionItem
-        userId: 45,
-        name: data,
-        action: "已上線", // 已離線
+        text: data.text,
       });
       this.message = "";
     },
@@ -245,6 +189,20 @@ export default {
         title: "訊息已發送!",
       });
     },
+    scroll() {
+      const height = this.$refs.height;
+      const container = this.$refs.container;
+      container.scrollTop = height.scrollHeight;
+    },
+  },
+  watch: {
+    messageList: {
+      deep: true,
+      handler: function () {
+        console.log("???");
+        this.scroll();
+      },
+    },
   },
   computed: {
     ...mapState(["currentUser"]),
@@ -255,7 +213,6 @@ export default {
 <style scoped>
 .publicMessage {
   display: flex;
-  /* border: 1px solid #000; */
 }
 
 .mainSection {
@@ -263,7 +220,6 @@ export default {
   width: 100%;
   height: 100vh;
   border-right: 1px solid #e6ecf0;
-  /* border: 3px solid red; */
   display: flex;
 }
 
@@ -287,7 +243,6 @@ export default {
   top: 0;
   background-color: #fff;
   z-index: 1;
-  /* z-index: 999; */
 }
 
 .title h1 {
