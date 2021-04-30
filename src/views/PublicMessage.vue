@@ -68,7 +68,7 @@
               >
                 <div class="mainContent">
                   <div class="avatar">
-                    <img :src="item.userAvatar | emptyImageFilter" alt="" />
+                    <img :src="item.avatar | emptyImageFilter" alt="" />
                   </div>
                   <div class="textContainer">
                     <div class="text">
@@ -129,14 +129,7 @@ export default {
       this.onlineUsersCount = onlineUsersCount;
 
       // join room
-      this.$socket.emit("join", {
-        username: this.currentUser.name,
-        roomId: 4,
-        userId: this.currentUser.id,
-      });
-
-      //scroll
-      this.scroll();
+      this.joinPublicRoom();
     } catch (error) {
       console.log(error);
       Toast.fire({
@@ -149,13 +142,12 @@ export default {
     connection: function (data) {
       console.log("Data:" + data);
     },
-    // when users chat
     "chat message": function (data) {
       this.messageList.push({
         id: this.messageList + 1,
         UserId: data.userId,
-        type: 1, // actionItem
-        avatar: data.userAvatar,
+        type: 1, // messageItem
+        avatar: data.avatar,
         message: data.text,
         createdAt: new Date(),
       });
@@ -170,6 +162,13 @@ export default {
     },
   },
   methods: {
+    joinPublicRoom() {
+      this.$socket.emit("join", {
+        username: this.currentUser.name,
+        roomId: 4,
+        userId: this.currentUser.id,
+      });
+    },
     sendMessage: function () {
       if (!this.message) {
         Toast.fire({
@@ -178,9 +177,7 @@ export default {
         });
         return;
       }
-      this.$socket.emit("chat message", this.message, () => {
-        console.log("MESSAGE DELIVERED---------");
-      });
+      this.$socket.emit("chat message", this.message);
 
       this.message = "";
 
@@ -199,7 +196,6 @@ export default {
     messageList: {
       deep: true,
       handler: function () {
-        console.log("???");
         this.scroll();
       },
     },
