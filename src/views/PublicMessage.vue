@@ -8,10 +8,12 @@
       <!-- onlineUserList -->
       <div class="usersOnline">
         <div class="title">
-          <h1>上線使用者</h1>
+          <h1>上線使用者 ({{ onlineUsersCount }})</h1>
         </div>
         <div class="container">
           <ul class="userList">
+            <!-- userItem -->
+            <!-- currentUser -->
             <li class="userItem">
               <div class="userContainer">
                 <div class="avatar">
@@ -25,69 +27,17 @@
                 </div>
               </div>
             </li>
-            <!-- others -->
-            <li class="userItem">
+            <!-- other users -->
+            <li class="userItem" v-for="user in onlineUsers" :key="user.id">
               <div class="userContainer">
                 <div class="avatar">
-                  <img :src="'' | emptyImageFilter" alt="" />
+                  <img :src="user.avatar | emptyImageFilter" alt="" />
                 </div>
                 <div class="userName">
-                  <p>currentUser.name</p>
+                  <p>{{ user.name }}</p>
                 </div>
                 <div class="userAccount">
-                  <p>@currentUser.account</p>
-                </div>
-              </div>
-            </li>
-            <li class="userItem">
-              <div class="userContainer">
-                <div class="avatar">
-                  <img :src="'' | emptyImageFilter" alt="" />
-                </div>
-                <div class="userName">
-                  <p>currentUser.name</p>
-                </div>
-                <div class="userAccount">
-                  <p>@currentUser.account</p>
-                </div>
-              </div>
-            </li>
-            <li class="userItem">
-              <div class="userContainer">
-                <div class="avatar">
-                  <img :src="'' | emptyImageFilter" alt="" />
-                </div>
-                <div class="userName">
-                  <p>currentUser.name</p>
-                </div>
-                <div class="userAccount">
-                  <p>@currentUser.account</p>
-                </div>
-              </div>
-            </li>
-            <li class="userItem">
-              <div class="userContainer">
-                <div class="avatar">
-                  <img :src="'' | emptyImageFilter" alt="" />
-                </div>
-                <div class="userName">
-                  <p>currentUser.name</p>
-                </div>
-                <div class="userAccount">
-                  <p>@currentUser.account</p>
-                </div>
-              </div>
-            </li>
-            <li class="userItem">
-              <div class="userContainer">
-                <div class="avatar">
-                  <img :src="'' | emptyImageFilter" alt="" />
-                </div>
-                <div class="userName">
-                  <p>currentUser.name</p>
-                </div>
-                <div class="userAccount">
-                  <p>@currentUser.account</p>
+                  <p>@{{ user.account }}</p>
                 </div>
               </div>
             </li>
@@ -102,30 +52,48 @@
         </div>
         <div class="container">
           <ul class="messageList">
-            <li class="messageItem">Hi!</li>
-            <li class="messageItem">Hello!</li>
-            <li class="messageItem">Aloha!</li>
-            <li
-              v-for="message in messageList"
-              :key="message"
-              class="messageItem"
-            >
-              {{ message }}
-            </li>
-          </ul>
-          <div class="meesagePanel">
-            <div class="inputPanel">
-              <button
-                type="button"
-                class="btn sendBtn"
-                @keyup.enter="sendMessage"
-                @click="sendMessage"
+            <!--  -->
+            <template v-for="item of messageList">
+              <!-- actionItem -->
+              <li v-if="item.type === 0" class="actionItem" :key="item.id">
+                <p>{{ item.name }} {{ item.action }}</p>
+              </li>
+
+              <!-- messageItem: others -->
+              <li
+                v-else
+                class="messageItem"
+                :key="item.id"
+                :class="{ currentUser: item.id === currentUser.id }"
               >
-                Send
-              </button>
-              <input id="textInput" type="text" v-model="message" />
-            </div>
-          </div>
+                <div class="mainContent">
+                  <div class="avatar">
+                    <img :src="item.avatar | emptyImageFilter" alt="" />
+                  </div>
+                  <div class="textContainer">
+                    <div class="text">
+                      {{ item.text }}
+                    </div>
+                  </div>
+                </div>
+                <div class="textTime">{{ item.createdAt | fromNow }}</div>
+              </li>
+            </template>
+          </ul>
+        </div>
+        <div class="meesagePanel">
+          <input
+            @keyup.enter="sendMessage"
+            id="textInput"
+            placeholder="輸入訊息..."
+            type="text"
+            v-model="message"
+            maxlength="160"
+            required
+          />
+          <button type="submit" class="btn sendBtn" @click="sendMessage">
+            <img src="../assets/send.svg" alt="" />
+          </button>
         </div>
       </div>
     </div>
@@ -134,21 +102,85 @@
 
 <script>
 import UserSidebar from "../components/UserSidebar";
+import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 import { mapState } from "vuex";
+import { uuid } from "uuidv4";
+import sucketsAPI from "../apis/socket";
 
 export default {
   name: "publicMessage",
   components: { UserSidebar },
-  mixins: [emptyImageFilter],
+  mixins: [emptyImageFilter, fromNowFilter],
   data() {
     return {
       message: "",
-      messageList: [],
+      messageList: [
+        {
+          id: 0, // 新的事件使用 messageList.length + 1 來做
+          type: 0, // actionItem
+          userId: 45,
+          name: "張三",
+          action: "已上線",
+        },
+        {
+          id: 1,
+          type: 1, // actionItem
+          userId: 45,
+          name: "張三",
+          avatar: "",
+          createdAt: new Date(),
+          text: "我才沒有上限!!!!",
+        },
+        {
+          id: 1443,
+          type: 1, // actionItem
+          userId: 45,
+          name: "張三",
+          avatar: "",
+          createdAt: new Date(),
+          text: "我才沒有上限!!!!",
+        },
+        {
+          id: 3,
+          type: 0, // actionItem
+          userId: 45,
+          name: "張三",
+          action: "已離線",
+        },
+      ],
+      onlineUsersCount: 5,
+      onlineUsers: [
+        { id: 44, avatar: "", account: "ssff", name: "地瓜" },
+        { id: 34, avatar: "", account: "asdd", name: "番薯" },
+        { id: 24, avatar: "", account: "sgff", name: "蓮霧" },
+        { id: 74, avatar: "", account: "aasf", name: "紅豆" },
+      ],
     };
   },
+  async created() {
+    try {
+      const { data } = await sucketsAPI.getPublicRoom();
+      const { messages: messageList, onlineUsersCount, onlineUsers } = data;
+      this.messageList = messageList;
+      this.onlineUsers = onlineUsers;
+      this.onlineUsersCount = onlineUsersCount;
+
+      const container = this.$el.querySelector(".messageList");
+      container.scrollTop = container.scrollHeight;
+      alert("!!!");
+    } catch (error) {
+      console.log(error);
+      Toast.fire({
+        icon: "error",
+        title: "無法取得聊天室資料，請稍後再試！",
+      });
+    }
+  },
   mounted() {
+    // const container = this.$el.querySelector(".messageList");
+    // container.scrollTop = container.scrollHeight;
     this.$socket.emit("join", {
       username: this.currentUser.name,
       roomId: 1,
@@ -156,29 +188,57 @@ export default {
     });
   },
   sockets: {
+    connection: function (data) {
+      console.log("Data:" + data);
+    },
     // console when users chat
     "chat message": function (data) {
-      // fired by socket server
-      console.log("--------MESSAGE GOT---------");
+      console.log("MESSAGE GOT---------");
       console.log("[DATA]: " + data.text + "| createdAt: " + data.createdAt);
+
+      this.messageList.push({
+        // id: data.id,
+        // type: 1, // actionItem
+        // avatar: data.userAvatar,
+        // text: data.message,
+        // createdAt: data.createdAt,
+        id: this.messageList.length + 1,
+        type: 1, // actionItem
+        name: "UserName",
+        avatar: "",
+        text: data.text,
+        createdAt: new Date(),
+      });
     },
     // console when user enters
     "users count": function (data) {
-      console.log("--------USERS COUNT--------");
+      console.log("USERS COUNT--------");
       console.log("[DATA]: " + data);
 
-      this.messageList.push(this.message);
+      this.messageList.push({
+        id: uuid(),
+        type: 0, // actionItem
+        userId: 45,
+        name: data,
+        action: "已上線", // 已離線
+      });
       this.message = "";
     },
   },
   methods: {
     sendMessage: function () {
+      if (!this.message) {
+        Toast.fire({
+          icon: "error",
+          title: "尚未輸入訊息!",
+        });
+        return;
+      }
       this.$socket.emit("chat message", this.message, () => {
-        console.log("--------MESSAGE DELIVERED---------");
+        console.log("MESSAGE DELIVERED---------");
       });
 
-      // this.messageList.push(this.message);
-      // this.message = "";
+      this.message = "";
 
       Toast.fire({
         icon: "success",
@@ -214,9 +274,6 @@ export default {
 
 .messageBox {
   flex: 2;
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh-135px);
 }
 
 .usersOnline .title,
@@ -240,12 +297,7 @@ export default {
 }
 
 .usersOnline .container {
-  /* border: 1px solid #000; */
   padding: 0;
-}
-
-.userList {
-  /* border: 1px solid #000; */
 }
 
 .userItem .userContainer {
@@ -256,7 +308,7 @@ export default {
   padding: 10px;
 }
 
-.userContainer .avatar {
+.avatar {
   width: 50px;
   height: 50px;
   border: 1px solid #fff;
@@ -298,71 +350,136 @@ export default {
 
 /* message box */
 
-/* .messageBox {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh-135px);
-} */
+.messageBox {
+  /* border: 1px solid red; */
+}
 
 .messageBox .container {
-  /* border: 1px solid #000; */
   padding: 0;
-  /* border: 1px solid red; */
-  flex: 1;
   display: flex;
   flex-direction: column;
-  /* border: 1px solid #000; */
-  /* height: calc(100vh-135px); */
+  height: calc(100vh - 115px);
+  overflow-y: scroll;
+}
+
+.messageBox .container::-webkit-scrollbar {
+  display: none;
+}
+
+/* for Chrome, Safari and Opera */
+.messageBox .container {
+  -ms-overflow-style: none;
 }
 
 .messageList {
   flex: 1;
-  /* border: 3px solid red; */
   margin: 0;
-  height: calc(100vh-135px);
-  overflow-y: scroll;
 }
 
-.messageItem {
-  width: 200px;
-  height: 50px;
-  border: 1px solid #aaa;
-  font-size: 18px;
-  line-height: 50px;
-  /* text-align: center; */
-  padding: 0px 15px;
-  border-radius: 10px;
-  margin: 10px 5px;
-}
-
-.meesagePanel {
-  padding: 10px;
-  /* background-color: #333; */
+.mainContent {
+  max-width: 60%;
+  /* width: 200px; */
+  /* height: 50px; */
+  margin: 10px 10px 0 10px;
   display: flex;
-  border: 1px solid #aaa;
-  /* align-items: center; */
+  align-items: flex-end;
 }
 
-.inputPanel {
-  /* border: 1px solid #000; */
+.textTime {
+  margin-left: 70px;
+  color: #777;
+  font-weight: 500;
+}
+
+.messageItem .avatar {
+  min-width: 50px;
+  height: 50px;
+}
+.messageItem .textContainer {
+  word-break: break-all;
+  margin-left: 10px;
+  height: 100%;
+}
+
+.messageItem .textContainer .text {
+  padding: 10px 15px;
+  border-radius: 20px 20px 20px 0;
+  background: #e6ecf0;
+  font-size: 16px;
+}
+
+.actionItem {
+  margin: 10px;
   display: flex;
   flex-direction: row;
+  justify-content: center;
 }
 
-.sendBtn {
+.actionItem p {
+  margin: 0;
+  width: auto;
+  background-color: hsl(0deg 0% 90%);
+  color: hsl(207deg 14% 46%);
+  padding: 5px 10px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/*////////// currentUser's message ///////////*/
+.currentUser {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.currentUser .textContainer .text {
+  border-radius: 20px 20px 0 20px;
+  background-color: hsl(24deg 100% 50%);
+  color: #fff;
+}
+
+.currentUser .textTime {
   /* border: 1px solid #000; */
-  background-color: #aaa;
-  color: #222;
-  margin-right: 20px;
-  height: 40px;
+  margin: 0;
+  margin-right: 10px;
+}
+
+.currentUser .mainContent .avatar {
+  display: none;
+}
+
+.currentUser .textTime {
+}
+
+/*/ ////////////////// panel ///////////////*/
+.meesagePanel {
+  height: 60px;
+  padding: 10px;
+  display: flex;
+  border: 1px solid #e6ecf0;
 }
 
 #textInput {
   flex: 1;
-  /* width: 200px; */
   height: 40px;
   outline: none;
-  background: #ccc;
+  border: none;
+  padding: 10px;
+  background: #e6ecf0;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.sendBtn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  padding-right: 10px;
+  margin-left: 10px;
+}
+
+.sendBtn img {
+  transform: rotate(45deg);
 }
 </style>

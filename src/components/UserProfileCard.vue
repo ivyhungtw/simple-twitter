@@ -54,7 +54,9 @@
       <div v-else class="btnPanel">
         <div>
           <button class="btn message">
-            <img src="../assets/btn_message.svg" alt="" />
+            <router-link :to="{ name: 'privateMessage' }">
+              <img src="../assets/btn_message.svg" alt="" />
+            </router-link>
           </button>
         </div>
         <div>
