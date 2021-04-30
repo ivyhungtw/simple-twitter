@@ -85,9 +85,6 @@ export default {
       isProcessing: false,
     };
   },
-  created() {
-    console.log("modal created");
-  },
   methods: {
     async createNewTweet() {
       const contentCheck = this.contentCheck(this.tweetContent);

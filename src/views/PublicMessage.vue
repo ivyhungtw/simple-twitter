@@ -15,13 +15,79 @@
             <li class="userItem">
               <div class="userContainer">
                 <div class="avatar">
+                  <img :src="currentUser.avatar | emptyImageFilter" alt="" />
+                </div>
+                <div class="userName">
+                  <p>{{ currentUser.name }}</p>
+                </div>
+                <div class="userAccount">
+                  <p>@{{ currentUser.account }}</p>
+                </div>
+              </div>
+            </li>
+            <!-- others -->
+            <li class="userItem">
+              <div class="userContainer">
+                <div class="avatar">
                   <img :src="'' | emptyImageFilter" alt="" />
                 </div>
                 <div class="userName">
-                  <p>UserName</p>
+                  <p>currentUser.name</p>
                 </div>
                 <div class="userAccount">
-                  <p>@userAccount</p>
+                  <p>@currentUser.account</p>
+                </div>
+              </div>
+            </li>
+            <li class="userItem">
+              <div class="userContainer">
+                <div class="avatar">
+                  <img :src="'' | emptyImageFilter" alt="" />
+                </div>
+                <div class="userName">
+                  <p>currentUser.name</p>
+                </div>
+                <div class="userAccount">
+                  <p>@currentUser.account</p>
+                </div>
+              </div>
+            </li>
+            <li class="userItem">
+              <div class="userContainer">
+                <div class="avatar">
+                  <img :src="'' | emptyImageFilter" alt="" />
+                </div>
+                <div class="userName">
+                  <p>currentUser.name</p>
+                </div>
+                <div class="userAccount">
+                  <p>@currentUser.account</p>
+                </div>
+              </div>
+            </li>
+            <li class="userItem">
+              <div class="userContainer">
+                <div class="avatar">
+                  <img :src="'' | emptyImageFilter" alt="" />
+                </div>
+                <div class="userName">
+                  <p>currentUser.name</p>
+                </div>
+                <div class="userAccount">
+                  <p>@currentUser.account</p>
+                </div>
+              </div>
+            </li>
+            <li class="userItem">
+              <div class="userContainer">
+                <div class="avatar">
+                  <img :src="'' | emptyImageFilter" alt="" />
+                </div>
+                <div class="userName">
+                  <p>currentUser.name</p>
+                </div>
+                <div class="userAccount">
+                  <p>@currentUser.account</p>
                 </div>
               </div>
             </li>
@@ -69,7 +135,8 @@
 <script>
 import UserSidebar from "../components/UserSidebar";
 import { emptyImageFilter } from "../utils/mixins";
-// import { Toast } from "../utils/helpers";
+import { Toast } from "../utils/helpers";
+import { mapState } from "vuex";
 
 export default {
   name: "publicMessage",
@@ -81,22 +148,46 @@ export default {
       messageList: [],
     };
   },
+  mounted() {
+    this.$socket.emit("join", {
+      username: this.currentUser.name,
+      roomId: 1,
+      userId: this.currentUser.id,
+    });
+  },
   sockets: {
-    connect: function () {
-      this.messageList.push("socket connected");
-      // console.log("socket connected");
-    },
-    customEmit: function (data) {
+    // console when users chat
+    "chat message": function (data) {
       // fired by socket server
-      this.messageList.push(data);
+      console.log("--------MESSAGE GOT---------");
+      console.log("[DATA]: " + data.text + "| createdAt: " + data.createdAt);
+    },
+    // console when user enters
+    "users count": function (data) {
+      console.log("--------USERS COUNT--------");
+      console.log("[DATA]: " + data);
+
+      this.messageList.push(this.message);
+      this.message = "";
     },
   },
   methods: {
     sendMessage: function () {
-      this.$socket.emit(this.message);
-      this.messageList.push(this.message);
-      this.message = "";
+      this.$socket.emit("chat message", this.message, () => {
+        console.log("--------MESSAGE DELIVERED---------");
+      });
+
+      // this.messageList.push(this.message);
+      // this.message = "";
+
+      Toast.fire({
+        icon: "success",
+        title: "訊息已發送!",
+      });
     },
+  },
+  computed: {
+    ...mapState(["currentUser"]),
   },
 };
 </script>
@@ -119,6 +210,13 @@ export default {
 .usersOnline {
   border-right: 1px solid #e6ecf0;
   flex: 1;
+}
+
+.messageBox {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh-135px);
 }
 
 .usersOnline .title,
@@ -153,11 +251,9 @@ export default {
 .userItem .userContainer {
   height: 60px;
   border-bottom: 1px solid #e6ecf0;
-  /* border: 1px solid #000; */
   display: flex;
   align-items: center;
   padding: 10px;
-  /* border: 1px solid #000; */
 }
 
 .userContainer .avatar {
@@ -177,11 +273,13 @@ export default {
   height: 100%;
   display: flex;
   align-items: center;
-  margin: 0 5px 0 15px;
+  margin: 0 0px 0 10px;
 }
 
 .userName p {
   margin: 0;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .userAccount {
@@ -193,18 +291,19 @@ export default {
 
 .userAccount p {
   margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #657786;
 }
 
 /* message box */
 
-.messageBox {
-  /* border: 1px solid #000; */
+/* .messageBox {
   flex: 2;
   display: flex;
   flex-direction: column;
   height: calc(100vh-135px);
-  /* border: 1px solid #000; */
-}
+} */
 
 .messageBox .container {
   /* border: 1px solid #000; */

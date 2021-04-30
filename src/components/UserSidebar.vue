@@ -170,9 +170,9 @@ export default {
     };
   },
   created() {
-    const path = this.$route.path.split("/")[1];
-    console.log(path);
-    console.log("-----------------");
+    // const path = this.$route.path.split("/")[1];
+    // console.log(path);
+    // console.log("-----------------");
     // this.pageLocate(path)
     this.$bus.$on("closeModal", (modalId) => {
       this.closeModal(modalId);

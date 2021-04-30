@@ -13,11 +13,9 @@ import store from './store'
 // import eventbus
 import './utils/bus'
 // vue-socket.io
-import VueSocektIO from 'vue-socket.io'
+import VueSocketIO from 'vue-socket.io'
 
-Vue.config.productionTip = false
-
-Vue.use(new VueSocektIO({
+Vue.use(new VueSocketIO({
   debug: true,
   connection: 'https://simple-twitter-api-2021.herokuapp.com/',
   vuex: {
