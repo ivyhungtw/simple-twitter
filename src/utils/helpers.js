@@ -13,10 +13,9 @@ axiosInstance.interceptors.request.use(config => {
     config.headers['Authorization'] = `Bearer ${token}`
     // CORS
     // config.headers['Access-Control-Allow-Origin'] = '*';
-    // config.headers['Access-Control-Allow-Credentials'] = 'true';
+    // config.headers['Access-Control-Allow-Credentials'] = true;
     // config.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,OPTIONS';
     // config.headers['Access-Control-Allow-Headers'] = 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json';
-    // config.headers['credentials'] = 'include'
   }
   return config
 }, err => {
