@@ -10,12 +10,17 @@
         <div class="title">
           <h1>訊息</h1>
           <div class="newMessage">
-            <img src="../assets/newMessage.svg" alt="" />
+            <img @click="createNewChat" src="../assets/newMessage.svg" alt="" />
           </div>
         </div>
         <div class="container">
           <ul class="userList">
-            <li class="userItem" v-for="user in userList" :key="user.id">
+            <li
+              class="userItem"
+              v-for="user in userList"
+              :key="user.id"
+              @click="fetchChatData(user)"
+            >
               <div class="avatar">
                 <img :src="user.avatar | emptyImageFilter" alt="" />
               </div>
@@ -44,10 +49,12 @@
 
       <!-- messageBox -->
       <div class="messageBox">
-        <div class="title">
+        <!-- <div class="title" v-if="currentChat.name">
           <h1>{{ currentChat.name }}</h1>
           <p>@{{ currentChat.account }}</p>
-        </div>
+        </div> -->
+        <!-- <div class="title" v-else></div> -->
+        <div class="title"></div>
         <div class="container"></div>
         <div class="meesagePanel">
           <input
@@ -70,9 +77,11 @@
 
 <script>
 import UserSidebar from "../components/UserSidebar";
-
+import { Toast } from "../utils/helpers";
 import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
+import sucketsAPI from "../apis/socket";
+import { mapState } from "vuex";
 
 export default {
   name: "privateMessage",
@@ -110,9 +119,9 @@ export default {
         },
       ],
       currentChat: {
-        name: "user A",
-        account: "Account",
-        messages: [],
+        name: "",
+        account: "",
+        messageList: [],
       },
       message: "",
     };
@@ -121,6 +130,56 @@ export default {
     sendMessage() {
       console.log("SEND!");
     },
+    // chat before
+    async fetchChatData(user) {
+      this.currentChat = {
+        name: user.name,
+        account: user.account,
+        avatar: user.avatar,
+        messages: [],
+      };
+      try {
+        const { data } = await sucketsAPI.getPublicRoom();
+        const { messages } = data;
+        this.currentChat.messageList = messages;
+
+        console.log(data);
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取得對話紀錄，請稍後再試！",
+        });
+      }
+    },
+    async createNewChat() {
+      let user = { id: 54 };
+      try {
+        const { data } = await sucketsAPI.createPrivateRoom(user.id);
+        const { roomId } = data;
+
+        console.log(data);
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        this.$socket.emit("join", {
+          username: this.currentUser.name,
+          roomId,
+          userId: this.currentUser.id,
+        });
+
+        Toast.fire({
+          icon: "success",
+          title: "連線",
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  },
+  computed: {
+    ...mapState(["currentUser"]),
   },
 };
 </script>
@@ -212,6 +271,10 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.userItem:hover {
+  cursor: pointer;
 }
 
 .avatar {
