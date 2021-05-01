@@ -123,14 +123,8 @@ export default {
           title: "推文成功！",
         });
 
-        // CloseModal!: close modal after successfully replied
-        console.log("close tweetModal");
-        // this.closeModal("tweetModal");
-
-        // CloseModal!: work fine
         $("#tweetModal").modal("hide");
 
-        // CloseModal!: work fin too
         const modalId = "#tweetModal";
         this.$bus.$emit("closeModal", modalId);
 

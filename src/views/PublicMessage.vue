@@ -112,11 +112,6 @@ export default {
         userId: this.currentUser.id,
       });
     },
-    scroll() {
-      const height = this.$refs.height;
-      const container = this.$refs.container;
-      container.scrollTop = height.scrollHeight;
-    },
   },
   computed: {
     ...mapState(["currentUser"]),

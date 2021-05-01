@@ -9,7 +9,7 @@ export default {
     return apiHelper.post('/rooms', { userId })
   },
   // 未完成
-  getPrivateRoom(userId) {
+  getRoomsByUser(userId) {
     return apiHelper.get(`/rooms/${userId}`)
   }
 }

@@ -10,14 +10,22 @@
         <div class="title">
           <h1>訊息</h1>
           <div class="newMessage">
-            <img @click="createNewChat" src="../assets/newMessage.svg" alt="" />
+            <button type="button" class="btn" @click="showModal">
+              <img src="../assets/newMessage.svg" alt="" />
+            </button>
           </div>
+
+          <!-- Modal -->
+          <UserChatListModal
+            @afterUserSelected="afterUserSelected"
+            :allUserList="allUserList"
+          ></UserChatListModal>
         </div>
         <div class="container">
           <ul class="userList">
             <li
               class="userItem"
-              v-for="user in userList"
+              v-for="user in openedUserList"
               :key="user.id"
               @click="fetchChatData(user)"
             >
@@ -49,12 +57,11 @@
 
       <!-- messageBox -->
       <div class="messageBox">
-        <!-- <div class="title" v-if="currentChat.name">
+        <div class="title" v-if="currentChat.name">
           <h1>{{ currentChat.name }}</h1>
           <p>@{{ currentChat.account }}</p>
-        </div> -->
-        <!-- <div class="title" v-else></div> -->
-        <div class="title"></div>
+        </div>
+        <div class="title" v-else></div>
         <div class="container"></div>
         <div class="meesagePanel">
           <input
@@ -76,23 +83,28 @@
 </template>
 
 <script>
+const dummyChat = [];
+
 import UserSidebar from "../components/UserSidebar";
+import UserChatListModal from "../components/Modal/UserChatListModal";
 import { Toast } from "../utils/helpers";
 import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
 import sucketsAPI from "../apis/socket";
 import { mapState } from "vuex";
+import $ from "jquery";
 
 export default {
   name: "privateMessage",
-  components: { UserSidebar },
+  components: { UserSidebar, UserChatListModal },
   mixins: [emptyImageFilter, fromNowFilter],
   data() {
     return {
-      userList: [
+      allUserList: [],
+      openedUserList: [
         {
           id: 6,
-          name: "name",
+          name: "USER",
           avatar: "",
           account: "account1",
           lastTime: "昨天",
@@ -119,6 +131,7 @@ export default {
         },
       ],
       currentChat: {
+        id: "",
         name: "",
         account: "",
         messageList: [],
@@ -132,22 +145,40 @@ export default {
     },
     // chat before
     async fetchChatData(user) {
+      const { id, name, account, avatar } = user;
       this.currentChat = {
-        name: user.name,
-        account: user.account,
-        avatar: user.avatar,
+        id,
+        name,
+        account,
+        avatar,
         messages: [],
       };
       try {
-        const { data } = await sucketsAPI.getPublicRoom();
+        const { data } = await sucketsAPI.getRoomsByUser();
         const { messages } = data;
         this.currentChat.messageList = messages;
 
+        console.log("XXXXXX");
         console.log(data);
       } catch (error) {
         Toast.fire({
           icon: "error",
           title: "無法取得對話紀錄，請稍後再試！",
+        });
+      }
+    },
+    async afterUserSelected(user) {
+      this.currentChat = {
+        ...this.currentChat,
+        ...user,
+      };
+      try {
+        // const { data } = await this.createNewChat();
+        this.currentChat.messages = dummyChat;
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法建立聊天室，請稍後再試！",
         });
       }
     },
@@ -176,6 +207,10 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    showModal() {
+      $("#allUserList").appendTo("body");
+      $("#allUserList").modal("show");
     },
   },
   computed: {
@@ -230,8 +265,6 @@ export default {
   justify-content: center;
   padding: 0 10px;
 }
-.messageBox .title h1 {
-}
 
 .messageBox .title p {
   margin: 0;
@@ -246,22 +279,27 @@ export default {
 
 .newMessage {
   /* border: 1px solid #000; */
-  width: 20px;
-  height: 20px;
   position: absolute;
   right: 10px;
 }
 
+.newMessage button {
+  padding: 12px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .newMessage img {
-  width: 100%;
-  height: 100%;
+  display: block;
+  width: 20px;
+  height: 20px;
 }
 
 .usersOnline .container {
   padding: 0;
-}
-
-.userList {
 }
 
 .userItem {
@@ -275,6 +313,7 @@ export default {
 
 .userItem:hover {
   cursor: pointer;
+  background-color: #f7f7f7;
 }
 
 .avatar {
@@ -296,10 +335,6 @@ export default {
   padding-left: 10px;
   display: flex;
   flex-direction: column;
-}
-
-.userContainer > * {
-  /* border: 1px solid #000; */
 }
 
 .userContainer .row {
@@ -354,10 +389,6 @@ export default {
 }
 
 /*/////////////////// message box ///////////////////*/
-
-.messageBox {
-  /* border: 1px solid red; */
-}
 
 .messageBox .container {
   padding: 0;

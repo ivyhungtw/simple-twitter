@@ -3,8 +3,8 @@
     <div class="title">
       <h1>公開聊天室</h1>
     </div>
-    <div ref="container" class="container">
-      <ul class="messageList" ref="height">
+    <div class="container">
+      <ul class="messageList" ref="container">
         <!--  -->
         <template v-for="item of messageList">
           <!-- actionItem -->
@@ -56,6 +56,7 @@ import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 import { mapState } from "vuex";
+// import $ from "jquery";
 
 export default {
   name: "MessageBox",
@@ -90,9 +91,11 @@ export default {
       });
     },
     scroll() {
-      const height = this.$refs.height;
+      // const height = this.$refs.height;
       const container = this.$refs.container;
-      container.scrollTop = height.scrollHeight;
+      // // container.scrollTop = height.scrollHeight;
+      // console.log("height: " + 72 * this.messageList.length);
+      container.scrollTop = 72 * this.messageList.length;
     },
   },
   computed: {
@@ -139,7 +142,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 115px);
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .avatar {
@@ -167,6 +170,7 @@ export default {
 .messageList {
   flex: 1;
   margin: 0;
+  /* min-height: 100%; */
 }
 
 .mainContent {
