@@ -32,7 +32,7 @@
       </div>
 
       <!-- messageBox -->
-      <MessageBox :messageList="messageList"></MessageBox>
+      <MessageBox :atPublic="atPublic" :messageList="messageList"></MessageBox>
     </div>
   </div>
 </template>
@@ -56,6 +56,7 @@ export default {
       messageList: [],
       onlineUsersCount: 1,
       onlineUsers: [],
+      atPublic: true,
     };
   },
   async created() {
@@ -77,10 +78,8 @@ export default {
     }
   },
   sockets: {
-    connection: function (data) {
-      console.log("Data:" + data);
-    },
     "chat message": function (data) {
+      console.log("Got message: " + data.text);
       this.messageList.push({
         id: this.messageList + 1,
         UserId: data.userId,

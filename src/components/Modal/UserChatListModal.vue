@@ -23,10 +23,10 @@
         <div class="modal-body">
           <ul class="userList">
             <li
-              @click="userSelected(user)"
               class="userItem"
               v-for="user in userList"
               :key="user.id"
+              @click="userSelected(user)"
             >
               <div class="userContainer">
                 <div class="avatar">
@@ -62,18 +62,19 @@ export default {
   },
   data() {
     return {
+      // to delete
       userList: [
-        {
-          id: 6,
-          name: "USER1",
-          avatar: "",
-          account: "account1",
-        },
         {
           id: 26,
           name: "USER2",
           avatar: "",
           account: "account2",
+        },
+        {
+          id: 94,
+          name: "User94",
+          avatar: "",
+          account: "clement",
         },
         {
           id: 61,
@@ -104,6 +105,7 @@ export default {
   },
   methods: {
     userSelected(user) {
+      console.log("Select userId: " + user.id);
       this.$emit("afterUserSelected", user);
       this.closeModal();
     },

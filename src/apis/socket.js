@@ -11,5 +11,8 @@ export default {
   // 未完成
   getRoomsByUser(userId) {
     return apiHelper.get(`/rooms/${userId}`)
+  },
+  getAvailableUsers() {
+    return apiHelper.get('rooms/availableUsers')
   }
 }

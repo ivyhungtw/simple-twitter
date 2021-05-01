@@ -1,12 +1,27 @@
 <template>
   <div class="messageBox">
-    <div class="title">
-      <h1>公開聊天室</h1>
-    </div>
+    <template v-if="atPublic">
+      <div class="title">
+        <h1>公開聊天室</h1>
+      </div>
+    </template>
+    <template v-else>
+      <div class="title private" v-if="currentChat.name">
+        <h1>{{ currentChat.name ? currentChat.name : "UserName" }}</h1>
+        <p>@{{ currentChat.account ? currentChat.account : "UserAccount" }}</p>
+      </div>
+      <div v-else class="title noChat">
+        <h1>開啟聊天！</h1>
+      </div>
+    </template>
+
     <div class="container">
       <ul class="messageList" ref="container">
+        <div v-if="!messageList.length" class="emptyList">
+          <img src="../assets/conversation.svg" alt="" />
+        </div>
         <!--  -->
-        <template v-for="item of messageList">
+        <template v-else v-for="item of messageList">
           <!-- actionItem -->
           <li v-if="item.type === 0" class="actionItem" :key="item.id">
             <p>{{ item.text }}</p>
@@ -36,6 +51,7 @@
     </div>
     <div class="meesagePanel">
       <input
+        :disabled="!currentChat.id"
         @keyup.enter="sendMessage"
         id="textInput"
         placeholder="輸入訊息..."
@@ -44,7 +60,12 @@
         maxlength="160"
         required
       />
-      <button type="submit" class="btn sendBtn" @click="sendMessage">
+      <button
+        :disabled="!currentChat.id"
+        type="submit"
+        class="btn sendBtn"
+        @click="sendMessage"
+      >
         <img src="../assets/send.svg" alt="" />
       </button>
     </div>
@@ -62,9 +83,24 @@ export default {
   name: "MessageBox",
   mixins: [emptyImageFilter, fromNowFilter],
   props: {
+    currentChat: {
+      type: Object,
+      default: function () {
+        return {
+          id: 1,
+          name: "公開聊天室",
+          roomId: 4,
+          account: "",
+        };
+      },
+    },
     messageList: {
       type: Array,
       required: true,
+    },
+    atPublic: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -72,8 +108,18 @@ export default {
       message: "",
     };
   },
+  sockets: {
+    "new private chat message": function (data) {
+      // get new chat
+      console.log(data);
+      // create new chat to openedUsersList
+      // message, userId, avatar, roomId
+      // this.joinPrivateRoom()
+    },
+  },
   methods: {
     sendMessage: function () {
+      const message = this.message;
       if (!this.message) {
         Toast.fire({
           icon: "error",
@@ -81,7 +127,36 @@ export default {
         });
         return;
       }
-      this.$socket.emit("chat message", this.message);
+
+      const newMessage = !this.messageList.length;
+      console.log("atPublic: " + this.atPublic);
+
+      if (this.atPublic) {
+        this.$socket.emit("chat message", {
+          newMessage,
+          message,
+        });
+      }
+
+      if (!newMessage) {
+        console.log("private chat message");
+        this.$socket.emit("private chat message", {
+          newMessage,
+          message,
+        });
+      } else {
+        console.log("new private chat message");
+        this.$socket.emit(
+          "private chat message",
+          {
+            newMessage,
+            message,
+          },
+          (data) => {
+            console.log(data);
+          }
+        );
+      }
 
       this.message = "";
 
@@ -129,10 +204,36 @@ export default {
   z-index: 1;
 }
 
+.messageBox .private {
+  display: block;
+  padding: 0;
+  padding-left: 10px;
+}
+
+.private h1 {
+  height: 50%;
+  line-height: 35px;
+}
+.private p {
+  margin: 0;
+  padding: 0;
+  height: 50%;
+}
 .title h1 {
   font-weight: 700;
   font-size: 19px;
   margin: 0;
+}
+
+.noChat {
+  height: 55px;
+  display: flex;
+  align-items: center;
+}
+
+.noChat h1 {
+  /* margin-top: 20px; */
+  display: inline-block;
 }
 
 /* message box */
@@ -171,6 +272,18 @@ export default {
   flex: 1;
   margin: 0;
   /* min-height: 100%; */
+}
+
+.messageList .emptyList {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.messageList .emptyList img {
+  min-width: 5%;
+  width: 50px;
+  height: 50px;
 }
 
 .mainContent {

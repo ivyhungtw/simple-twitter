@@ -56,82 +56,48 @@
       </div>
 
       <!-- messageBox -->
-      <div class="messageBox">
-        <div class="title" v-if="currentChat.name">
-          <h1>{{ currentChat.name }}</h1>
-          <p>@{{ currentChat.account }}</p>
-        </div>
-        <div class="title" v-else></div>
-        <div class="container"></div>
-        <div class="meesagePanel">
-          <input
-            @keyup.enter="sendMessage"
-            id="textInput"
-            placeholder="輸入訊息..."
-            type="text"
-            v-model="message"
-            maxlength="160"
-            required
-          />
-          <button type="submit" class="btn sendBtn" @click="sendMessage">
-            <img src="../assets/send.svg" alt="" />
-          </button>
-        </div>
-      </div>
+      <MeesageBox
+        :currentChat="currentChat"
+        :messageList="currentChat.messageList"
+      ></MeesageBox>
     </div>
   </div>
 </template>
 
 <script>
-const dummyChat = [];
+// const dummyChat = [];
 
 import UserSidebar from "../components/UserSidebar";
 import UserChatListModal from "../components/Modal/UserChatListModal";
+import MeesageBox from "../components/MessageBox";
 import { Toast } from "../utils/helpers";
 import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
-import sucketsAPI from "../apis/socket";
+import socketsAPI from "../apis/socket";
 import { mapState } from "vuex";
 import $ from "jquery";
 
 export default {
   name: "privateMessage",
-  components: { UserSidebar, UserChatListModal },
+  components: { UserSidebar, UserChatListModal, MeesageBox },
   mixins: [emptyImageFilter, fromNowFilter],
   data() {
     return {
       allUserList: [],
       openedUserList: [
-        {
-          id: 6,
-          name: "USER",
-          avatar: "",
-          account: "account1",
-          lastTime: "昨天",
-          lastMessage:
-            "Lorem, ipsum dolor sit amet consectetur adipisicing Lorempsum, dolor sit amet consectetur adipisicing Lorem ipsolor sit amet consectetur adipisicing elit. Ducimuatem itaque in doloremque reiciendis quis pariamo eos error quae. Tenetur quod deleniti consequatur. Iurbero aliquam distinctio fugit repudiandae!",
-        },
-        {
-          id: 26,
-          name: "NAME",
-          avatar: "",
-          account: "account2",
-          lastTime: "前天",
-          lastMessage:
-            "Lorem, ipsum dolor sit amet consecte Ducimuatem itaque in doloremque reiciendis quis pariamo eos error quae. Tenetur quod deleniti consequatur. Iurbero aliquam distinctio fugit repudiandae!",
-        },
-        {
-          id: 61,
-          name: "naMe",
-          avatar: "",
-          account: "account3",
-          lastTime: "後天",
-          lastMessage:
-            "Lorem, ipsum dolor sit amet consectetur adipisicing Lorempsum, dolor sit amet consectetur adipisicing Lorem ipsolor sit amet consectetur adipisicing elit. Ducimuatem itaque in dolorendae!",
-        },
+        // {
+        //   roomId: 144,
+        //   id: 6,
+        //   name: "USER",
+        //   avatar: "",
+        //   account: "account1",
+        //   lastTime: "昨天",
+        //   lastMessage: "",
+        // },
       ],
       currentChat: {
-        id: "",
+        roomId: undefined,
+        id: undefined,
         name: "",
         account: "",
         messageList: [],
@@ -139,11 +105,82 @@ export default {
       message: "",
     };
   },
-  methods: {
-    sendMessage() {
-      console.log("SEND!");
+  async created() {
+    try {
+      await this.fetchAvailableUser();
+    } catch (error) {
+      console.log();
+    }
+  },
+  sockets: {
+    message: function (data) {
+      Toast.fire({
+        icon: "info",
+        title: data,
+      });
+      console.log(data);
     },
-    // chat before
+    "private chat message": function (data) {
+      console.log(data);
+      const {
+        roomId,
+        userId: id,
+        name,
+        avatar,
+        account,
+        message: lastMessage,
+        createdAt: lastTime,
+      } = data;
+      // 放到 data.roomId = this.openedUserList 裡面 roomId 一樣的資料裡
+      const roomOfNewMessage = this.openedUserList.find(
+        (room) => room.roomId === data.roomId
+      );
+      if (!roomOfNewMessage) {
+        console.log("create new room!");
+        // if not found, add new room to openedUserList
+        this.openedUserList.push({
+          roomId,
+          id,
+          name,
+          avatar,
+          account,
+          lastTime,
+          lastMessage,
+        });
+      } else {
+        console.log("room found!");
+        // if room found, update lastTime & lastMessage
+        roomOfNewMessage.lastTime = lastTime;
+        roomOfNewMessage.lastMessage = lastMessage;
+      }
+
+      // if new private message is of currentChat, push new message to messageList
+      if (this.currentChat.roomId === data.roomId) {
+        this.currentChat.messageList.push({
+          id: this.currentChat.messageList + 1,
+          UserId: id,
+          type: 1, // messageItem
+          avatar: data.avatar,
+          message: lastMessage,
+          createdAt: lastTime,
+        });
+      }
+    },
+    "users count": function (data) {
+      console.log("Users count: ");
+      console.log(data);
+      console.log("-----------------------");
+    },
+    "new private chat message": function (data) {
+      // get new chat
+      console.log(data);
+      // create new chat to openedUsersList
+      // message, userId, avatar, roomId
+      // this.joinPrivateRoom()
+    },
+  },
+  methods: {
+    // click old chat, fetch chat data, join room
     async fetchChatData(user) {
       const { id, name, account, avatar } = user;
       this.currentChat = {
@@ -154,58 +191,86 @@ export default {
         messages: [],
       };
       try {
-        const { data } = await sucketsAPI.getRoomsByUser();
-        const { messages } = data;
+        const { data } = await socketsAPI.getRoomsByUser();
+        // 還不知道會拿出什麼，但應該要有 roomId
+        const { messages, roomId } = data;
         this.currentChat.messageList = messages;
 
-        console.log("XXXXXX");
+        // join room
+        this.joinPrivateRoom(roomId);
+
         console.log(data);
       } catch (error) {
+        console.log("fetchChatData");
+        console.log(error);
         Toast.fire({
           icon: "error",
           title: "無法取得對話紀錄，請稍後再試！",
         });
       }
     },
-    async afterUserSelected(user) {
+    // Step1: select new chat
+    afterUserSelected(user) {
+      console.log("Select userId: " + user.id);
       this.currentChat = {
         ...this.currentChat,
         ...user,
       };
-      try {
-        // const { data } = await this.createNewChat();
-        this.currentChat.messages = dummyChat;
-      } catch (error) {
-        Toast.fire({
-          icon: "error",
-          title: "無法建立聊天室，請稍後再試！",
-        });
-      }
+      const userId = this.currentChat.id;
+      this.createNewChat(userId);
     },
-    async createNewChat() {
-      let user = { id: 54 };
+    // Step2: create new chat room
+    async createNewChat(userId) {
       try {
-        const { data } = await sucketsAPI.createPrivateRoom(user.id);
+        const { data } = await socketsAPI.createPrivateRoom(userId);
         const { roomId } = data;
 
         console.log(data);
+        console.log("RoomId: " + roomId);
 
         if (data.status !== "success") {
           throw new Error(data.message);
         }
 
-        this.$socket.emit("join", {
-          username: this.currentUser.name,
-          roomId,
-          userId: this.currentUser.id,
-        });
-
         Toast.fire({
           icon: "success",
-          title: "連線",
+          title: "已建立連線！",
         });
+
+        this.joinPrivateRoom(roomId);
       } catch (error) {
         console.log(error);
+      }
+    },
+    // Step3: currentUser join chat room
+    joinPrivateRoom(roomId) {
+      console.log("join private room: " + roomId);
+      this.$socket.emit("join", {
+        username: this.currentUser.name,
+        roomId,
+        userId: this.currentUser.id,
+      });
+    },
+    async fetchAvailableUser() {
+      try {
+        const { data } = await socketsAPI.getAvailableUsers();
+
+        console.log("typeof data: " + typeof data);
+        console.log(data);
+
+        // console.log(Object.values(data));
+
+        // this.allUserList = Object.key(data);
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: error,
+        });
       }
     },
     showModal() {
