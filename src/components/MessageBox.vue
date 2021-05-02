@@ -51,7 +51,6 @@
     </div>
     <div class="meesagePanel">
       <input
-        :disabled="!currentChat.id"
         @keyup.enter="sendMessage"
         id="textInput"
         placeholder="輸入訊息..."
@@ -60,12 +59,7 @@
         maxlength="160"
         required
       />
-      <button
-        :disabled="!currentChat.id"
-        type="submit"
-        class="btn sendBtn"
-        @click="sendMessage"
-      >
+      <button type="submit" class="btn sendBtn" @click="sendMessage">
         <img src="../assets/send.svg" alt="" />
       </button>
     </div>
@@ -111,6 +105,7 @@ export default {
   sockets: {
     "new private chat message": function (data) {
       // get new chat
+      console.log("Get new msg!");
       console.log(data);
       // create new chat to openedUsersList
       // message, userId, avatar, roomId
@@ -138,25 +133,16 @@ export default {
         });
       }
 
-      if (!newMessage) {
-        console.log("private chat message");
-        this.$socket.emit("private chat message", {
+      this.$socket.emit(
+        "private chat message",
+        {
           newMessage,
           message,
-        });
-      } else {
-        console.log("new private chat message");
-        this.$socket.emit(
-          "private chat message",
-          {
-            newMessage,
-            message,
-          },
-          (data) => {
-            console.log(data);
-          }
-        );
-      }
+        },
+        () => {
+          console.log(`private chat message, new: ${newMessage}`);
+        }
+      );
 
       this.message = "";
 
@@ -165,24 +151,16 @@ export default {
         title: "訊息已發送!",
       });
     },
-    scroll() {
-      // const height = this.$refs.height;
-      const container = this.$refs.container;
-      // // container.scrollTop = height.scrollHeight;
-      // console.log("height: " + 72 * this.messageList.length);
-      container.scrollTop = 72 * this.messageList.length;
-    },
+    // scroll() {
+    //   // const height = this.$refs.height;
+    //   const container = this.$refs.container;
+    //   // // container.scrollTop = height.scrollHeight;
+    //   // console.log("height: " + 72 * this.messageList.length);
+    //   container.scrollTop = 72 * this.messageList.length;
+    // },
   },
   computed: {
     ...mapState(["currentUser"]),
-  },
-  watch: {
-    messageList: {
-      deep: true,
-      handler: function () {
-        this.scroll();
-      },
-    },
   },
 };
 </script>

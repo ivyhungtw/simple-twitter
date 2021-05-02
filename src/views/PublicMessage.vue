@@ -57,18 +57,21 @@ export default {
       onlineUsersCount: 1,
       onlineUsers: [],
       atPublic: true,
+      currentRoomId: 4,
     };
   },
   async created() {
     try {
       const { data } = await sucketsAPI.getPublicRoom();
-      const { messages: messageList, onlineUsersCount, onlineUsers } = data;
-      this.messageList = messageList;
+      const { messages, onlineUsersCount, onlineUsers } = data;
+      this.messageList = messages;
       this.onlineUsers = onlineUsers;
       this.onlineUsersCount = onlineUsersCount;
 
       // join room
+      this.$socket.emit("leave", this.currentUser.id, this.currentRoomId);
       this.joinPublicRoom();
+      this.currentRoomId = 4;
     } catch (error) {
       console.log(error);
       Toast.fire({

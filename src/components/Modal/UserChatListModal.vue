@@ -24,7 +24,7 @@
           <ul class="userList">
             <li
               class="userItem"
-              v-for="user in userList"
+              v-for="user in allUserList"
               :key="user.id"
               @click="userSelected(user)"
             >
@@ -60,49 +60,6 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      // to delete
-      userList: [
-        {
-          id: 26,
-          name: "USER2",
-          avatar: "",
-          account: "account2",
-        },
-        {
-          id: 94,
-          name: "User94",
-          avatar: "",
-          account: "clement",
-        },
-        {
-          id: 61,
-          name: "USER3",
-          avatar: "",
-          account: "account3",
-        },
-        {
-          id: 611,
-          name: "USER4",
-          avatar: "",
-          account: "account3",
-        },
-        {
-          id: 61123,
-          name: "USER5",
-          avatar: "",
-          account: "account3",
-        },
-        {
-          id: 5161,
-          name: "USER6",
-          avatar: "",
-          account: "account3",
-        },
-      ],
-    };
-  },
   methods: {
     userSelected(user) {
       console.log("Select userId: " + user.id);
@@ -125,7 +82,7 @@ export default {
   width: 300px;
   left: 50%;
   transform: translateX(-50%);
-  top: 100px;
+  top: 0px;
 }
 
 .modal-header {

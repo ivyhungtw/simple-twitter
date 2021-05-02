@@ -41,7 +41,6 @@ export default {
     currentUser: {
       deep: true,
       handler: function () {
-        console.log("Got currentUser");
         this.startSession();
       },
     },

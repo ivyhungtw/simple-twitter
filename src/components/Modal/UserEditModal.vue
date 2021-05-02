@@ -211,7 +211,9 @@ export default {
   },
   watch: {
     userData: {
+      deep: true,
       handler: function (newVal) {
+        console.log("newVal for userData");
         const { name, introduction, avatar, cover } = newVal;
         this.form = {
           name,
@@ -220,7 +222,6 @@ export default {
           cover,
         };
       },
-      deep: true,
     },
   },
 };

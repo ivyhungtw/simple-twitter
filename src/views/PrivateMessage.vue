@@ -23,34 +23,39 @@
         </div>
         <div class="container">
           <ul class="userList">
-            <li
-              class="userItem"
-              v-for="user in openedUserList"
-              :key="user.id"
-              @click="fetchChatData(user)"
-            >
-              <div class="avatar">
-                <img :src="user.avatar | emptyImageFilter" alt="" />
-              </div>
-              <div class="userContainer">
-                <div class="row">
-                  <div class="userName">
-                    <p>{{ user.name }}</p>
+            <template v-if="!receivedMessageList.length">
+              <p class="noReceivedMessageList">還沒有任何對話</p>
+            </template>
+            <template>
+              <li
+                class="userItem"
+                v-for="user in receivedMessageList"
+                :key="user.id"
+                @click="passChatData(user)"
+              >
+                <div class="avatar">
+                  <img :src="user.avatar | emptyImageFilter" alt="" />
+                </div>
+                <div class="userContainer">
+                  <div class="row">
+                    <div class="userName">
+                      <p>{{ user.name }}</p>
+                    </div>
+                    <div class="userAccount">
+                      <p>@{{ user.account }}</p>
+                    </div>
+                    <div class="lastTime">
+                      <p>{{ user.lastTime | fromNow }}</p>
+                    </div>
                   </div>
-                  <div class="userAccount">
-                    <p>@{{ user.account }}</p>
-                  </div>
-                  <div class="lastTime">
-                    <p>{{ user.lastTime }}</p>
+                  <div class="previewMessage">
+                    <p>
+                      {{ user.lastMessage }}
+                    </p>
                   </div>
                 </div>
-                <div class="previewMessage">
-                  <p>
-                    {{ user.lastMessage }}
-                  </p>
-                </div>
-              </div>
-            </li>
+              </li>
+            </template>
           </ul>
         </div>
       </div>
@@ -58,15 +63,13 @@
       <!-- messageBox -->
       <MeesageBox
         :currentChat="currentChat"
-        :messageList="currentChat.messageList"
+        :messageList="currentMessageList"
       ></MeesageBox>
     </div>
   </div>
 </template>
 
 <script>
-// const dummyChat = [];
-
 import UserSidebar from "../components/UserSidebar";
 import UserChatListModal from "../components/Modal/UserChatListModal";
 import MeesageBox from "../components/MessageBox";
@@ -75,6 +78,7 @@ import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
 import socketsAPI from "../apis/socket";
 import { mapState } from "vuex";
+import usersAPI from "../apis/users";
 import $ from "jquery";
 
 export default {
@@ -83,84 +87,64 @@ export default {
   mixins: [emptyImageFilter, fromNowFilter],
   data() {
     return {
+      currentRoomId: "",
       allUserList: [],
-      openedUserList: [
-        // {
-        //   roomId: 144,
-        //   id: 6,
-        //   name: "USER",
-        //   avatar: "",
-        //   account: "account1",
-        //   lastTime: "昨天",
-        //   lastMessage: "",
-        // },
-      ],
+      receivedMessageList: [],
       currentChat: {
-        roomId: undefined,
+        // roomId: undefined,
         id: undefined,
         name: "",
         account: "",
-        messageList: [],
       },
+      currentMessageList: [],
       message: "",
     };
   },
   async created() {
     try {
+      await this.fetchReceivedMessageList();
       await this.fetchAvailableUser();
     } catch (error) {
-      console.log();
+      console.log(error);
     }
   },
   sockets: {
     message: function (data) {
       Toast.fire({
         icon: "info",
-        title: data,
+        title: data.text,
       });
       console.log(data);
     },
     "private chat message": function (data) {
       console.log(data);
       const {
-        roomId,
-        userId: id,
-        name,
         avatar,
-        account,
-        message: lastMessage,
         createdAt: lastTime,
+        text: lastMessage,
+        userId: id,
       } = data;
-      // 放到 data.roomId = this.openedUserList 裡面 roomId 一樣的資料裡
-      const roomOfNewMessage = this.openedUserList.find(
-        (room) => room.roomId === data.roomId
+
+      // 放到 data.roomId = this.receivedMessageList 裡面 roomId 一樣的資料裡
+      const newMessageRoom = this.receivedMessageList.find(
+        (room) => room.roomId === this.currentRoomId
       );
-      if (!roomOfNewMessage) {
-        console.log("create new room!");
-        // if not found, add new room to openedUserList
-        this.openedUserList.push({
-          roomId,
-          id,
-          name,
-          avatar,
-          account,
-          lastTime,
-          lastMessage,
-        });
-      } else {
-        console.log("room found!");
-        // if room found, update lastTime & lastMessage
-        roomOfNewMessage.lastTime = lastTime;
-        roomOfNewMessage.lastMessage = lastMessage;
-      }
+
+      console.log("newMessageRoom: ");
+      console.log(newMessageRoom);
+
+      // if room found, update lastTime & lastMessage
+      newMessageRoom.lastTime = lastTime;
+      newMessageRoom.lastMessage = lastMessage;
 
       // if new private message is of currentChat, push new message to messageList
-      if (this.currentChat.roomId === data.roomId) {
-        this.currentChat.messageList.push({
-          id: this.currentChat.messageList + 1,
+      if (this.currentChat.roomId === this.currentRoomId) {
+        console.log("at currentChat");
+        this.currentMessageList.push({
+          id: this.currentMessageList + 1,
           UserId: id,
           type: 1, // messageItem
-          avatar: data.avatar,
+          avatar,
           message: lastMessage,
           createdAt: lastTime,
         });
@@ -171,44 +155,100 @@ export default {
       console.log(data);
       console.log("-----------------------");
     },
-    "new private chat message": function (data) {
+    "new private chat message": async function (response) {
       // get new chat
-      console.log(data);
-      // create new chat to openedUsersList
-      // message, userId, avatar, roomId
-      // this.joinPrivateRoom()
+      console.log("create new room!");
+      const roomId = response[1];
+      const { avatar, createdAt, text, userId } = response[0];
+
+      // fetch userInfo
+      try {
+        const { data } = await usersAPI.getUser(userId);
+        const { name, account } = data;
+
+        // ///////////
+        // create new room to receivedMessageList
+
+        this.receivedMessageList.push({
+          userId,
+          name,
+          account,
+          avatar,
+          roomId,
+          lastTime: createdAt,
+          lastMessage: text,
+        });
+
+        this.currentChat.message.push(response);
+      } catch (error) {
+        console.log("new private chat message: " + error);
+      }
     },
   },
   methods: {
-    // click old chat, fetch chat data, join room
-    async fetchChatData(user) {
-      const { id, name, account, avatar } = user;
-      this.currentChat = {
-        id,
-        name,
-        account,
-        avatar,
-        messages: [],
-      };
+    async fetchReceivedMessageList() {
       try {
         const { data } = await socketsAPI.getRoomsByUser();
-        // 還不知道會拿出什麼，但應該要有 roomId
-        const { messages, roomId } = data;
-        this.currentChat.messageList = messages;
 
-        // join room
-        this.joinPrivateRoom(roomId);
-
-        console.log(data);
+        // 把 userId 一樣的訊息裝成一包放進 receivedMessageList
+        this.receivedMessageList = data.map((each) => {
+          const {
+            userId,
+            name,
+            account,
+            avatar,
+            roomId,
+            message,
+            createdAt,
+          } = each;
+          return {
+            userId,
+            name,
+            account,
+            avatar,
+            roomId,
+            lastTime: createdAt,
+            lastMessage: message,
+          };
+        });
       } catch (error) {
         console.log("fetchChatData");
         console.log(error);
+      }
+    },
+
+    // click old chat, fetch chat data, join room
+    async passChatData(user) {
+      console.log("passChatData");
+      // user => account, avatar, lastMessage, lastTime, name, roomId, userId
+      const { roomId } = user;
+      this.currentChat = user;
+
+      try {
+        const { data } = await socketsAPI.getRoom(roomId);
+        const { messages } = data;
+        this.currentMessageList = messages.map((msg) => {
+          return {
+            ...msg,
+            type: 1,
+          };
+        });
+        console.log("messageList");
+        console.log(this.currentMessageList);
+
+        // join room
+        this.$socket.emit("leave", this.currentUser.id, this.currentRoomId);
+        this.joinPrivateRoom(roomId);
+        this.currentRoomId = roomId;
+      } catch (error) {
+        console.log(error);
         Toast.fire({
           icon: "error",
-          title: "無法取得對話紀錄，請稍後再試！",
+          title: error,
         });
       }
     },
+
     // Step1: select new chat
     afterUserSelected(user) {
       console.log("Select userId: " + user.id);
@@ -237,7 +277,9 @@ export default {
           title: "已建立連線！",
         });
 
+        this.$socket.emit("leave", this.currentUser.id, this.currentRoomId);
         this.joinPrivateRoom(roomId);
+        this.currentRoomId = roomId;
       } catch (error) {
         console.log(error);
       }
@@ -255,22 +297,13 @@ export default {
       try {
         const { data } = await socketsAPI.getAvailableUsers();
 
-        console.log("typeof data: " + typeof data);
-        console.log(data);
-
-        // console.log(Object.values(data));
-
-        // this.allUserList = Object.key(data);
+        this.allUserList = data;
 
         if (data.status !== "success") {
           throw new Error(data.message);
         }
       } catch (error) {
         console.log(error);
-        Toast.fire({
-          icon: "error",
-          title: error,
-        });
       }
     },
     showModal() {
@@ -365,6 +398,11 @@ export default {
 
 .usersOnline .container {
   padding: 0;
+}
+
+.noReceivedMessageList {
+  margin-top: 100px;
+  text-align: center;
 }
 
 .userItem {
