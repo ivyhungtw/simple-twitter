@@ -141,11 +141,21 @@ export default {
         const payload = { comment: this.replyContent };
         // call api to create tweet reply
         const { data } = await tweetsAPI.createReply(tweetId, payload);
-        const { id } = data;
-
+        const { ReplyId } = data;
+        const id = ReplyId
+ 
         if (data.status !== "success") {
           throw new Error(data.message);
         }
+
+        console.log("replyId", ReplyId)
+        const { id: userId } = this.$route.params;
+        this.$socket.emit("reply", {
+          userId,
+          replyId: ReplyId,
+          reply: this.replyContent,
+          currentUserId: this.currentUser.id,
+        });
 
         // inform user
         Toast.fire({

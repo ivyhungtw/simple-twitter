@@ -12,7 +12,7 @@ export default new Vuex.Store({
       cover: '',
       email: "",
       id: undefined,
-      introdcution: '',
+      introduction: '',
       name: "",
       role: 'user',
     },

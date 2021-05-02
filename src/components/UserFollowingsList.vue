@@ -51,6 +51,7 @@
 import usersAPI from "../apis/users";
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
+import { mapState } from "vuex";
 
 export default {
   name: "UserFollowersList",
@@ -66,6 +67,9 @@ export default {
       followings: [],
       isProcessing: false,
     };
+  },
+   computed: {
+    ...mapState(["currentUser"]),
   },
   watch: {
     Followings(newVal) {
@@ -88,6 +92,12 @@ export default {
         }
         // rerender
         this.renderAfterFollowToggle(following);
+
+        const { id: userId } = this.$route.params;
+        this.$socket.emit("follow", {
+          userId,
+          currentUserId: this.currentUser.id,
+        });
 
         Toast.fire({
           icon: "success",
@@ -168,12 +178,14 @@ export default {
   font-weight: 900;
 }
 .avatar {
+  min-width: 50px;
   width: 50px;
   height: 50px;
   margin-right: 10px;
   margin-top: 15px;
 }
 .avatar img {
+  min-width: 50px;
   width: 100%;
   height: 100%;
   border-radius: 50%;

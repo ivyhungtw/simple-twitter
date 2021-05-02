@@ -59,6 +59,8 @@
 import usersAPI from "../apis/users";
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
+import { mapState } from "vuex";
+
 export default {
   name: "RecommendedFollowers",
   mixins: [emptyImageFilter],
@@ -68,6 +70,9 @@ export default {
     this.$bus.$on("toggleFollowFromProfileCard", (userId) => {
       this.renderAfterFollowToggle(userId);
     });
+  },
+   computed: {
+    ...mapState(["currentUser"]),
   },
   data() {
     return {
@@ -111,6 +116,12 @@ export default {
         Toast.fire({
           icon: "success",
           title: "追蹤成功！",
+        });
+
+        const { id: userId } = this.$route.params;
+        this.$socket.emit("follow", {
+          userId,
+          currentUserId: this.currentUser.id,
         });
 
         this.isProcessing = false;

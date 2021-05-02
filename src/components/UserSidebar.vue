@@ -19,9 +19,11 @@
       </div>
       <!--  -->
 
-      <div class="navItem userProfile">
+      <div class="navItem notification">
         <div class="icon">
-          <i class="far fa-bell tempIcon"></i>
+          <img v-if="this.noti.length > 0" src="../assets/getNoti.svg" alt="" />
+          <img v-else-if="notification" src="../assets/atNoti.svg" alt="" />
+          <img v-else src="../assets/noti.svg" alt="" />
         </div>
         <button class="btn">
           <router-link to="/notification">
@@ -107,21 +109,55 @@ export default {
   components: { CreateTweetModal },
   data() {
     return {
+      noti: [],
       main: false,
+      notification: false,
+      publicMessage: false,
+      privateMessage: false,
       profile: false,
       accountEdit: false,
     };
+  },
+  sockets: {
+    connection: function (data) {
+      console.log("Data:" + data);
+    },
+    notification: function (data) {
+      console.log("notification", data);
+      this.noti.push(data);
+
+      if (data) {
+        this.$socket.emit(
+          "tweet",
+          {
+            id: data.id,
+            account: data.account,
+            name: data.name,
+            UserId: data.id,
+            avatar: data.avatar,
+            tweetId: data.tweetId,
+            tweet: data.tweet,
+            replyId: data.replyId,
+            reply: data.reply,
+          },
+          this.currentUser.id
+        );
+      }
+    },
   },
   created() {
     this.$bus.$on("closeModal", (modalId) => {
       this.closeModal(modalId);
     });
+    const location = this.$route.path.split("/")[1];
+    this.setCurrentLocation(location);
   },
   methods: {
     logout() {
       // delete token => log out
       this.$store.commit("revokeAuthentication");
       this.$router.push("/signin");
+      sessionStorage.clear();
     },
     showModal() {
       console.log("open from sidebar");
@@ -131,6 +167,29 @@ export default {
       console.log("closed");
       $(modalId).modal("hide");
       $(".modal-backdrop").hide();
+    },
+    setCurrentLocation(location) {
+      console.log("location: " + location);
+      switch (location) {
+        case "main":
+          this.main = true;
+          break;
+        case "notification":
+          this.notification = true;
+          break;
+        case "publicMessage":
+          this.publicMessage = true;
+          break;
+        case "privateMessage":
+          this.privateMessage = true;
+          break;
+        case "profile":
+          this.profile = true;
+          break;
+        case "accountEdit":
+          this.accountEdit = true;
+          break;
+      }
     },
   },
   computed: {

@@ -17,7 +17,15 @@ const authorizeIsAdmin = (to, from, next) => {
     next('/404')
     return
   }
+  next()
+}
 
+const authorizeIsUser = (to, from, next) => {
+  const currentUser = store.state.currentUser
+  if (currentUser && currentUser.role !== "user") {
+    next('/404')
+    return
+  }
   next()
 }
 
@@ -50,7 +58,8 @@ const routes = [
   {
     path: '/main',
     name: 'main',
-    component: Main
+    component: Main,
+    beforeEnter: authorizeIsUser
   },
   {
     path: '/notification/mentions',
@@ -75,7 +84,8 @@ const routes = [
   {
     path: '/accountEdit',
     name: 'account-edit',
-    component: () => import('../views/AccountEdit.vue')
+    component: () => import('../views/AccountEdit.vue'),
+    beforeEnter: authorizeIsUser
   },
   {
     path: '/replydetail/:id',
@@ -85,27 +95,32 @@ const routes = [
   {
     path: '/userprofile/:id/replies',
     name: 'user-profile-replies',
-    component: () => import('../views/UserProfileReply.vue')
+    component: () => import('../views/UserProfileReply.vue'),
+    beforeEnter: authorizeIsUser
   },
   {
     path: '/userprofile/:id/likes',
     name: 'user-profile-Likes',
-    component: () => import('../views/UserProfileLike.vue')
+    component: () => import('../views/UserProfileLike.vue'),
+    beforeEnter: authorizeIsUser
   },
   {
     path: '/userprofile/:id/followers',
     name: 'user-profile-followers',
-    component: () => import('../views/UserFollowers.vue')
+    component: () => import('../views/UserFollowers.vue'),
+    beforeEnter: authorizeIsUser
   },
   {
     path: '/userprofile/:id/following',
     name: 'user-profile-following',
-    component: () => import('../views/UserFollowing.vue')
+    component: () => import('../views/UserFollowing.vue'),
+    beforeEnter: authorizeIsUser
   },
   {
     path: '/userprofile/:id',
     name: 'user-profile',
-    component: () => import('../views/UserProfile.vue')
+    component: () => import('../views/UserProfile.vue'),
+    beforeEnter: authorizeIsUser
   },
   {
     path: '/admin/tweets',

@@ -12,8 +12,34 @@ import '@fortawesome/fontawesome-free/js/all.js'
 import store from './store'
 // import eventbus
 import './utils/bus'
+import VueSocketIO from 'vue-socket.io'
+
+
 
 Vue.config.productionTip = false
+
+Vue.use(new VueSocketIO({
+  debug: true,
+  connection: 'https://simple-twitter-api-2021.herokuapp.com/',
+  vuex: {
+    store,
+    actionPrefix: 'SOCKET_',
+    mutationPrefix: 'SOCKET_',
+    options: { path: '/' }
+  }
+}))
+
+// const options = { path: './App' };
+// Vue.use(new VueSocketIO({
+//   debug: true,
+//   connection: SocketIO('https://simple-twitter-api-2021.herokuapp.com',options), //options object is Optional
+//   vuex: {
+//     store,
+//     actionPrefix: "SOCKET_",
+//     mutationPrefix: "SOCKET_"
+//   }
+// })
+// );
 
 new Vue({
   router,

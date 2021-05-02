@@ -85,9 +85,6 @@ export default {
       isProcessing: false,
     };
   },
-  created() {
-    console.log("modal created");
-  },
   methods: {
     async createNewTweet() {
       const contentCheck = this.contentCheck(this.tweetContent);
@@ -119,6 +116,12 @@ export default {
           description,
           updatedAt,
         };
+
+        this.$socket.emit("notification", {
+          userId: UserId,
+          tweetId: id,
+          tweet: description,
+        });
 
         // inform user
         Toast.fire({
