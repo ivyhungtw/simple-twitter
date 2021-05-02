@@ -5,7 +5,6 @@
     id="edit-user-modal"
     tabindex="-1"
     role="dialog"
-    aria-labelledby="exampleModalLabel"
     aria-hidden="true"
   >
     <div class="modal-dialog" role="document">
@@ -86,7 +85,9 @@
                   maxlength="50"
                   required
                 />
-                <p class="textLength">{{ form.name.length }}/50</p>
+                <p class="textLength">
+                  {{ form.name ? form.name.length : 0 }}/50
+                </p>
               </div>
               <div class="row">
                 <label for="name">自我介紹</label>
@@ -98,7 +99,9 @@
                   maxlength="160"
                   v-model="form.introduction"
                 ></textarea>
-                <p class="textLength">{{ form.introduction.length }}/160</p>
+                <p class="textLength">
+                  {{ form.introduction ? form.introduction.length : 0 }}/160
+                </p>
               </div>
             </div>
           </div>
@@ -159,10 +162,13 @@ export default {
         this.$emit("afterSaveSetting", this.form);
 
         // clear form
-        this.clearForm;
+        this.clearForm();
 
         // hide modal
-        $("#edit-user-modal").modal("hide");
+        // $("#edit-user-modal").modal("hide");
+        $("#edit-user-modal").hide();
+        $(".modal-backdrop").remove();
+        $("body").removeClass("modal-open");
 
         Toast.fire({
           icon: "success",
@@ -207,11 +213,16 @@ export default {
     },
     clearForm() {
       this.form = this.userData;
+      $("#edit-user-modal").hide();
+      $(".modal-backdrop").remove();
     },
   },
   watch: {
     userData: {
+      deep: true,
       handler: function (newVal) {
+        console.log("newVal for userData");
+        console.log(newVal);
         const { name, introduction, avatar, cover } = newVal;
         this.form = {
           name,
@@ -220,7 +231,6 @@ export default {
           cover,
         };
       },
-      deep: true,
     },
   },
 };
