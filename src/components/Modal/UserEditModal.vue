@@ -87,7 +87,7 @@
                   required
                 />
                 <p class="textLength">
-                  {{ form.name.length ? form.name.length : 0 }}/50
+                  {{ form.name ? form.name.length : 0 }}/50
                 </p>
               </div>
               <div class="row">
@@ -101,9 +101,7 @@
                   v-model="form.introduction"
                 ></textarea>
                 <p class="textLength">
-                  {{
-                    form.introduction.length ? form.introduction.length : 0
-                  }}/160
+                  {{ form.introduction ? form.introduction.length : 0 }}/160
                 </p>
               </div>
             </div>
