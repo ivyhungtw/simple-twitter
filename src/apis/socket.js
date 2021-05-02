@@ -8,6 +8,13 @@ export default {
   createPrivateRoom(userId) {
     return apiHelper.post('/rooms', { userId })
   },
+  // 未完成
+  getPrivateRoom(userId) {
+    return apiHelper.get(`/rooms/${userId}`)
+  },
+  getNotification() {
+    return apiHelper.get('/rooms/notifications')
+  },
   getRoom(roomId) {
     return apiHelper.get(`/rooms/${roomId}`)
   },

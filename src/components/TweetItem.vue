@@ -125,6 +125,12 @@ export default {
           tweet.likeCount += 1;
           // call api to like this tweet by user
           response = await tweetsAPI.likeTweet(tweet.id);
+          
+          const { id: userId } = this.$route.params;
+          this.$socket.emit("like", {
+            userId,
+            currentUserId: this.currentUser.id,
+          });
         }
 
         if (response.data.status !== "success") {

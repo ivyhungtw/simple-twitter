@@ -117,6 +117,12 @@ export default {
           updatedAt,
         };
 
+        this.$socket.emit("notification", {
+          userId: UserId,
+          tweetId: id,
+          tweet: description,
+        });
+
         // inform user
         Toast.fire({
           icon: "success",

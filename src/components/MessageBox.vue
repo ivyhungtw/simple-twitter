@@ -164,7 +164,6 @@ export default {
 .messageBox {
   flex: 2;
 }
-
 .messageBox .title {
   border-bottom: 1px solid #e6ecf0;
   height: 55px;
@@ -225,7 +224,6 @@ export default {
   border: 1px solid #fff;
   border-radius: 50%;
 }
-
 .avatar img {
   width: 100%;
   height: 100%;
@@ -267,13 +265,11 @@ export default {
   display: flex;
   align-items: flex-end;
 }
-
 .textTime {
   margin-left: 70px;
   color: #777;
   font-weight: 500;
 }
-
 .messageItem .avatar {
   min-width: 50px;
   height: 50px;
@@ -283,21 +279,18 @@ export default {
   margin-left: 10px;
   height: 100%;
 }
-
 .messageItem .textContainer .text {
   padding: 10px 15px;
   border-radius: 20px 20px 20px 0;
   background: #e6ecf0;
   font-size: 16px;
 }
-
 .actionItem {
   margin: 10px;
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
-
 .actionItem p {
   margin: 0;
   width: auto;
@@ -307,20 +300,17 @@ export default {
   border-radius: 10px;
   font-weight: 500;
 }
-
 /*////////// currentUser's message ///////////*/
 .currentUser {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
 }
-
 .currentUser .textContainer .text {
   border-radius: 20px 20px 0 20px;
   background-color: hsl(24deg 100% 50%);
   color: #fff;
 }
-
 .currentUser .textTime {
   /* border: 1px solid #000; */
   margin: 0;
@@ -341,7 +331,6 @@ export default {
   display: flex;
   border: 1px solid #e6ecf0;
 }
-
 #textInput {
   flex: 1;
   height: 40px;
@@ -353,7 +342,6 @@ export default {
   font-size: 18px;
   font-weight: 500;
 }
-
 .sendBtn {
   width: 40px;
   height: 40px;

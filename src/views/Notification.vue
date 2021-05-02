@@ -6,15 +6,58 @@
       <div class="title">
         <h1>通知</h1>
       </div>
-      <div class="navtabs">
-        <button>
-          <router-link to="/notification">全部</router-link>
-        </button>
-        <button>
-          <router-link to="/notification/mentions">提及</router-link>
-        </button>
+      <div class="noti-panel">
+        <template v-for="item of messageList">
+          <!-- tweetItem -->
+          <li v-if="item.type === 1" class="tweetItem" :key="item.id">
+            <div class="tweet-noti">
+              <div class="avatar">
+                <img :src="item.avatar" alt="" />
+              </div>
+              <h6>{{ item.name }} 有新的推文通知</h6>
+              <p>
+                {{ item.tweet }}
+              </p>
+            </div>
+          </li>
+
+          <!-- followItem -->
+
+          <li v-if="item.type === 2" class="followItem" :key="item.id">
+            <div class="follow-noti">
+              <div class="avatar">
+                <img :src="item.avatar" alt="" />
+              </div>
+              <h6>{{ item.name }} 開始追蹤你</h6>
+            </div>
+          </li>
+
+          <!-- replyItem -->
+
+          <li v-if="item.type === 3" class="replyItem" :key="item.id">
+            <div class="reply-noti">
+              <div class="avatar">
+                <img :src="item.avatar" alt="" />
+              </div>
+              <h6>你的貼文有新的回覆</h6>
+              <p>
+                {{ item.reply }}
+              </p>
+            </div>
+          </li>
+
+          <!-- likeItem -->
+
+          <li v-if="item.type === 4" class="likeItem" :key="item.id">
+            <div class="like-noti">
+              <div class="avatar">
+                <img :src="item.avatar" alt="" />
+              </div>
+              <h6>{{ item.name }} 喜歡你的貼文</h6>
+            </div>
+          </li>
+        </template>
       </div>
-      <h1>noti</h1>
     </div>
 
     <!-- RecommededFollowers -->
@@ -25,10 +68,75 @@
 <script>
 import UserSidebar from "../components/UserSidebar";
 import RecommededFollowers from "../components/RecommendedFollowers";
+import { mapState } from "vuex";
+import { Toast } from "../utils/helpers";
+import socketsAPI from "../apis/socket";
 
 export default {
   name: "notification",
   components: { UserSidebar, RecommededFollowers },
+  data() {
+    return {
+      messageList: [],
+    };
+  },
+  computed: {
+    ...mapState(["currentUser"]),
+  },
+  sockets: {
+    connection: function (data) {
+      console.log("Data:" + data);
+    },
+    notification: function (data) {
+      console.log("notification", data);
+      this.messageList.push({
+        type: 1, // tweetItem
+        id: this.messageList.length + 1,
+        account: data.account,
+        name: data.name,
+        UserId: data.id,
+        avatar: data.avatar,
+        tweetId: data.tweetId,
+        tweet: data.tweet,
+        replyId: data.replyId,
+        reply: data.reply,
+      });
+
+      if (data) {
+        console.log("data")
+        this.$socket.emit(
+          "tweet",
+          {
+            id: data.id,
+            account: data.account,
+            name: data.name,
+            UserId: data.id,
+            avatar: data.avatar,
+            tweetId: data.tweetId,
+            tweet: data.tweet,
+            replyId: data.replyId,
+            reply: data.reply,
+          },
+          this.currentUser.id
+        );
+      }
+    },
+  },
+  async created() {
+    try {
+      const { data } = await socketsAPI.getNotification();
+      console.log("apidata", data);
+      this.messageList = data;
+    } catch (error) {
+      console.log(error);
+      Toast.fire({
+        icon: "error",
+        title: "無法取得通知資料，請稍後再試！",
+      });
+    }
+  },
+
+  methods: {},
 };
 </script>
 
@@ -40,6 +148,7 @@ export default {
 .mainSection {
   flex: 1;
   width: 100%;
+  min-width: 600px;
   height: 100vh;
   border-right: 1px solid #e6ecf0;
   overflow-y: scroll;
@@ -85,33 +194,28 @@ export default {
   margin: 0;
 }
 
-.navtabs {
-  display: flex;
-  flex-direction: row;
+.avatar {
+  width: 25px;
+  height: 25px;
 }
-
-.navtabs button {
-  flex: 1;
-  text-decoration: none;
-  background-color: #fff;
-  border: none;
-}
-
-.navtabs button:first-child {
-  border-bottom: 2px solid rgb(29, 161, 242);
-}
-
-.navtabs button a {
-  display: inline-block;
+.avatar img {
   width: 100%;
-  padding: 12px 0;
-  font-weight: 700;
+  height: 100%;
+  border-radius: 50%;
+  background-size: cover;
+  object-fit: cover;
 }
 
-.navtabs button:hover {
-  background-color: hsl(205deg 92% 95%);
+.tweet-noti,
+.reply-noti,
+.follow-noti,
+.like-noti {
+  padding: 10px;
+  border-bottom: 1px solid #e6ecf0;
 }
-.navtabs button:hover a {
-  text-decoration: none;
+
+h6 {
+  margin-top: 10px;
+  font-weight: 900;
 }
 </style>

@@ -62,10 +62,20 @@
           </button>
         </div>
         <div>
-          <button v-if="localUserData.isSubscribed" class="btn subscribed">
-            <img src="../assets/btn_noti.svg" alt="" />
+          <button
+            v-if="localUserData.isSubscribed"
+            class="btn subscribed"
+            :disabled="isProcessing"
+            @click.prevent.stop="deleteSubscribe(localUserData)"
+          >
+            <img src="../assets/btn_noti_active.svg" alt="" />
           </button>
-          <button v-else class="btn subscribe">
+          <button
+            v-else
+            class="btn subscribe"
+            :disabled="isProcessing"
+            @click.prevent.stop="addSubscribe(localUserData)"
+          >
             <img src="../assets/btn_noti.svg" alt="" />
           </button>
         </div>
@@ -127,7 +137,13 @@ export default {
     return {
       localUserData: {},
       isProcessing: false,
+      roomId: "",
     };
+  },
+  sockets: {
+    // connection: function (data) {
+    //   console.log("Data:" + data);
+    // },
   },
   created() {
     // from RecommendedFollowers
@@ -159,6 +175,12 @@ export default {
 
         // rerender: invoke this.afterFollowUser(userId, true)
         this.afterFollowUser(user.id, true);
+
+        const { id: userId } = this.$route.params;
+        this.$socket.emit("follow", {
+          userId,
+          currentUserId: this.currentUser.id,
+        });
 
         this.isProcessing = false;
       } catch (error) {
@@ -261,6 +283,70 @@ export default {
       console.log("UserData: ");
       console.log(this.localUserData);
     },
+    async addSubscribe(user) {
+      try {
+        // call api to toggle isFolloweda
+        this.isProcessing = true;
+        const payload = { id: user.id };
+        const { data } = await usersAPI.subscribeUser(payload);
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        this.localUserData.isSubscribed = true;
+
+        this.$socket.emit(
+          "subscription",
+         JSON.parse(sessionStorage.getItem("rooms")),
+          user.account
+        );
+
+        Toast.fire({
+          icon: "success",
+          title: "訂閱成功！",
+        });
+        this.isProcessing = false;
+      } catch (error) {
+        this.isProcessing = false;
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法執行動作，請稍後再試！",
+        });
+      }
+    },
+    async deleteSubscribe(user) {
+      try {
+        this.isProcessing = true;
+        const { data } = await usersAPI.unsubscribeUser(user.id);
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        this.localUserData.isSubscribed = false;
+
+        this.$socket.emit(
+          "cancel subscription",
+          JSON.parse(sessionStorage.getItem("rooms")),
+          user.account
+        );
+
+        Toast.fire({
+          icon: "success",
+          title: "取消訂閱成功！",
+        });
+        this.isProcessing = false;
+      } catch (error) {
+        this.isProcessing = false;
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法追蹤，請稍後再試！",
+        });
+      }
+    },
   },
   computed: {
     ...mapState(["currentUser"]),
@@ -271,6 +357,12 @@ export default {
         this.localUserData = this.userData;
       },
       deep: true,
+    },
+    currentUser: {
+      deep: true,
+      handler: function () {
+        this.startSession();
+      },
     },
   },
 };
@@ -383,7 +475,7 @@ button.btn {
   margin: 0 10px;
 }
 
-.subscribed {
+button.subscribed {
   margin: 0 10px;
   background-color: #ff6600;
   color: #fff;

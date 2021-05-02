@@ -30,5 +30,11 @@ export default {
   },
   unfollowUser(userId) {
     return apiHelper.delete(`/followships/${userId}`)
+  },
+  subscribeUser(payload) {
+    return apiHelper.post('/subscriptions', payload)
+  },
+  unsubscribeUser(userId) {
+    return apiHelper.delete(`/subscriptions/${userId}`)
   }
 }
