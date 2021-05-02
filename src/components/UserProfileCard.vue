@@ -45,7 +45,7 @@
       <button
         v-if="currentUser.id === localUserData.id"
         class="btn btn-edit-user"
-        @click="showModal"
+        @click="showModal('#edit-user-modal')"
       >
         編輯個人資料
       </button>
@@ -53,10 +53,12 @@
       <!-- btnPanel -->
       <div v-else class="btnPanel">
         <div>
-          <button class="btn message">
-            <router-link :to="{ name: 'privateMessage' }">
+          <button class="btn message" @click="showModal('#messageModal')">
+            <!-- <button class="btn message" @click="ale"> -->
+            <!-- <router-link :to="{ name: 'privateMessage' }">
               <img src="../assets/btn_message.svg" alt="" />
-            </router-link>
+            </router-link> -->
+            <img src="../assets/btn_message.svg" alt="" />
           </button>
         </div>
         <div>
@@ -92,6 +94,8 @@
         @afterSaveSetting="afterSaveSetting"
         :userData="localUserData"
       ></UserEditModal>
+      <!-- MessagModal -->
+      <MessageModal :userData="userData"></MessageModal>
     </div>
   </div>
 </template>
@@ -102,6 +106,7 @@ import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 import usersAPI from "../apis/users";
 import UserEditModal from "./Modal/UserEditModal";
+import MessageModal from "./Modal/MessageModal";
 // import locally
 import $ from "jquery";
 
@@ -116,6 +121,7 @@ export default {
   },
   components: {
     UserEditModal,
+    MessageModal,
   },
   data() {
     return {
@@ -239,9 +245,10 @@ export default {
       }
     },
     // import JQuery from 'jquery'
-    showModal() {
-      $("#edit-user-modal").appendTo("body");
-      $("#edit-user-modal").modal("show");
+    showModal(modalId) {
+      // $("#edit-user-modal").remove();
+      $(modalId).appendTo("body");
+      $(modalId).modal("show");
       /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
     },
     afterSaveSetting(form) {

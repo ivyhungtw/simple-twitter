@@ -5,7 +5,6 @@
     id="edit-user-modal"
     tabindex="-1"
     role="dialog"
-    aria-labelledby="exampleModalLabel"
     aria-hidden="true"
   >
     <div class="modal-dialog" role="document">
@@ -163,10 +162,13 @@ export default {
         this.$emit("afterSaveSetting", this.form);
 
         // clear form
-        this.clearForm;
+        this.clearForm();
 
         // hide modal
-        $("#edit-user-modal").modal("hide");
+        // $("#edit-user-modal").modal("hide");
+        $("#edit-user-modal").hide();
+        $(".modal-backdrop").remove();
+        $("body").removeClass("modal-open");
 
         Toast.fire({
           icon: "success",
@@ -211,6 +213,8 @@ export default {
     },
     clearForm() {
       this.form = this.userData;
+      $("#edit-user-modal").hide();
+      $(".modal-backdrop").remove();
     },
   },
   watch: {

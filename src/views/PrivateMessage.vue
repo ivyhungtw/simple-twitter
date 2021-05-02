@@ -216,6 +216,9 @@ export default {
         console.log("new private chat message: " + error);
       }
     },
+    "notice from private": function (data) {
+      console.log(data);
+    },
   },
   methods: {
     async fetchReceivedMessageList() {

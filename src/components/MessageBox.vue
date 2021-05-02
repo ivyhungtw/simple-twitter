@@ -121,6 +121,7 @@ export default {
           "chat message",
           {
             roomId: this.currentRoomId,
+            userId: this.currentUser.id,
             newMessage,
             message,
           },
@@ -132,7 +133,12 @@ export default {
       } else {
         this.$socket.emit(
           "private chat message",
-          { roomId: this.currentRoomId, newMessage, message },
+          {
+            roomId: this.currentRoomId,
+            userId: this.currentUser.id,
+            newMessage,
+            message,
+          },
           () => {
             console.log("currentRoomId: " + this.currentRoomId);
             console.log(`private chat message, new: ${newMessage}`);
