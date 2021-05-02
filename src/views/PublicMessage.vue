@@ -57,10 +57,11 @@ export default {
       onlineUsersCount: 1,
       onlineUsers: [],
       atPublic: true,
-      currentRoomId: 4,
     };
   },
   async created() {
+    this.$socket.emit("leave");
+    this.$store.commit("setCurrentRoomId", 4);
     try {
       const { data } = await sucketsAPI.getPublicRoom();
       const { messages, onlineUsersCount, onlineUsers } = data;
@@ -69,9 +70,7 @@ export default {
       this.onlineUsersCount = onlineUsersCount;
 
       // join room
-      this.$socket.emit("leave", this.currentUser.id, this.currentRoomId);
       this.joinPublicRoom();
-      this.currentRoomId = 4;
     } catch (error) {
       console.log(error);
       Toast.fire({
@@ -116,7 +115,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["currentUser", "currentRoomId"]),
   },
 };
 </script>

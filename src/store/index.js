@@ -17,7 +17,8 @@ export default new Vuex.Store({
       role: 'user',
     },
     isAuthenticated: false,
-    token: ''
+    token: '',
+    currentRoomId: undefined
   },
   mutations: {
     setCurrentUser(state, currentUser) {
@@ -34,6 +35,9 @@ export default new Vuex.Store({
       state.token = ''
       localStorage.removeItem('token')
       sessionStorage.removeItem('rooms')
+    },
+    setCurrentRoomId(state, newRoomId) {
+      state.currentRoomId = newRoomId
     }
   },
   actions: {

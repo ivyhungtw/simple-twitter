@@ -10,7 +10,12 @@
         <div class="title">
           <h1>訊息</h1>
           <div class="newMessage">
-            <button type="button" class="btn" @click="showModal">
+            <button
+              :disabled="!allUserList.length"
+              type="button"
+              class="btn"
+              @click="showModal"
+            >
               <img src="../assets/newMessage.svg" alt="" />
             </button>
           </div>
@@ -30,7 +35,7 @@
               <li
                 class="userItem"
                 v-for="user in receivedMessageList"
-                :key="user.id"
+                :key="user.userId"
                 @click="passChatData(user)"
               >
                 <div class="avatar">
@@ -87,7 +92,6 @@ export default {
   mixins: [emptyImageFilter, fromNowFilter],
   data() {
     return {
-      currentRoomId: "",
       allUserList: [],
       receivedMessageList: [],
       currentChat: {
@@ -116,63 +120,65 @@ export default {
       });
       console.log(data);
     },
-    "private chat message": async function (data) {
+    "private chat message": async function (msg) {
       console.log("private chat message");
-      console.log(data);
-      const {
-        avatar,
-        createdAt: lastTime,
-        text: lastMessage,
-        // userId: id,
-        userId,
-      } = data;
 
-      // 放到 data.roomId = this.receivedMessageList 裡面 roomId 一樣的資料裡
-      const newMessageRoom = this.receivedMessageList.find(
-        (room) => room.roomId === this.currentRoomId
-      );
-
-      // 如果沒有已經建立的 message
-      try {
-        if (!newMessageRoom) {
-          // 根據 userId 拉資料
-          const { data } = await usersAPI.getUser(userId);
-          const { name, account } = data;
+      // 1. if msg.userId === currentUser.id, me sending msg to others
+      if (msg.userId === this.currentUser.id) {
+        // 2. use currentChat.userId to update messageRoom
+        // see if messageRoom existes
+        const messageRoom = this.receivedMessageList.find(
+          (room) => room.roomId === this.currentRoomId
+        );
+        // newMessageRoom existes: not first time, update messageRoom
+        if (messageRoom) {
+          messageRoom.lastTime = msg.createdAt;
+          messageRoom.lastMessage = msg.text;
+        } else {
+          // newMessageRoom doesn't existe: first time, create messageRoom
           this.receivedMessageList.push({
-            account,
-            avatar,
-            lastMessage,
-            lastTime,
-            name,
-            userId,
+            account: this.currentChat.account,
+            avatar: this.currentChat.avatar,
+            lastMessage: msg.text,
+            lastTime: msg.createdAt,
+            name: this.currentChat.name,
+            userId: this.currentChat.id,
             roomId: this.currentRoomId,
           });
         }
-      } catch (error) {
-        console.log(error);
-      }
-
-      // 如果有已經建立的 message
-      newMessageRoom.lastTime = lastTime;
-      newMessageRoom.lastMessage = lastMessage;
-
-      // 發訊者的當前 messageBox 處理
-      if (this.currentChat.roomId === this.currentRoomId) {
-        console.log("at currentChat");
+        // update messageBox, cause we are surely inside.
         this.currentMessageList.push({
-          id: this.currentMessageList + 1,
-          UserId: userId,
+          id: this.currentMessageList.length + 1,
+          UserId: this.currentUser.id,
           type: 1, // messageItem
-          avatar,
-          message: lastMessage,
-          createdAt: lastTime,
+          avatar: this.currentUser.avatar,
+          message: msg.text,
+          createdAt: msg.createdAt,
         });
+      } else {
+        // receiving others msg
+        const messageRoom = this.receivedMessageList.find(
+          (room) => room.userId === msg.userId // 也要判斷 roomId，看是否是給自己的訊息
+        );
+        // messageRoom must existe: otherwise it'll be new private chat, update messageRoom
+        messageRoom.lastTime = msg.createdAt;
+        messageRoom.lastMessage = msg.text;
+        // if we are at the room, update messageList
+        if (this.currentRoomId === messageRoom.roomId) {
+          this.currentMessageList.push({
+            id: this.currentMessageList.length + 1,
+            UserId: this.currentChat.userId,
+            type: 1, // messageItem
+            avatar: this.currentChat.avatar,
+            message: msg.text,
+            createdAt: msg.createdAt,
+          });
+        }
       }
     },
     "users count": function (data) {
       console.log("Users count: ");
       console.log(data);
-      console.log("-----------------------");
     },
     // ERROR: 對方收到訊息的時候沒有正確建立 receivedMessage 或新增 message
     "new private chat message": async function (response) {
@@ -245,6 +251,10 @@ export default {
 
     // click old chat, fetch chat data, join room
     async passChatData(user) {
+      console.log("leave room: " + this.currentRoomId);
+      this.$socket.emit("leave", this.currentUser.id, this.currentRoomId);
+      this.$store.commit("setCurrentRoomId", undefined);
+
       console.log("passChatData");
       // user => account, avatar, lastMessage, lastTime, name, roomId, userId
       const { roomId } = user;
@@ -259,13 +269,11 @@ export default {
             type: 1,
           };
         });
-        console.log("messageList");
-        console.log(this.currentMessageList);
 
         // join room
-        this.$socket.emit("leave", this.currentUser.id, this.currentRoomId);
+        console.log("join room:" + roomId);
         this.joinPrivateRoom(roomId);
-        this.currentRoomId = roomId;
+        this.$store.commit("setCurrentRoomId", roomId);
       } catch (error) {
         console.log(error);
         Toast.fire({
@@ -283,7 +291,7 @@ export default {
         ...this.currentChat,
         ...user,
       };
-      const userId = this.currentChat.id;
+      const userId = this.currentChat.userId;
       this.createNewChat(userId);
     },
     // Step2: create new chat room
@@ -306,7 +314,8 @@ export default {
 
         this.$socket.emit("leave", this.currentUser.id, this.currentRoomId);
         this.joinPrivateRoom(roomId);
-        this.currentRoomId = roomId;
+
+        this.$store.commit("setCurrentRoomId", roomId);
       } catch (error) {
         console.log(error);
       }
@@ -339,7 +348,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["currentUser", "currentRoomId"]),
   },
 };
 </script>

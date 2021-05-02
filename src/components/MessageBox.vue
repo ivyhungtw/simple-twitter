@@ -81,9 +81,9 @@ export default {
       type: Object,
       default: function () {
         return {
-          id: 1,
+          userId: undefined,
           name: "公開聊天室",
-          roomId: 4,
+          // roomId: 4,
           account: "",
         };
       },
@@ -102,16 +102,6 @@ export default {
       message: "",
     };
   },
-  // sockets: {
-  // "new private chat message": function (data) {
-  //   // get new chat
-  //   console.log("Get new msg!");
-  //   console.log(data);
-  //   // create new chat to openedUsersList
-  //   // message, userId, avatar, roomId
-  //   // this.joinPrivateRoom()
-  // },
-  // },
   methods: {
     sendMessage: function () {
       const message = this.message;
@@ -127,18 +117,24 @@ export default {
       console.log("atPublic: " + this.atPublic);
 
       if (this.atPublic) {
-        this.$socket.emit("chat message", {
-          newMessage,
-          message,
-        });
-      } else {
         this.$socket.emit(
-          "private chat message",
+          "chat message",
           {
+            roomId: this.currentRoomId,
             newMessage,
             message,
           },
           () => {
+            console.log("currentRoomId: " + this.currentRoomId);
+            console.log(`private chat message, new: ${newMessage}`);
+          }
+        );
+      } else {
+        this.$socket.emit(
+          "private chat message",
+          { roomId: this.currentRoomId, newMessage, message },
+          () => {
+            console.log("currentRoomId: " + this.currentRoomId);
             console.log(`private chat message, new: ${newMessage}`);
           }
         );
@@ -151,16 +147,9 @@ export default {
         title: "訊息已發送!",
       });
     },
-    // scroll() {
-    //   // const height = this.$refs.height;
-    //   const container = this.$refs.container;
-    //   // // container.scrollTop = height.scrollHeight;
-    //   // console.log("height: " + 72 * this.messageList.length);
-    //   container.scrollTop = 72 * this.messageList.length;
-    // },
   },
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["currentUser", "currentRoomId"]),
   },
 };
 </script>
