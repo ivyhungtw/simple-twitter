@@ -45,7 +45,7 @@
       <button
         v-if="currentUser.id === localUserData.id"
         class="btn btn-edit-user"
-        @click="showModal"
+        @click="showModal('#edit-user-modal')"
       >
         編輯個人資料
       </button>
@@ -53,7 +53,11 @@
       <!-- btnPanel -->
       <div v-else class="btnPanel">
         <div>
-          <button class="btn message">
+          <button class="btn message" @click="showModal('#messageModal')">
+            <!-- <button class="btn message" @click="ale"> -->
+            <!-- <router-link :to="{ name: 'privateMessage' }">
+              <img src="../assets/btn_message.svg" alt="" />
+            </router-link> -->
             <img src="../assets/btn_message.svg" alt="" />
           </button>
         </div>
@@ -100,6 +104,8 @@
         @afterSaveSetting="afterSaveSetting"
         :userData="localUserData"
       ></UserEditModal>
+      <!-- MessagModal -->
+      <MessageModal :userData="userData"></MessageModal>
     </div>
   </div>
 </template>
@@ -110,6 +116,7 @@ import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 import usersAPI from "../apis/users";
 import UserEditModal from "./Modal/UserEditModal";
+import MessageModal from "./Modal/MessageModal";
 // import locally
 import $ from "jquery";
 
@@ -124,6 +131,7 @@ export default {
   },
   components: {
     UserEditModal,
+    MessageModal,
   },
   data() {
     return {
@@ -259,16 +267,21 @@ export default {
       }
     },
     // import JQuery from 'jquery'
-    showModal() {
-      $("#edit-user-modal").appendTo("body");
-      $("#edit-user-modal").modal("show");
+    showModal(modalId) {
+      // $("#edit-user-modal").remove();
+      $(modalId).appendTo("body");
+      $(modalId).modal("show");
       /// 是不是因為 append 太多 modal，所以沒辦法一次關掉，因為一次只能關一個。
     },
     afterSaveSetting(form) {
+      console.log("form: ");
+      console.log(form);
       this.localUserData = {
         ...this.localUserData,
         ...form,
       };
+      console.log("UserData: ");
+      console.log(this.localUserData);
     },
     async addSubscribe(user) {
       try {
@@ -381,14 +394,14 @@ export default {
   transform: translate(-50%, -50%);
   border-radius: 50%;
   z-index: 999;
-  overflow: hidden;
+  /* overflow: hidden; */
   object-fit: cover;
 }
 
 .avatar img {
   width: 100%;
   height: 100%;
-  /* border: 1px solid #000; */
+  border-radius: 50%;
 }
 
 .avatar:after {
@@ -396,8 +409,8 @@ export default {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 140px;
-  height: 140px;
+  width: 142px;
+  height: 142px;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   border: 4px solid #ffffff;

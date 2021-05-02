@@ -7,13 +7,20 @@
     </div>
     <div class="buttonList">
       <div class="navItem index">
-        <div class="icon">
-          <img v-if="main" src="../assets/atHome.svg" alt="" />
-          <img v-else src="../assets/home.svg" alt="" />
+        <div v-if="location === 'main'" class="icon">
+          <!-- 橘色 -->
+          <img src="../assets/atHome.svg" alt="" />
+        </div>
+        <div v-else class="icon">
+          <!-- 黑色 -->
+          <img src="../assets/home.svg" alt="" />
         </div>
         <button class="btn">
           <router-link to="/main">
-            <p :class="{ active: main }" id="routerMain">首頁</p>
+            <p v-if="location === 'main'" class="located" id="routerMain">
+              首頁
+            </p>
+            <p v-else id="routerMain">首頁</p>
           </router-link>
         </button>
       </div>
@@ -27,56 +34,102 @@
         </div>
         <button class="btn">
           <router-link to="/notification">
-            <p id="routerNotification">通知</p>
+            <p
+              v-if="location === 'notification'"
+              class="located"
+              id="routerNotification"
+            >
+              通知
+            </p>
+            <p v-else id="routerNotification">通知</p>
           </router-link>
         </button>
       </div>
       <!--  -->
 
       <div class="navItem userProfile">
-        <div class="icon">
+        <div v-if="location === 'publicMessage'" class="icon">
+          <i class="far fa-envelope tempIcon"></i>
+        </div>
+        <div v-else class="icon">
           <i class="far fa-envelope tempIcon"></i>
         </div>
         <button class="btn">
           <router-link to="/publicMessage">
-            <p id="routerPublicMessage">公開聊天室</p>
+            <p
+              v-if="location === 'publicMessage'"
+              class="located"
+              id="routerPublicMessage"
+            >
+              公開聊天室
+            </p>
+            <p v-else id="routerPublicMessage">公開聊天室</p>
           </router-link>
         </button>
       </div>
       <!--  -->
 
       <div class="navItem userProfile">
-        <div class="icon">
+        <div v-if="location === 'privateMessage'" class="icon">
+          <i class="far fa-envelope tempIcon"></i>
+        </div>
+        <div v-else class="icon">
           <i class="far fa-envelope tempIcon"></i>
         </div>
         <button class="btn">
           <router-link to="/privateMessage">
-            <p id="routerPrivateMessage">私人訊息</p>
+            <p
+              v-if="location === 'privateMessage'"
+              class="located"
+              id="routerPrivateMessage"
+            >
+              私人訊息
+            </p>
+            <p v-else id="routerPrivateMessage">私人訊息</p>
           </router-link>
         </button>
       </div>
       <!--  -->
+
       <div class="navItem userProfile">
-        <div class="icon">
-          <img v-if="profile" src="../assets/atProfile.svg" alt="" />
-          <img v-else src="../assets/profile.svg" alt="" />
+        <div v-if="location === 'userProfile'" class="icon">
+          <img src="../assets/atProfile.svg" alt="" />
+        </div>
+        <div v-else class="icon">
+          <img src="../assets/profile.svg" alt="" />
         </div>
         <button class="btn">
           <router-link
             :to="{ name: 'user-profile', params: { id: currentUser.id } }"
           >
-            <p :class="{ active: profile }" id="routerProfile">個人資料</p>
+            <p
+              v-if="location === 'userProfile'"
+              class="located"
+              id="routerProfile"
+            >
+              個人資料
+            </p>
+            <p v-else id="routerProfile">個人資料</p>
           </router-link>
         </button>
       </div>
       <div class="navItem setting">
-        <div class="icon">
-          <img v-if="accountEdit" src="../assets/atSetting.svg" alt="" />
-          <img v-else src="../assets/setting.svg" alt="" />
+        <div v-if="location === 'accountEdit'" class="icon">
+          <img src="../assets/atSetting.svg" alt="" />
+        </div>
+        <div v-else class="icon">
+          <img src="../assets/setting.svg" alt="" />
         </div>
         <button class="btn">
           <router-link to="/accountEdit">
-            <p :class="{ active: accountEdit }" id="routerSetting">設定</p>
+            <p
+              v-if="location === 'accountEdit'"
+              class="located"
+              id="routerSetting"
+            >
+              設定
+            </p>
+            <p v-else id="routerSetting">設定</p>
           </router-link>
         </button>
       </div>
@@ -116,6 +169,7 @@ export default {
       privateMessage: false,
       profile: false,
       accountEdit: false,
+      location: "main",
     };
   },
   sockets: {
@@ -146,6 +200,10 @@ export default {
     },
   },
   created() {
+    // const path = this.$route.path.split("/")[1];
+    // console.log(path);
+    // console.log("-----------------");
+    // this.pageLocate(path)
     this.$bus.$on("closeModal", (modalId) => {
       this.closeModal(modalId);
     });
@@ -224,7 +282,7 @@ export default {
   align-items: center;
 }
 
-.navItem .btn .active p {
+.navItem .btn .located {
   color: #ff6600;
 }
 

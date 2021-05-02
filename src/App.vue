@@ -21,10 +21,6 @@ export default {
   methods: {
     startSession() {
       const rooms = JSON.parse(sessionStorage.getItem("rooms"));
-      // console.log("rooms:");
-      // console.log(rooms);
-      // console.log("--------------------");
-      // console.log("currentUser: " + this.currentUser.id);
       if (rooms) {
         this.$socket.emit("start session", rooms, this.currentUser.id);
       } else {
@@ -40,7 +36,6 @@ export default {
     currentUser: {
       deep: true,
       handler: function () {
-        console.log("Got currentUser");
         this.startSession();
       },
     },

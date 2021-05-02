@@ -1,12 +1,27 @@
 <template>
   <div class="messageBox">
-    <div class="title">
-      <h1>公開聊天室</h1>
-    </div>
-    <div ref="container" class="container">
-      <ul class="messageList" ref="height">
+    <template v-if="atPublic">
+      <div class="title">
+        <h1>公開聊天室</h1>
+      </div>
+    </template>
+    <template v-else>
+      <div class="title private" v-if="currentChat.name">
+        <h1>{{ currentChat.name ? currentChat.name : "UserName" }}</h1>
+        <p>@{{ currentChat.account ? currentChat.account : "UserAccount" }}</p>
+      </div>
+      <div v-else class="title noChat">
+        <h1>開啟聊天！</h1>
+      </div>
+    </template>
+
+    <div class="container">
+      <ul class="messageList" ref="container">
+        <div v-if="!messageList.length" class="emptyList">
+          <img src="../assets/conversation.svg" alt="" />
+        </div>
         <!--  -->
-        <template v-for="item of messageList">
+        <template v-else v-for="item of messageList">
           <!-- actionItem -->
           <li v-if="item.type === 0" class="actionItem" :key="item.id">
             <p>{{ item.text }}</p>
@@ -56,13 +71,30 @@ import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 import { mapState } from "vuex";
+// import $ from "jquery";
+
 export default {
   name: "MessageBox",
   mixins: [emptyImageFilter, fromNowFilter],
   props: {
+    currentChat: {
+      type: Object,
+      default: function () {
+        return {
+          userId: undefined,
+          name: "公開聊天室",
+          // roomId: 4,
+          account: "",
+        };
+      },
+    },
     messageList: {
       type: Array,
       required: true,
+    },
+    atPublic: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -72,6 +104,7 @@ export default {
   },
   methods: {
     sendMessage: function () {
+      const message = this.message;
       if (!this.message) {
         Toast.fire({
           icon: "error",
@@ -79,29 +112,50 @@ export default {
         });
         return;
       }
-      this.$socket.emit("chat message", this.message);
+
+      const newMessage = !this.messageList.length;
+      console.log("atPublic: " + this.atPublic);
+
+      if (this.atPublic) {
+        this.$socket.emit(
+          "chat message",
+          {
+            roomId: this.currentRoomId,
+            userId: this.currentUser.id,
+            newMessage,
+            message,
+          },
+          () => {
+            console.log("currentRoomId: " + this.currentRoomId);
+            console.log(`private chat message, new: ${newMessage}`);
+          }
+        );
+      } else {
+        this.$socket.emit(
+          "private chat message",
+          {
+            roomId: this.currentRoomId,
+            userId: this.currentUser.id,
+            newMessage,
+            message,
+          },
+          () => {
+            console.log("currentRoomId: " + this.currentRoomId);
+            console.log(`private chat message, new: ${newMessage}`);
+          }
+        );
+      }
+
       this.message = "";
+
       Toast.fire({
         icon: "success",
         title: "訊息已發送!",
       });
     },
-    scroll() {
-      const height = this.$refs.height;
-      const container = this.$refs.container;
-      container.scrollTop = height.scrollHeight;
-    },
   },
   computed: {
-    ...mapState(["currentUser"]),
-  },
-  watch: {
-    messageList: {
-      deep: true,
-      handler: function () {
-        this.scroll();
-      },
-    },
+    ...mapState(["currentUser", "currentRoomId"]),
   },
 };
 </script>
@@ -121,19 +175,49 @@ export default {
   background-color: #fff;
   z-index: 1;
 }
+
+.messageBox .private {
+  display: block;
+  padding: 0;
+  padding-left: 10px;
+}
+
+.private h1 {
+  height: 50%;
+  line-height: 35px;
+}
+.private p {
+  margin: 0;
+  padding: 0;
+  height: 50%;
+}
 .title h1 {
   font-weight: 700;
   font-size: 19px;
   margin: 0;
 }
+
+.noChat {
+  height: 55px;
+  display: flex;
+  align-items: center;
+}
+
+.noChat h1 {
+  /* margin-top: 20px; */
+  display: inline-block;
+}
+
 /* message box */
+
 .messageBox .container {
   padding: 0;
   display: flex;
   flex-direction: column;
   height: calc(100vh - 115px);
-  overflow-y: scroll;
+  overflow-y: auto;
 }
+
 .avatar {
   width: 50px;
   height: 50px;
@@ -145,17 +229,34 @@ export default {
   height: 100%;
   border-radius: 50%;
 }
+
 .messageBox .container::-webkit-scrollbar {
   display: none;
 }
+
 /* for Chrome, Safari and Opera */
 .messageBox .container {
   -ms-overflow-style: none;
 }
+
 .messageList {
   flex: 1;
   margin: 0;
+  /* min-height: 100%; */
 }
+
+.messageList .emptyList {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.messageList .emptyList img {
+  min-width: 5%;
+  width: 50px;
+  height: 50px;
+}
+
 .mainContent {
   max-width: 60%;
   /* width: 200px; */
@@ -215,11 +316,14 @@ export default {
   margin: 0;
   margin-right: 10px;
 }
+
 .currentUser .mainContent .avatar {
   display: none;
 }
-/* .currentUser .textTime {
-} */
+
+.currentUser .textTime {
+}
+
 /*/ ////////////////// panel ///////////////*/
 .meesagePanel {
   height: 60px;
@@ -245,7 +349,8 @@ export default {
   padding-right: 10px;
   margin-left: 10px;
 }
+
 .sendBtn img {
   transform: rotate(45deg);
 }
-</style> 
+</style>

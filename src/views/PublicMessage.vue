@@ -32,7 +32,7 @@
       </div>
 
       <!-- messageBox -->
-      <MessageBox :messageList="messageList"></MessageBox>
+      <MessageBox :atPublic="atPublic" :messageList="messageList"></MessageBox>
     </div>
   </div>
 </template>
@@ -55,15 +55,19 @@ export default {
       messageList: [],
       onlineUsersCount: 1,
       onlineUsers: [],
+      atPublic: true,
     };
   },
   async created() {
+    this.$socket.emit("leave");
+    this.$store.commit("setCurrentRoomId", 4);
     try {
       const { data } = await sucketsAPI.getPublicRoom();
-      const { messages: messageList, onlineUsersCount, onlineUsers } = data;
-      this.messageList = messageList;
+      const { messages, onlineUsersCount, onlineUsers } = data;
+      this.messageList = messages;
       this.onlineUsers = onlineUsers;
       this.onlineUsersCount = onlineUsersCount;
+
       // join room
       this.joinPublicRoom();
     } catch (error) {
@@ -75,10 +79,8 @@ export default {
     }
   },
   sockets: {
-    connection: function (data) {
-      console.log("Data:" + data);
-    },
     "chat message": function (data) {
+      console.log("Got message: " + data.text);
       this.messageList.push({
         id: this.messageList + 1,
         UserId: data.userId,
@@ -110,14 +112,9 @@ export default {
         userId: this.currentUser.id,
       });
     },
-    scroll() {
-      const height = this.$refs.height;
-      const container = this.$refs.container;
-      container.scrollTop = height.scrollHeight;
-    },
   },
   computed: {
-    ...mapState(["currentUser"]),
+    ...mapState(["currentUser", "currentRoomId"]),
   },
 };
 </script>
@@ -153,9 +150,11 @@ export default {
   font-size: 19px;
   margin: 0;
 }
+
 .usersOnline .container {
   padding: 0;
 }
+
 .userItem .userContainer {
   height: 60px;
   border-bottom: 1px solid #e6ecf0;

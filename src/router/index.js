@@ -20,15 +20,6 @@ const authorizeIsAdmin = (to, from, next) => {
   next()
 }
 
-const authorizeIsUser = (to, from, next) => {
-  const currentUser = store.state.currentUser
-  if (currentUser && currentUser.role !== "user") {
-    next('/404')
-    return
-  }
-  next()
-}
-
 const routes = [
   {
     path: '/',

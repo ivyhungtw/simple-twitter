@@ -20,13 +20,13 @@
 </template>
 
 <script>
-import TweetItem from "./TweetItem";
+import TweetItem from "../TweetItem";
 import { mapState } from "vuex";
-import { Toast } from "../utils/helpers";
-import tweetsAPI from "../apis/tweets";
+import { Toast } from "../../utils/helpers";
+import tweetsAPI from "../../apis/tweets";
 
 export default {
-  name: "UserProfileLikeList",
+  name: "UserProfileTweetsList",
   components: {
     TweetItem,
   },
@@ -36,9 +36,30 @@ export default {
       required: true,
     },
   },
+  created() {
+    this.$bus.$on("afterCreateTweet", (newTweet) => {
+      console.log("afterCreateTweet in tweetlist");
+      this.afterCreateTweet(newTweet);
+    });
+  },
   data() {
     return {
       user: {},
+      tweet: {
+        UserId: undefined,
+        created: "",
+        description: "",
+        id: undefined, // tweetId
+        likeCount: 0,
+        replyCount: 0,
+        updatedAt: "",
+        user: {
+          account: "",
+          name: "",
+          avatar: "",
+        },
+        isLiked: false, // 要後端補
+      },
       tweets: {},
       isLoading: true,
     };
@@ -47,30 +68,40 @@ export default {
     fetchUser(newVal) {
       this.user = newVal;
     },
-    async fetchUserLikedTweets(userId) {
-      // console.log("fetchUserLikedTweets in List");
+    async fetchUserTweets(userId) {
+      // console.log("fetchUserTweets in List");
       // console.log("fetchUser:" + userId);
       try {
         this.isLoading = true;
-        const { data } = await tweetsAPI.getAllLikedTweets(userId);
+        const { data } = await tweetsAPI.getUserTweet(userId);
 
         this.tweets = data.map((tweet) => {
-          const { Tweet } = tweet;
-          const { User } = tweet.Tweet;
           return {
-            ...Tweet,
-            user: User,
-            UserId: Tweet.User.id,
+            ...tweet,
+            UserId: this.user.id,
+            user: {
+              account: this.user.account,
+              avatar: this.user.avatar,
+              name: this.user.name,
+            },
           };
         });
         this.isLoading = false;
       } catch (error) {
+        console.log("fetchUserTweets");
         console.log(error);
         Toast.fire({
           icon: "error",
-          title: "無法取得推文資料，請稍後再試！",
+          title: "無法取得推文，請稍後再試！",
         });
       }
+    },
+    afterCreateTweet(newTweet) {
+      console.log("newTweet got!!!!");
+      this.tweets.unshift({
+        ...this.tweet,
+        ...newTweet,
+      });
     },
   },
   computed: {
@@ -82,7 +113,7 @@ export default {
         try {
           this.fetchUser(newVal);
           const userId = this.user.id;
-          await this.fetchUserLikedTweets(userId);
+          await this.fetchUserTweets(userId);
         } catch (error) {
           console.log(error);
           Toast.fire({

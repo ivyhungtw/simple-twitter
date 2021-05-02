@@ -121,7 +121,8 @@ export default {
       );
     },
     afterCreateReply(newReply) {
-      this.localComments.unshift(newReply);
+      // this.localComments.unshift(newReply);
+      this.localComments.push(newReply);
     },
   },
   watch: {
@@ -170,6 +171,11 @@ export default {
   width: 50px;
   height: 50px;
   margin-right: 10px;
+}
+
+.avatar a {
+  width: 100%;
+  height: 100%;
 }
 
 .avatar img {
