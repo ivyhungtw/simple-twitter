@@ -33,6 +33,7 @@ export default new Vuex.Store({
       state.isAuthenticated = false
       state.token = ''
       localStorage.removeItem('token')
+      sessionStorage.removeItem('rooms')
     }
   },
   actions: {

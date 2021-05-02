@@ -116,13 +116,15 @@ export default {
       });
       console.log(data);
     },
-    "private chat message": function (data) {
+    "private chat message": async function (data) {
+      console.log("private chat message");
       console.log(data);
       const {
         avatar,
         createdAt: lastTime,
         text: lastMessage,
-        userId: id,
+        // userId: id,
+        userId,
       } = data;
 
       // 放到 data.roomId = this.receivedMessageList 裡面 roomId 一樣的資料裡
@@ -130,19 +132,36 @@ export default {
         (room) => room.roomId === this.currentRoomId
       );
 
-      console.log("newMessageRoom: ");
-      console.log(newMessageRoom);
+      // 如果沒有已經建立的 message
+      try {
+        if (!newMessageRoom) {
+          // 根據 userId 拉資料
+          const { data } = await usersAPI.getUser(userId);
+          const { name, account } = data;
+          this.receivedMessageList.push({
+            account,
+            avatar,
+            lastMessage,
+            lastTime,
+            name,
+            userId,
+            roomId: this.currentRoomId,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
 
-      // if room found, update lastTime & lastMessage
+      // 如果有已經建立的 message
       newMessageRoom.lastTime = lastTime;
       newMessageRoom.lastMessage = lastMessage;
 
-      // if new private message is of currentChat, push new message to messageList
+      // 發訊者的當前 messageBox 處理
       if (this.currentChat.roomId === this.currentRoomId) {
         console.log("at currentChat");
         this.currentMessageList.push({
           id: this.currentMessageList + 1,
-          UserId: id,
+          UserId: userId,
           type: 1, // messageItem
           avatar,
           message: lastMessage,
@@ -155,11 +174,18 @@ export default {
       console.log(data);
       console.log("-----------------------");
     },
+    // ERROR: 對方收到訊息的時候沒有正確建立 receivedMessage 或新增 message
     "new private chat message": async function (response) {
       // get new chat
       console.log("create new room!");
       const roomId = response[1];
-      const { avatar, createdAt, text, userId } = response[0];
+      // response[0]:
+      const {
+        avatar,
+        createdAt: lastTime,
+        text: lastMessage,
+        userId,
+      } = response[0];
 
       // fetch userInfo
       try {
@@ -170,13 +196,13 @@ export default {
         // create new room to receivedMessageList
 
         this.receivedMessageList.push({
-          userId,
-          name,
           account,
           avatar,
+          userId,
+          lastMessage,
+          lastTime,
           roomId,
-          lastTime: createdAt,
-          lastMessage: text,
+          name,
         });
 
         this.currentChat.message.push(response);
@@ -252,6 +278,7 @@ export default {
     // Step1: select new chat
     afterUserSelected(user) {
       console.log("Select userId: " + user.id);
+      this.currentMessageList = [];
       this.currentChat = {
         ...this.currentChat,
         ...user,

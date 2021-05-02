@@ -102,16 +102,16 @@ export default {
       message: "",
     };
   },
-  sockets: {
-    "new private chat message": function (data) {
-      // get new chat
-      console.log("Get new msg!");
-      console.log(data);
-      // create new chat to openedUsersList
-      // message, userId, avatar, roomId
-      // this.joinPrivateRoom()
-    },
-  },
+  // sockets: {
+  // "new private chat message": function (data) {
+  //   // get new chat
+  //   console.log("Get new msg!");
+  //   console.log(data);
+  //   // create new chat to openedUsersList
+  //   // message, userId, avatar, roomId
+  //   // this.joinPrivateRoom()
+  // },
+  // },
   methods: {
     sendMessage: function () {
       const message = this.message;
@@ -131,18 +131,18 @@ export default {
           newMessage,
           message,
         });
+      } else {
+        this.$socket.emit(
+          "private chat message",
+          {
+            newMessage,
+            message,
+          },
+          () => {
+            console.log(`private chat message, new: ${newMessage}`);
+          }
+        );
       }
-
-      this.$socket.emit(
-        "private chat message",
-        {
-          newMessage,
-          message,
-        },
-        () => {
-          console.log(`private chat message, new: ${newMessage}`);
-        }
-      );
 
       this.message = "";
 
