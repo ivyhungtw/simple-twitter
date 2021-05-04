@@ -12,6 +12,7 @@
         </div>
         <div class="container">
           <ul class="userList">
+            <Spinner v-if="isProcessing"></Spinner>
             <!-- userItem -->
             <!-- other users -->
             <li class="userItem" v-for="user in onlineUsers" :key="user.id">
@@ -32,7 +33,11 @@
       </div>
 
       <!-- messageBox -->
-      <MessageBox :atPublic="atPublic" :messageList="messageList"></MessageBox>
+      <MessageBox
+        ref="messageBox"
+        :atPublic="atPublic"
+        :messageList="messageList"
+      ></MessageBox>
     </div>
   </div>
 </template>
@@ -40,6 +45,7 @@
 <script>
 import UserSidebar from "../components/UserSidebar";
 import MessageBox from "../components/MessageBox";
+import Spinner from "../components/Spinner";
 import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
@@ -47,7 +53,7 @@ import { mapState } from "vuex";
 import sucketsAPI from "../apis/socket";
 export default {
   name: "publicMessage",
-  components: { UserSidebar, MessageBox },
+  components: { UserSidebar, MessageBox, Spinner },
   mixins: [emptyImageFilter, fromNowFilter],
   data() {
     return {
@@ -56,25 +62,31 @@ export default {
       onlineUsersCount: 1,
       onlineUsers: [],
       atPublic: true,
+      isProcessing: true,
     };
   },
-  async created() {
+  async mounted() {
     this.$socket.emit("leave");
     this.$store.commit("setCurrentRoomId", 4);
     try {
+      this.isProcessing = true;
+      this.$refs.messageBox.toggleIsProcessing();
       const { data } = await sucketsAPI.getPublicRoom();
       const { messages, onlineUsersCount, onlineUsers } = data;
       this.messageList = messages;
       this.onlineUsers = onlineUsers;
       this.onlineUsersCount = onlineUsersCount;
 
+      this.$refs.messageBox.toggleIsProcessing();
       // join room
       this.joinPublicRoom();
     } catch (error) {
+      this.isProcessing = false;
       console.log(error);
       Toast.fire({
         icon: "error",
-        title: "無法取得聊天室資料，請稍後再試！",
+        // title: "無法取得聊天室資料，請稍後再試！",
+        title: error,
       });
     }
   },
@@ -111,6 +123,7 @@ export default {
         roomId: 4,
         userId: this.currentUser.id,
       });
+      this.isProcessing = false;
     },
   },
   computed: {

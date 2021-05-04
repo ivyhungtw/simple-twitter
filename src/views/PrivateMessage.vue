@@ -28,7 +28,7 @@
         </div>
         <div class="container">
           <ul class="userList">
-            <Spanner v-if="isProcessing"></Spanner>
+            <Spinner v-if="isProcessing"></Spinner>
             <template v-else>
               <template v-if="!receivedMessageList.length">
                 <p class="noReceivedMessageList">還沒有任何對話</p>
@@ -69,11 +69,11 @@
       </div>
 
       <!-- messageBox -->
-      <MeesageBox
+      <MessageBox
         ref="messageBox"
         :currentChat="currentChat"
         :messageList="currentMessageList"
-      ></MeesageBox>
+      ></MessageBox>
     </div>
   </div>
 </template>
@@ -81,8 +81,8 @@
 <script>
 import UserSidebar from "../components/UserSidebar";
 import UserChatListModal from "../components/Modal/UserChatListModal";
-import MeesageBox from "../components/MessageBox";
-import Spanner from "../components/Spinner";
+import MessageBox from "../components/MessageBox";
+import Spinner from "../components/Spinner";
 import { Toast } from "../utils/helpers";
 import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
@@ -93,7 +93,7 @@ import $ from "jquery";
 
 export default {
   name: "privateMessage",
-  components: { UserSidebar, UserChatListModal, MeesageBox, Spanner },
+  components: { UserSidebar, UserChatListModal, MessageBox, Spinner },
   mixins: [emptyImageFilter, fromNowFilter],
   data() {
     return {
