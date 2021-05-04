@@ -1,7 +1,7 @@
 <template>
   <div class="messageBox">
     <template v-if="atPublic">
-      <div class="title">
+      <div class="title" @click="updateScroll">
         <h1>公開聊天室</h1>
       </div>
     </template>
@@ -15,8 +15,8 @@
       </div>
     </template>
 
-    <div class="container">
-      <ul class="messageList" ref="container">
+    <div class="container" ref="messageList">
+      <ul class="messageList">
         <Spinner v-if="isProcessing"></Spinner>
         <template v-else>
           <div v-if="!messageList.length" class="emptyList">
@@ -61,8 +61,14 @@
         v-model="message"
         maxlength="160"
         required
+        :disabled="currentChat.userId === undefined"
       />
-      <button type="submit" class="btn sendBtn" @click="sendMessage">
+      <button
+        :disabled="currentChat.userId === undefined"
+        type="submit"
+        class="btn sendBtn"
+        @click="sendMessage"
+      >
         <img src="../assets/send.svg" alt="" />
       </button>
     </div>
@@ -87,8 +93,7 @@ export default {
       default: function () {
         return {
           userId: undefined,
-          name: "公開聊天室",
-          // roomId: 4,
+          name: "",
           account: "",
         };
       },
@@ -107,6 +112,10 @@ export default {
       message: "",
       isProcessing: false,
     };
+  },
+  updated() {
+    console.log("updated");
+    this.updateScroll();
   },
   methods: {
     sendMessage: function () {
@@ -160,10 +169,10 @@ export default {
       });
     },
     toggleIsProcessing() {
-      console.log("Toggle isProcessing: " + this.isProcessing);
       this.isProcessing = !this.isProcessing;
-      console.log("Toggle isProcessing: " + this.isProcessing);
-      console.log("-------------");
+    },
+    updateScroll() {
+      this.$refs.messageList.scrollTop = this.$refs.messageList.scrollHeight;
     },
   },
   computed: {
@@ -227,7 +236,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 115px);
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 .avatar {
@@ -326,7 +335,7 @@ export default {
 .currentUser .textTime {
   /* border: 1px solid #000; */
   margin: 0;
-  margin-right: 10px;
+  margin: 10px 10px 0;
 }
 
 .currentUser .mainContent .avatar {
