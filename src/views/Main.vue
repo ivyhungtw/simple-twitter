@@ -12,7 +12,9 @@
       <CreateTweet></CreateTweet>
 
       <!-- FollowingUsersTweets -->
+      <Spinner v-if="!tweets.length"></Spinner>
       <FollowingUsersTweets
+        v-else
         :tweets="tweets"
         @afterToggleLike="afterToggleLike"
       ></FollowingUsersTweets>
@@ -30,6 +32,7 @@ import CreateTweet from "../components/Main/CreateTweet";
 import FollowingUsersTweets from "../components/Main/FollowingUsersTweets";
 import { Toast } from "../utils/helpers";
 import tweetsAPI from "../apis/tweets";
+import Spinner from "../components/Spinner";
 
 export default {
   name: "Main",
@@ -38,6 +41,7 @@ export default {
     RecommendedFollowers,
     CreateTweet,
     FollowingUsersTweets,
+    Spinner,
   },
   created() {
     this.fetchTweets();

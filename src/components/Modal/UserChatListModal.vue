@@ -184,10 +184,6 @@ export default {
   color: #657786;
 }
 
-.modal-footer {
-  /* border: none; */
-}
-
 .spinner {
   margin: 0;
   padding: 0;

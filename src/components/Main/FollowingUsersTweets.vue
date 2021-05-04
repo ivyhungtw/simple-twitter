@@ -14,12 +14,6 @@
 import TweetItem from "../TweetItem";
 export default {
   name: "FollowingUsersTweets",
-  // prop: {
-  //   tweets: {
-  //     type: Array,
-  //     required: true,
-  //   },
-  // },
   components: {
     TweetItem,
   },
@@ -47,5 +41,9 @@ export default {
 .tweetList {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+.spinner {
+  padding: 0;
 }
 </style>

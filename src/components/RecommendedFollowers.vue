@@ -6,46 +6,49 @@
     <hr />
     <div class="users">
       <ul class="usersList">
-        <li class="user" v-for="user of recommendedFollowers" :key="user.id">
-          <div class="userContent">
-            <div class="avatar">
-              <router-link :to="`/userProfile/${user.id}`">
-                <img :src="user.avatar | emptyImageFilter" alt="" />
-              </router-link>
-            </div>
-            <div class="info">
-              <div class="name">
+        <spinner class="spinner" v-if="isProcessing"></spinner>
+        <template v-else>
+          <li class="user" v-for="user of recommendedFollowers" :key="user.id">
+            <div class="userContent">
+              <div class="avatar">
                 <router-link :to="`/userProfile/${user.id}`">
-                  <h2>{{ user.name }}</h2>
+                  <img :src="user.avatar | emptyImageFilter" alt="" />
                 </router-link>
               </div>
-              <div class="account">
-                <router-link :to="`/userProfile/${user.id}`">
-                  <h2>@{{ user.account }}</h2>
-                </router-link>
+              <div class="info">
+                <div class="name">
+                  <router-link :to="`/userProfile/${user.id}`">
+                    <h2>{{ user.name }}</h2>
+                  </router-link>
+                </div>
+                <div class="account">
+                  <router-link :to="`/userProfile/${user.id}`">
+                    <h2>@{{ user.account }}</h2>
+                  </router-link>
+                </div>
+              </div>
+              <div class="toggleFollow">
+                <button
+                  v-if="user.isFollowed"
+                  class="btn isFollowing"
+                  @click.prevent.stop="unfollowUser(user)"
+                  :disabled="isProcessing"
+                >
+                  正在跟隨
+                </button>
+                <button
+                  v-else
+                  class="btn"
+                  @click.prevent.stop="followUser(user)"
+                  :disabled="isProcessing"
+                >
+                  跟隨
+                </button>
               </div>
             </div>
-            <div class="toggleFollow">
-              <button
-                v-if="user.isFollowed"
-                class="btn isFollowing"
-                @click.prevent.stop="unfollowUser(user)"
-                :disabled="isProcessing"
-              >
-                正在跟隨
-              </button>
-              <button
-                v-else
-                class="btn"
-                @click.prevent.stop="followUser(user)"
-                :disabled="isProcessing"
-              >
-                跟隨
-              </button>
-            </div>
-          </div>
-          <hr />
-        </li>
+            <hr />
+          </li>
+        </template>
       </ul>
     </div>
 
@@ -56,12 +59,14 @@
 </template>
 
 <script>
+import Spinner from "./Spinner";
 import usersAPI from "../apis/users";
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
 import { mapState } from "vuex";
 
 export default {
+  components: { Spinner },
   name: "RecommendedFollowers",
   mixins: [emptyImageFilter],
   created() {
@@ -71,23 +76,26 @@ export default {
       this.renderAfterFollowToggle(userId);
     });
   },
-   computed: {
+  computed: {
     ...mapState(["currentUser"]),
   },
   data() {
     return {
       recommendedFollowers: [],
-      isProcessing: false,
+      isProcessing: true,
     };
   },
   methods: {
     async fetchRecommendedFollowers() {
       try {
+        this.isProcessing = true;
         // call api to get recommended Followers data
         const { data } = await usersAPI.getRecommendedFollowers();
         // console.log(data);
         this.recommendedFollowers = data;
+        this.isProcessing = false;
       } catch (error) {
+        this.isProcessing = false;
         console.log(error);
         Toast.fire({
           icon: "error",
@@ -284,5 +292,9 @@ button {
   padding: 0;
   border: none;
   font-weight: 400;
+}
+
+.spinner {
+  padding: 0;
 }
 </style>
