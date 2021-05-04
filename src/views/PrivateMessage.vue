@@ -10,12 +10,7 @@
         <div class="title">
           <h1>訊息</h1>
           <div class="newMessage">
-            <button
-              :disabled="!allUserList.length"
-              type="button"
-              class="btn"
-              @click="showModal"
-            >
+            <button type="button" class="btn" @click="showModal">
               <img src="../assets/newMessage.svg" alt="" />
             </button>
           </div>
@@ -28,48 +23,52 @@
         </div>
         <div class="container">
           <ul class="userList">
-            <template v-if="!receivedMessageList.length">
-              <p class="noReceivedMessageList">還沒有任何對話</p>
-            </template>
-            <template>
-              <li
-                class="userItem"
-                v-for="user in receivedMessageList"
-                :key="user.userId"
-                @click="passChatData(user)"
-              >
-                <div class="avatar">
-                  <img :src="user.avatar | emptyImageFilter" alt="" />
-                </div>
-                <div class="userContainer">
-                  <div class="row">
-                    <div class="userName">
-                      <p>{{ user.name }}</p>
+            <Spinner v-if="isProcessing"></Spinner>
+            <template v-else>
+              <template v-if="!receivedMessageList.length">
+                <p class="noReceivedMessageList">還沒有任何對話</p>
+              </template>
+              <template>
+                <li
+                  class="userItem"
+                  v-for="user in receivedMessageList"
+                  :key="user.userId"
+                  @click="passChatData(user)"
+                >
+                  <div class="avatar">
+                    <img :src="user.avatar | emptyImageFilter" alt="" />
+                  </div>
+                  <div class="userContainer">
+                    <div class="row">
+                      <div class="userName">
+                        <p>{{ user.name }}</p>
+                      </div>
+                      <div class="userAccount">
+                        <p>@{{ user.account }}</p>
+                      </div>
+                      <div class="lastTime">
+                        <p>{{ user.lastTime | fromNow }}</p>
+                      </div>
                     </div>
-                    <div class="userAccount">
-                      <p>@{{ user.account }}</p>
-                    </div>
-                    <div class="lastTime">
-                      <p>{{ user.lastTime | fromNow }}</p>
+                    <div class="previewMessage">
+                      <p>
+                        {{ user.lastMessage }}
+                      </p>
                     </div>
                   </div>
-                  <div class="previewMessage">
-                    <p>
-                      {{ user.lastMessage }}
-                    </p>
-                  </div>
-                </div>
-              </li>
+                </li>
+              </template>
             </template>
           </ul>
         </div>
       </div>
 
       <!-- messageBox -->
-      <MeesageBox
+      <MessageBox
+        ref="messageBox"
         :currentChat="currentChat"
         :messageList="currentMessageList"
-      ></MeesageBox>
+      ></MessageBox>
     </div>
   </div>
 </template>
@@ -77,7 +76,8 @@
 <script>
 import UserSidebar from "../components/UserSidebar";
 import UserChatListModal from "../components/Modal/UserChatListModal";
-import MeesageBox from "../components/MessageBox";
+import MessageBox from "../components/MessageBox";
+import Spinner from "../components/Spinner";
 import { Toast } from "../utils/helpers";
 import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
@@ -88,7 +88,7 @@ import $ from "jquery";
 
 export default {
   name: "privateMessage",
-  components: { UserSidebar, UserChatListModal, MeesageBox },
+  components: { UserSidebar, UserChatListModal, MessageBox, Spinner },
   mixins: [emptyImageFilter, fromNowFilter],
   data() {
     return {
@@ -102,6 +102,7 @@ export default {
       },
       currentMessageList: [],
       message: "",
+      isProcessing: true,
     };
   },
   async created() {
@@ -223,6 +224,7 @@ export default {
   methods: {
     async fetchReceivedMessageList() {
       try {
+        this.isProcessing = true;
         const { data } = await socketsAPI.getRoomsByUser();
 
         // 把 userId 一樣的訊息裝成一包放進 receivedMessageList
@@ -246,7 +248,9 @@ export default {
             lastMessage: message,
           };
         });
+        this.isProcessing = false;
       } catch (error) {
+        this.isProcessing = false;
         console.log("fetchChatData");
         console.log(error);
       }
@@ -254,6 +258,9 @@ export default {
 
     // click old chat, fetch chat data, join room
     async passChatData(user) {
+      // tell messageBox to show "processing"
+      this.$refs.messageBox.toggleIsProcessing();
+
       console.log("leave room: " + this.currentRoomId);
       this.$socket.emit("leave", this.currentUser.id, this.currentRoomId);
       this.$store.commit("setCurrentRoomId", undefined);
@@ -273,6 +280,9 @@ export default {
           };
         });
 
+        // tell messageBox to show "processing"
+        this.$refs.messageBox.toggleIsProcessing();
+
         // join room
         console.log("join room:" + roomId);
         this.joinPrivateRoom(roomId);
@@ -288,13 +298,12 @@ export default {
 
     // Step1: select new chat
     afterUserSelected(user) {
-      console.log("Select userId: " + user.id);
       this.currentMessageList = [];
       this.currentChat = {
         ...this.currentChat,
         ...user,
       };
-      const userId = this.currentChat.userId;
+      const userId = this.currentChat.id;
       this.createNewChat(userId);
     },
     // Step2: create new chat room
@@ -337,10 +346,6 @@ export default {
         const { data } = await socketsAPI.getAvailableUsers();
 
         this.allUserList = data;
-
-        if (data.status !== "success") {
-          throw new Error(data.message);
-        }
       } catch (error) {
         console.log(error);
       }

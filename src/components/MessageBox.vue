@@ -17,36 +17,39 @@
 
     <div class="container">
       <ul class="messageList" ref="container">
-        <div v-if="!messageList.length" class="emptyList">
-          <img src="../assets/conversation.svg" alt="" />
-        </div>
-        <!--  -->
-        <template v-else v-for="item of messageList">
-          <!-- actionItem -->
-          <li v-if="item.type === 0" class="actionItem" :key="item.id">
-            <p>{{ item.text }}</p>
-          </li>
+        <Spinner v-if="isProcessing"></Spinner>
+        <template v-else>
+          <div v-if="!messageList.length" class="emptyList">
+            <img src="../assets/conversation.svg" alt="" />
+          </div>
+          <!--  -->
+          <template v-else v-for="item of messageList">
+            <!-- actionItem -->
+            <li v-if="item.type === 0" class="actionItem" :key="item.id">
+              <p>{{ item.text }}</p>
+            </li>
 
-          <!-- messageItem: others -->
-          <li
-            v-else
-            class="messageItem"
-            :key="item.id"
-            :class="{ currentUser: item.UserId === currentUser.id }"
-          >
-            <div class="mainContent">
-              <div class="avatar">
-                <img :src="item.avatar | emptyImageFilter" alt="" />
-              </div>
-              <div class="textContainer">
-                <div class="text">
-                  {{ item.message }}
+            <!-- messageItem: others -->
+            <li
+              v-else
+              class="messageItem"
+              :key="item.id"
+              :class="{ currentUser: item.UserId === currentUser.id }"
+            >
+              <div class="mainContent">
+                <div class="avatar">
+                  <img :src="item.avatar | emptyImageFilter" alt="" />
+                </div>
+                <div class="textContainer">
+                  <div class="text">
+                    {{ item.message }}
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="textTime">{{ item.createdAt | fromNow }}</div>
-          </li>
-        </template>
+              <div class="textTime">{{ item.createdAt | fromNow }}</div>
+            </li>
+          </template></template
+        >
       </ul>
     </div>
     <div class="meesagePanel">
@@ -67,6 +70,7 @@
 </template>
 
 <script>
+import Spinner from "./Spinner";
 import { fromNowFilter } from "../utils/mixins";
 import { emptyImageFilter } from "../utils/mixins";
 import { Toast } from "../utils/helpers";
@@ -76,6 +80,7 @@ import { mapState } from "vuex";
 export default {
   name: "MessageBox",
   mixins: [emptyImageFilter, fromNowFilter],
+  components: { Spinner },
   props: {
     currentChat: {
       type: Object,
@@ -100,6 +105,7 @@ export default {
   data() {
     return {
       message: "",
+      isProcessing: false,
     };
   },
   methods: {
@@ -152,6 +158,12 @@ export default {
         icon: "success",
         title: "訊息已發送!",
       });
+    },
+    toggleIsProcessing() {
+      console.log("Toggle isProcessing: " + this.isProcessing);
+      this.isProcessing = !this.isProcessing;
+      console.log("Toggle isProcessing: " + this.isProcessing);
+      console.log("-------------");
     },
   },
   computed: {
