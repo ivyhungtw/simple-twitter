@@ -14,7 +14,6 @@ export default {
   name: "App",
   sockets: {
     "set session": function (data) {
-      console.log("set session: " + data);
       sessionStorage.setItem("rooms", JSON.stringify(data));
     },
   },
