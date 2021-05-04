@@ -169,7 +169,7 @@ export default {
       privateMessage: false,
       profile: false,
       accountEdit: false,
-      location: "main",
+      location: " ",
     };
   },
   sockets: {
@@ -178,9 +178,9 @@ export default {
     },
     notification: function (data) {
       console.log("notification", data);
-      this.noti.push(data);
+      this.noti.push(data.id);
 
-      if (data) {
+      if (data && !this.notification) {
         this.$socket.emit(
           "tweet",
           {
