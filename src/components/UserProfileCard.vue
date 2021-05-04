@@ -266,6 +266,52 @@ export default {
         return;
       }
     },
+    afterUnfollowUser(userId, fromProfileCard = false) {
+      // 在目標追蹤者的頁面上，按 ProfileCard 上的追蹤按鈕追蹤
+      if (this.userData.id === userId && fromProfileCard) {
+        // 追蹤者的 followers 數量 ++
+        console.log("Event A");
+        this.localUserData.followerCount--;
+        this.localUserData.isFollowed = false;
+        // inform RecommendedFollowers to toggle
+        this.$bus.$emit("toggleFollowFromProfileCard", userId);
+        return;
+      }
+
+      // 在目標追蹤者的頁面上，按推薦追蹤者欄來追蹤
+
+      if (
+        this.userData.id === userId &&
+        this.userData.id !== this.currentUser.id
+      ) {
+        // 追蹤者的 followers 數量 ++
+        console.log("Event B");
+        this.localUserData.followerCount++;
+        this.localUserData.isFollowed = true;
+        return;
+      }
+
+      // 在個人頁面上，按推薦追蹤追蹤其他使用者
+      if (
+        this.userData.id !== userId &&
+        this.userData.id === this.currentUser.id
+      ) {
+        // 個人 following 數量 ++
+        console.log("Event C");
+        this.localUserData.followingCount++;
+        return;
+      }
+      // 在個人頁面上，按推薦追蹤取消追蹤其他使用者
+      if (
+        this.userData.id !== userId &&
+        this.userData.id === this.currentUser.id
+      ) {
+        // 個人 following 數量 ++
+        console.log("Event C");
+        this.localUserData.followingCount--;
+        return;
+      }
+    },
     // import JQuery from 'jquery'
     showModal(modalId) {
       // $("#edit-user-modal").remove();
