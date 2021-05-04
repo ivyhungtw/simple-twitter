@@ -286,8 +286,8 @@ export default {
       ) {
         // 追蹤者的 followers 數量 ++
         console.log("Event B");
-        this.localUserData.followerCount++;
-        this.localUserData.isFollowed = true;
+        this.localUserData.followerCount--;
+        this.localUserData.isFollowed = false;
         return;
       }
 
