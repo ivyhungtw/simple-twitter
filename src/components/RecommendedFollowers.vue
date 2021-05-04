@@ -126,9 +126,9 @@ export default {
           title: "追蹤成功！",
         });
 
-        const { id: userId } = this.$route.params;
+        // const { id: userId } = this.$route.params;
         this.$socket.emit("follow", {
-          userId,
+          userId: user.id,
           currentUserId: this.currentUser.id,
         });
 

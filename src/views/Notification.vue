@@ -89,21 +89,9 @@ export default {
     },
     notification: function (data) {
       console.log("notification", data);
-      this.messageList.push({
-        type: 1, // tweetItem
-        id: this.messageList.length + 1,
-        account: data.account,
-        name: data.name,
-        UserId: data.id,
-        avatar: data.avatar,
-        tweetId: data.tweetId,
-        tweet: data.tweet,
-        replyId: data.replyId,
-        reply: data.reply,
-      });
 
       if (data) {
-        console.log("data")
+        console.log("data");
         this.$socket.emit(
           "tweet",
           {
@@ -116,9 +104,22 @@ export default {
             tweet: data.tweet,
             replyId: data.replyId,
             reply: data.reply,
+            type: data.type
           },
           this.currentUser.id
         );
+        this.messageList.unshift({
+          type: data.type, 
+          id: this.messageList.length + 1,
+          account: data.account,
+          name: data.name,
+          UserId: data.id,
+          avatar: data.avatar,
+          tweetId: data.tweetId,
+          tweet: data.tweet,
+          replyId: data.replyId,
+          reply: data.reply,
+        });
       }
     },
   },
