@@ -22,22 +22,25 @@
 
         <div class="modal-body">
           <ul class="userList">
-            <li
-              class="userItem"
-              v-for="user in allUserList"
-              :key="user.id"
-              @click="userSelected(user)"
-            >
-              <div class="userContainer">
-                <div class="avatar">
-                  <img :src="user.avatar | emptyImageFilter" alt="" />
+            <Spinner class="spinner" v-if="isProcessing"></Spinner>
+            <template v-else>
+              <li
+                class="userItem"
+                v-for="user in allUserList"
+                :key="user.id"
+                @click="userSelected(user)"
+              >
+                <div class="userContainer">
+                  <div class="avatar">
+                    <img :src="user.avatar | emptyImageFilter" alt="" />
+                  </div>
+                  <div class="userInfo">
+                    <p>{{ user.name }}</p>
+                    <p>@{{ user.account }}</p>
+                  </div>
                 </div>
-                <div class="userInfo">
-                  <p>{{ user.name }}</p>
-                  <p>@{{ user.account }}</p>
-                </div>
-              </div>
-            </li>
+              </li>
+            </template>
           </ul>
         </div>
 
@@ -48,17 +51,26 @@
 </template>
 
 <script>
+import Spinner from "../Spinner";
 import { emptyImageFilter } from "../../utils/mixins";
 import $ from "jquery";
 
 export default {
   name: "UserChatListModal",
   mixins: [emptyImageFilter],
+  components: {
+    Spinner,
+  },
   props: {
     allUserList: {
       type: Array,
       required: true,
     },
+  },
+  data() {
+    return {
+      isProcessing: true,
+    };
   },
   methods: {
     userSelected(user) {
@@ -71,6 +83,14 @@ export default {
       $(".modal-backdrop").hide();
       const modalBackdrops = document.getElementsByClassName("modal-backdrop");
       document.body.removeChild(modalBackdrops[0]);
+    },
+  },
+  watch: {
+    allUserList: {
+      deep: true,
+      handler: function () {
+        this.isProcessing = false;
+      },
     },
   },
 };
@@ -164,7 +184,8 @@ export default {
   color: #657786;
 }
 
-.modal-footer {
-  /* border: none; */
+.spinner {
+  margin: 0;
+  padding: 0;
 }
 </style>
