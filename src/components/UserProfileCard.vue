@@ -272,7 +272,7 @@ export default {
         return;
       }
 
-      // 在目標追蹤者的頁面上，按推薦追蹤者欄來追蹤
+      // 在目標追蹤者的頁面上，按推薦追蹤者欄來取消追蹤
 
       if (
         this.userData.id === userId &&
@@ -280,8 +280,8 @@ export default {
       ) {
         // 追蹤者的 followers 數量 ++
         console.log("Event B");
-        this.localUserData.followerCount++;
-        this.localUserData.isFollowed = true;
+        this.localUserData.followerCount--;
+        this.localUserData.isFollowed = false;
         return;
       }
 
