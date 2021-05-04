@@ -10,12 +10,7 @@
         <div class="title">
           <h1>訊息</h1>
           <div class="newMessage">
-            <button
-              :disabled="!allUserList.length"
-              type="button"
-              class="btn"
-              @click="showModal"
-            >
+            <button type="button" class="btn" @click="showModal">
               <img src="../assets/newMessage.svg" alt="" />
             </button>
           </div>
