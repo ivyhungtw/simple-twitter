@@ -42,70 +42,68 @@
           </div>
         </div>
       </div>
-      <button
-        v-if="currentUser.id === localUserData.id"
-        class="btn btn-edit-user"
-        @click="showModal('#edit-user-modal')"
-      >
-        編輯個人資料
-      </button>
+      <template v-if="userData.id !== undefined">
+        <button
+          v-if="currentUser.id === localUserData.id"
+          class="btn btn-edit-user"
+          @click="showModal('#edit-user-modal')"
+        >
+          編輯個人資料
+        </button>
 
-      <!-- btnPanel -->
-      <div v-else class="btnPanel">
-        <div>
-          <button class="btn message" @click="showModal('#messageModal')">
-            <!-- <button class="btn message" @click="ale"> -->
-            <!-- <router-link :to="{ name: 'privateMessage' }">
+        <!-- btnPanel -->
+        <div v-else class="btnPanel">
+          <div>
+            <button class="btn message" @click="showModal('#messageModal')">
               <img src="../assets/btn_message.svg" alt="" />
-            </router-link> -->
-            <img src="../assets/btn_message.svg" alt="" />
-          </button>
+            </button>
+          </div>
+          <div>
+            <button
+              v-if="localUserData.isSubscribed"
+              class="btn subscribed"
+              :disabled="isProcessing"
+              @click.prevent.stop="deleteSubscribe(localUserData)"
+            >
+              <img src="../assets/btn_noti_active.svg" alt="" />
+            </button>
+            <button
+              v-else
+              class="btn subscribe"
+              :disabled="isProcessing"
+              @click.prevent.stop="addSubscribe(localUserData)"
+            >
+              <img src="../assets/btn_noti.svg" alt="" />
+            </button>
+          </div>
+          <div>
+            <button
+              v-if="localUserData.isFollowed"
+              class="btn isFollowing"
+              :disabled="isProcessing"
+              @click.stop.prevent="unfollowUser(localUserData)"
+            >
+              正在跟隨
+            </button>
+            <button
+              v-else
+              class="btn follow"
+              :disabled="isProcessing"
+              @click.stop.prevent="followUser(localUserData)"
+            >
+              跟隨
+            </button>
+          </div>
         </div>
-        <div>
-          <button
-            v-if="localUserData.isSubscribed"
-            class="btn subscribed"
-            :disabled="isProcessing"
-            @click.prevent.stop="deleteSubscribe(localUserData)"
-          >
-            <img src="../assets/btn_noti_active.svg" alt="" />
-          </button>
-          <button
-            v-else
-            class="btn subscribe"
-            :disabled="isProcessing"
-            @click.prevent.stop="addSubscribe(localUserData)"
-          >
-            <img src="../assets/btn_noti.svg" alt="" />
-          </button>
-        </div>
-        <div>
-          <button
-            v-if="localUserData.isFollowed"
-            class="btn isFollowing"
-            :disabled="isProcessing"
-            @click.stop.prevent="unfollowUser(localUserData)"
-          >
-            正在跟隨
-          </button>
-          <button
-            v-else
-            class="btn follow"
-            :disabled="isProcessing"
-            @click.stop.prevent="followUser(localUserData)"
-          >
-            跟隨
-          </button>
-        </div>
-      </div>
-      <!-- btnPanel -->
-      <!-- UserEditModal -->
-      <UserEditModal
-        @afterSaveSetting="afterSaveSetting"
-        :userData="localUserData"
-      ></UserEditModal>
-      <!-- MessagModal -->
-      <MessageModal :userData="userData"></MessageModal>
+        <!-- btnPanel -->
+        <!-- UserEditModal -->
+        <UserEditModal
+          @afterSaveSetting="afterSaveSetting"
+          :userData="localUserData"
+        ></UserEditModal>
+        <!-- MessagModal -->
+        <MessageModal :userData="userData"></MessageModal>
+      </template>
     </div>
   </div>
 </template>
@@ -117,7 +115,6 @@ import { Toast } from "../utils/helpers";
 import usersAPI from "../apis/users";
 import UserEditModal from "./Modal/UserEditModal";
 import MessageModal from "./Modal/MessageModal";
-// import locally
 import $ from "jquery";
 
 export default {
@@ -140,12 +137,9 @@ export default {
       roomId: "",
     };
   },
-  sockets: {
-    // connection: function (data) {
-    //   console.log("Data:" + data);
-    // },
-  },
   created() {
+    console.log("created userData");
+    console.log(this.userData);
     // from RecommendedFollowers
     this.$bus.$on("afterFollowUser", (userId) => {
       this.afterFollowUser(userId);
@@ -298,7 +292,7 @@ export default {
 
         this.$socket.emit(
           "subscription",
-         JSON.parse(sessionStorage.getItem("rooms")),
+          JSON.parse(sessionStorage.getItem("rooms")),
           user.account
         );
 
@@ -354,6 +348,8 @@ export default {
   watch: {
     userData: {
       handler: function () {
+        console.log("watch userData");
+        console.log(this.userData);
         this.localUserData = this.userData;
       },
       deep: true,
