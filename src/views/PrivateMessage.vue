@@ -288,13 +288,12 @@ export default {
 
     // Step1: select new chat
     afterUserSelected(user) {
-      console.log("Select userId: " + user.id);
       this.currentMessageList = [];
       this.currentChat = {
         ...this.currentChat,
         ...user,
       };
-      const userId = this.currentChat.userId;
+      const userId = this.currentChat.id;
       this.createNewChat(userId);
     },
     // Step2: create new chat room
@@ -337,10 +336,6 @@ export default {
         const { data } = await socketsAPI.getAvailableUsers();
 
         this.allUserList = data;
-
-        if (data.status !== "success") {
-          throw new Error(data.message);
-        }
       } catch (error) {
         console.log(error);
       }
