@@ -61,8 +61,14 @@
         v-model="message"
         maxlength="160"
         required
+        :disabled="currentChat.userId === undefined"
       />
-      <button type="submit" class="btn sendBtn" @click="sendMessage">
+      <button
+        :disabled="currentChat.userId === undefined"
+        type="submit"
+        class="btn sendBtn"
+        @click="sendMessage"
+      >
         <img src="../assets/send.svg" alt="" />
       </button>
     </div>
@@ -87,8 +93,7 @@ export default {
       default: function () {
         return {
           userId: undefined,
-          name: "公開聊天室",
-          // roomId: 4,
+          name: "",
           account: "",
         };
       },

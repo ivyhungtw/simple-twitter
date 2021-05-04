@@ -35,6 +35,7 @@
       <!-- messageBox -->
       <MessageBox
         ref="messageBox"
+        :currentChat="currentChat"
         :atPublic="atPublic"
         :messageList="messageList"
       ></MessageBox>
@@ -57,6 +58,11 @@ export default {
   mixins: [emptyImageFilter, fromNowFilter],
   data() {
     return {
+      currentChat: {
+        userId: "publicRoom",
+        name: "公開聊天室",
+        account: "",
+      },
       message: "",
       messageList: [],
       onlineUsersCount: 1,

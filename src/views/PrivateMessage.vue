@@ -450,6 +450,7 @@ export default {
 }
 
 .userItem {
+  /* border: 1px solid #000; */
   border-bottom: 1px solid #e6ecf0;
   padding: 0 10px;
   height: 60px;
@@ -464,6 +465,7 @@ export default {
 }
 
 .avatar {
+  min-width: 50px;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -493,6 +495,7 @@ export default {
 
 .previewMessage {
   max-width: 90%;
+  width: 90%;
   height: 25px;
   overflow: hidden;
 }
@@ -533,6 +536,7 @@ export default {
 
 .previewMessage p {
   line-height: 25px;
+  width: 100px;
 }
 
 /*/////////////////// message box ///////////////////*/
@@ -576,6 +580,7 @@ export default {
 
 .messageItem .avatar {
   min-width: 50px;
+  width: 50px;
   height: 50px;
 }
 .messageItem .textContainer {
