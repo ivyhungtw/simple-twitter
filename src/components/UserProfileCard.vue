@@ -278,7 +278,7 @@ export default {
         return;
       }
 
-      // 在目標追蹤者的頁面上，按推薦追蹤者欄來追蹤
+      // 在目標追蹤者的頁面上，按推薦追蹤者欄來取消追蹤
 
       if (
         this.userData.id === userId &&
