@@ -302,6 +302,7 @@ export default {
       this.currentChat = {
         ...this.currentChat,
         ...user,
+        userId: user.id,
       };
       const userId = this.currentChat.id;
       this.createNewChat(userId);
